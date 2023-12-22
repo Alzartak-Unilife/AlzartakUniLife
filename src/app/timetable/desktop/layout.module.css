@@ -1,0 +1,10 @@
+.layout {
+    height: calc(100vh - 20px);
+    width: calc(100vw - 30px);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    scroll-behavior: smooth;
+    padding: 10px 15px;
+    overflow: auto;
+}

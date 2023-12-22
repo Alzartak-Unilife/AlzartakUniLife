@@ -1,0 +1,295 @@
+.timetable {
+    height: calc(98% - 20px - 2px);
+    width: calc(100% - 30px - 2px);
+    margin: 10px;
+    margin-right: 20px;
+    border: var(--border-solid);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--table-row-background);
+
+    --font-size-painter-timetable-head-tr-th: 75px;
+    --font-size-painter-timetable-body-tr-th: var(--font-size-painter-timetable-head-tr-th);
+}
+
+.timetable__head {
+    height: 30px;
+    width: 100%;
+    background-color: var(--table-attribute-background);
+}
+
+.timetable__head_table {
+    table-layout: fixed;
+    height: 100%;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.timetable__day {
+    font-weight: normal;
+    text-align: center;
+}
+
+.timetable__body {
+    flex-grow: 1;
+    width: 100%;
+}
+
+.timetable__body_table {
+    height: 100%;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.timetable__body_table tr th,
+.timetable__body_table tr td {
+    border: var(--border-solid);
+    vertical-align: top;
+    border-bottom: 0px;
+}
+
+.timetable__body_table tr th {
+    width: var(--font-size-painter-timetable-body-tr-th);
+    font-size: 14px;
+    border-left: 0px;
+}
+
+
+.timetable__hours {
+    height: 100%;
+}
+
+.timetable__hour {
+    height: 6.25%;
+    width: var(--font-size-painter-timetable-head-tr-th);
+    padding-top: 7px;
+    color: #464646;
+    font-weight: normal;
+    text-align: center;
+    box-sizing: border-box;
+    border-top: var(--border-solid);
+}
+
+.timetable__hour:first-of-type {
+    border: none;
+}
+
+.timetable__block_field {
+    position: relative;
+    height: 100%;
+}
+
+.timetable__course_blocks {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.timetable__time_blocks {
+    height: 100%;
+}
+
+.timetable__time_block {
+    height: 6.25%;
+    box-sizing: border-box;
+    border-top: var(--border-solid);
+}
+
+.timetable__time_block:first-of-type {
+    border: none;
+}
+
+
+/* course block*/
+.course_block {
+    color: #666;
+    font-family: "맑은 고딕", 돋움, "Apple SD Gothic Neo", tahoma;
+    font-size: 12px;
+    letter-spacing: -0.5px;
+}
+
+.course_block dl,
+.course_block ul,
+.course_block ol,
+.course_block menu,
+.course_block li {
+    list-style: none;
+}
+
+.course_block h3 {
+    color: #292929;
+    font-weight: bold;
+    margin: 7px 7px 0 7px;
+    font-size: 12px;
+    line-height: 13px;
+}
+
+.course_block p {
+    color: #666;
+    font-family: "맑은 고딕", 돋움, "Apple SD Gothic Neo", tahoma;
+    font-size: 12px;
+    letter-spacing: -0.5px;
+    margin: 0 7px 7px 7px;
+    line-height: 12px;
+}
+
+.course_block p em {
+    font-style: normal;
+    margin-right: 5px;
+    color: #737373;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.course_block p span {
+    color: #737373;
+    font-size: 11px;
+}
+
+.course_block ul li {
+    float: left;
+    width: 15px;
+    height: 15px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    cursor: pointer;
+}
+
+.course_block__delete {
+    background-image: url(/src/components/timetable/image/container.timetable.del.png);
+}
+
+.course_block__status {
+    margin: 7px 7px 0 0;
+    float: right;
+}
+
+
+
+
+/* block color */
+.color0 {
+    background-color: rgb(107, 107, 107, 0.6);
+}
+
+.color1 {
+    background-color: #f2e8e8;
+}
+
+.color2 {
+    background-color: #ffe9e9;
+}
+
+.color3 {
+    background-color: #eff9cc;
+}
+
+.color4 {
+    background-color: #dcf2e9;
+}
+
+.color5 {
+    background-color: #dee8f6;
+}
+
+.color6 {
+    background-color: #fff8cc;
+}
+
+.color7 {
+    background-color: #ffedda;
+}
+
+.color8 {
+    background-color: #dceef2;
+}
+
+.color9 {
+    background-color: #f2e8e8;
+}
+
+.color10 {
+    background-color: #ffe9e9;
+}
+
+.color11 {
+    background-color: #eff9cc;
+}
+
+.color12 {
+    background-color: #dcf2e9;
+}
+
+.color13 {
+    background-color: #dee8f6;
+}
+
+.color14 {
+    background-color: #fff8cc;
+}
+
+.color15 {
+    background-color: #ffedda;
+}
+
+.color16 {
+    background-color: #dceef2;
+}
+
+.color17 {
+    background-color: #f2e8e8;
+}
+
+.color18 {
+    background-color: #ffe9e9;
+}
+
+.color19 {
+    background-color: #eff9cc;
+}
+
+.color20 {
+    background-color: #dcf2e9;
+}
+
+.color21 {
+    background-color: #dee8f6;
+}
+
+.color22 {
+    background-color: #fff8cc;
+}
+
+.color23 {
+    background-color: #ffedda;
+}
+
+.color24 {
+    background-color: #dceef2;
+}
+
+.color25 {
+    background-color: #f2e8e8;
+}
+
+.color26 {
+    background-color: #ffe9e9;
+}
+
+.color27 {
+    background-color: #eff9cc;
+}
+
+.color28 {
+    background-color: #dcf2e9;
+}
+
+.color29 {
+    background-color: #dee8f6;
+}
+
+.color30 {
+    background-color: #fff8cc;
+}

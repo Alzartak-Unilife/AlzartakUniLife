@@ -1,0 +1,33 @@
+.virtualizedTable {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.table__header {
+    max-width: 100%;
+}
+
+.table__headers_columns {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.table__body {
+    position: relative;
+    width: 100%;
+}
+
+.table__body_rows {
+    width: 100%;
+
+}
+
+.virtualizedTable_item {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
