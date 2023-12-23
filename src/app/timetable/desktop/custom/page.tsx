@@ -4,7 +4,7 @@ import Coursetable from "@/core/components/timetable/desktop/Coursetable";
 import CourseSearch from "@/core/components/timetable/desktop/CourseSearch";
 
 
-export default function AutoSettingDesktop() {
+export default function CustomDesktop() {
     // Render
     return (
         <div className={styles.page}>
@@ -13,11 +13,11 @@ export default function AutoSettingDesktop() {
             </div>
             <div className={styles.middle}>
                 <div className={styles.middle_left}>
-                    <AutoGeneratorConfig />
+
                 </div>
                 <div className={styles.middle_right}>
                     <Coursetable
-                        checkCourseConflict={false}
+                        checkCourseConflict={true}
                     />
                 </div>
             </div>

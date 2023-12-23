@@ -91,9 +91,80 @@ export async function getOfferedCourses(param: {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                withCredentials: true
             }
         );
+        responseData = response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            responseData = error.response.data;
+        }
+    }
+
+    return responseData.map(data => new Course(
+        data.year,
+        data.semester,
+        data.grades,
+        data.curriculum,
+        data.courseArea,
+        data.baseCode,
+        data.divCode,
+        data.courseName,
+        data.professor,
+        data.campus,
+        data.schedules.map(schedule => new Schedule(
+            schedule.day as Day,
+            new Time(schedule.time.begin, schedule.time.end),
+            schedule.room
+        )),
+        data.credit,
+        data.theory,
+        data.practice,
+        data.lectureType,
+        data.lectureCategory,
+        data.lectureLanguage,
+        data.requirementType,
+        data.offeringCollege,
+        data.offeringDepartment,
+        data.remarks,
+        data.avgEvaluation ?? 0
+    ));
+}
+
+
+/*
+type GetProfessorEvaluationsResponse = {
+    year: number;
+    semester: number;
+    score:
+}
+
+[
+    {
+        year: 2023,
+        semester: 1,
+        score: 3.89
+    }
+]
+
+
+export async function getProfessorEvaluations(param: {
+    baseCode: string;
+    professor: string;
+}
+): Promise<Course[]> {
+    let responseData: GetOfferedCoursesResponse = [];
+    try {
+        const postData = param;
+        const response = await axios.post(
+            getApiUrl(`/evaluate`),
+            postData,
+            {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }
+        );
+        console.log(response.data)
         responseData = response.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
@@ -128,3 +199,4 @@ export async function getOfferedCourses(param: {
         data.avgEvaluation ?? 0
     ));
 }
+*/

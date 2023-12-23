@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./CourseSearch.module.css"
 import { Course } from "@/core/types/Course";
 import { useRecoilState } from "recoil";
-import { SelectedCoursesAtom } from "@/core/recoil/SelectedCoursesAtom";
-import { HoveredCourseAtom } from "@/core/recoil/HoveredCourseAtom";
-import { OfferedCoursesAtom } from "@/core/recoil/OfferedCoursesAtom";
+import { autoWishCoursesAtom } from "@/core/recoil/wishCoursesAtom";
+import { autoHoverCourseAtom } from "@/core/recoil/hoverCourseAtom";
+import { autoOfferedCoursesAtom } from "@/core/recoil/offeredCoursesAtom";
 import { getOfferedCourses } from "@/core/api/AlzartakUnilfeApi";
 
 
@@ -2113,9 +2113,9 @@ export default function CourseSearch() {
 
 
     // Recoil
-    const [offeredCourse, setOfferedCourse] = useRecoilState<Course[]>(OfferedCoursesAtom);
-    const [selectedCourses, setSelectedCourses] = useRecoilState<Course[]>(SelectedCoursesAtom);
-    const [hoveredCourse, setHoveredCourse] = useRecoilState<Course | null>(HoveredCourseAtom);
+    const [offeredCourse, setOfferedCourse] = useRecoilState<Course[]>(autoOfferedCoursesAtom);
+    const [selectedCourses, setSelectedCourses] = useRecoilState<Course[]>(autoWishCoursesAtom);
+    const [hoveredCourse, setHoveredCourse] = useRecoilState<Course | null>(autoHoverCourseAtom);
 
 
     // State
@@ -2158,9 +2158,8 @@ export default function CourseSearch() {
     const handleCourseCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => setCourseCode(e.target.value);
 
     const handleSearchOfferedCourse = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const checkValid = (value: string) => (value === '-전체-' || value === '-선택-' || value === '') ? undefined : value;
-
-        setOfferedCourse(await getOfferedCourses({
+        const checkValid = (value: string) => (value === '-전체-' || value === '-선택-' || value === '') ? "" : value;
+        const offeredCourse = await getOfferedCourses({
             year: yearSemester.year,
             semester: yearSemester.semester,
             curriculum: checkValid(curriculum),
@@ -2171,7 +2170,10 @@ export default function CourseSearch() {
             lectureCategory: checkValid(lectureCategory),
             professor: checkValid(professorName),
             lectureLanguage: checkValid(language),
-        }));
+        });
+
+        setOfferedCourse(offeredCourse);
+        //console.log(offeredCourse)
     }
 
     const handleReset = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

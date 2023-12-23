@@ -65,6 +65,15 @@ export class Time {
     }
 
     /**
+     * `copy` 메서드는 `Time` 인스턴스의 깊은 복사본을 생성합니다.
+     * 이 메서드는 기존 `Time` 객체의 시작 및 종료 시간을 새 인스턴스로 복사하여 반환합니다.
+     * @returns {Time} 새로운 `Time` 인스턴스
+     */
+    copy(): Time {
+        return new Time(this.begin, this.end);
+    }
+
+    /**
      * `printFormat` 메서드는 `Time` 클래스 인스턴스의 시작 및 종료 시간을 포맷팅하여 문자열로 반환합니다.
      * 이 메서드는 내부적으로 `format` 함수를 사용하여 시간과 분을 00:00 형식으로 포맷팅합니다.
      * 예를 들어, 시작 시간이 90분이고 종료 시간이 150분인 경우, 
@@ -156,6 +165,16 @@ export class Schedule {
     }
 
     /**
+     * `copy` 메서드는 `Schedule` 인스턴스의 깊은 복사본을 생성합니다.
+     * 이 메서드는 기존 `Schedule` 객체의 요일, 시간, 장소를 새 인스턴스로 복사하여 반환합니다.
+     * 여기서 시간 객체는 해당 객체의 `copy` 메서드를 사용하여 복사합니다.
+     * @returns {Schedule} 새로운 `Schedule` 인스턴스
+     */
+    copy(): Schedule {
+        return new Schedule(this.day, this.time.copy(), this.room);
+    }
+
+    /**
      * `printFormat` 메서드는 `Schedule` 클래스 인스턴스의 강의 또는 이벤트 정보를 포맷팅하여 문자열로 반환합니다.
      * 이 메서드는 강의 또는 이벤트의 요일, 시간 및 장소 정보를 결합하여 문자열로 표현합니다.
      * 예를 들어, 강의가 월요일에 오전 9시부터 오전 11시까지 '101호'에서 열린다면,
@@ -177,6 +196,8 @@ export class Schedule {
  * 이 클래스는 강의의 평점, 커리큘럼, 학문 분야, 코드, 교수, 캠퍼스 등 다양한 정보를 포함합니다.
  */
 export class Course {
+    private year: number;                 // 개설년도
+    private semester: number;             // 개설학기
     private grades: number[];             // 학년/가진급학년
     private curriculum: string;           // 교과과정
     private courseArea: string;           // 교과영역구분
@@ -197,18 +218,22 @@ export class Course {
     private offeringDepartment: string;   // 개설학과/전공
     private remarks: string;              // 비고
     private evaluation: number;           // 강의평점
+    private rating: number;               // 선호도
 
     /**
     * `Course` 클래스의 생성자입니다. 강의에 대한 모든 정보를 초기화합니다.
     */
     constructor(
+        year: number, semester: number,
         grades: number[], curriculum: string, courseArea: string, baseCode: string,
         divCode: string, name: string, professor: string, campus: string,
         schedules: Schedule[], credit: number, theory: number, practice: number,
         lectureType: string, lectureCategory: string, language: string,
-        requirementType: string, offeringCollege: string, offeringDepartment: string,
-        remarks: string, evaluation: number
+        requirementType: string, offeringCollege: string, offeringDepartment: string, remarks: string,
+        evaluation: number, rating?: number
     ) {
+        this.year = year;
+        this.semester = semester;
         this.grades = grades;
         this.curriculum = curriculum;
         this.courseArea = courseArea;
@@ -229,6 +254,27 @@ export class Course {
         this.offeringDepartment = offeringDepartment;
         this.remarks = remarks;
         this.evaluation = evaluation;
+        this.rating = evaluation;
+    }
+
+    /** 개설년도를 반환합니다. */
+    getYear(): number {
+        return this.year;
+    }
+
+    /** 개설년도를 설정합니다. */
+    setYear(value: number): void {
+        this.year = value;
+    }
+
+    /** 개설학기를 반환합니다. */
+    getSemester(): number {
+        return this.semester;
+    }
+
+    /** 개설학기를 설정합니다. */
+    setSemester(value: number): void {
+        this.semester = value;
     }
 
     /** 학년/가진급학년을 반환합니다. */
@@ -431,6 +477,87 @@ export class Course {
         this.evaluation = evaluation;
     }
 
+    /** 선호도를 반환합니다. */
+    getRating(): number {
+        return this.rating;
+    }
+
+    /** 선호도를 설정합니다. */
+    setRating(rating: number) {
+        this.rating = rating;
+    }
+
+    /**
+     * `equalWith` 메서드는 다른 `Course` 인스턴스와 현재 인스턴스가 동일한 강의인지 비교합니다.
+     * 이 메서드는 학수강좌번호, 분반, 개설년도 및 개설학기를 기준으로 두 강의가 같은지 확인합니다.
+     * @param {Course} other 비교할 다른 `Course` 인스턴스입니다.
+     * @returns {boolean} 두 강의가 동일하면 true, 그렇지 않으면 false를 반환합니다.
+     */
+    equalWith(other: Course): boolean {
+        return this.baseCode === other.baseCode
+            && this.divCode === other.divCode
+            && this.year === other.year
+            && this.semester === other.semester;
+    }
+
+    /**
+     * `conflictWith` 메서드는 현재 강의와 다른 강의의 시간표가 겹치는지 여부를 확인합니다.
+     * 시간표의 충돌 여부는 다음과 같이 판단됩니다:
+     * - 두 강의의 시간표 요일이 동일한 경우
+     * - 두 강의의 시간표 시작 시간과 종료 시간이 겹치는 경우
+     *
+     * @param {Course} other 비교할 다른 `Course` 인스턴스입니다.
+     * @returns {boolean} 시간표가 겹치면 true, 그렇지 않으면 false를 반환합니다.
+     */
+    conflictWith(other: Course): boolean {
+        for (const fstSchedule of this.getSchedules()) {
+            for (const sndSchedule of other.getSchedules()) {
+                if (
+                    fstSchedule.getDay() === sndSchedule.getDay() && // 두 강의의 요일이 동일한 경우
+                    fstSchedule.getTime().getBegin() < sndSchedule.getTime().getEnd() && // 시작 시간이 겹치는 경우
+                    fstSchedule.getTime().getEnd() > sndSchedule.getTime().getBegin() // 종료 시간이 겹치는 경우
+                ) {
+                    return true; // 시간표가 겹칠 경우 true 반환
+                }
+            }
+        }
+        return false; // 시간표가 겹치지 않을 경우 false 반환
+    }
+
+    /**
+     * `copy` 메서드는 `Course` 인스턴스의 깊은 복사본을 생성합니다.
+     * 이 메서드는 기존 `Course` 객체의 모든 속성을 새 인스턴스로 복사하여 반환합니다.
+     * 여기서 `schedules` 배열의 각 요소는 해당 요소의 `copy` 메서드를 사용하여 복사합니다.
+     * @returns {Course} 새로운 `Course` 인스턴스
+     */
+    copy(): Course {
+        return new Course(
+            this.year,
+            this.semester,
+            [...this.grades],
+            this.curriculum,
+            this.courseArea,
+            this.baseCode,
+            this.divCode,
+            this.name,
+            this.professor,
+            this.campus,
+            this.schedules.map(s => s.copy()),
+            this.credit,
+            this.theory,
+            this.practice,
+            this.lectureType,
+            this.lectureCategory,
+            this.language,
+            this.requirementType,
+            this.offeringCollege,
+            this.offeringDepartment,
+            this.remarks,
+            this.evaluation,
+            this.rating
+        );
+    }
+
     /**
      * `printFormat` 메서드는 `Course` 인스턴스의 정보를 포맷팅된 형태로 반환합니다.
      * 이 메서드는 강의의 주요 정보들을 객체로 포맷팅하여 반환합니다.
@@ -438,7 +565,7 @@ export class Course {
      */
     printFormat() {
         return {
-            grades: this.grades.length > 1 ? `${this.grades[0]}~${this.grades[this.grades.length - 1]}` : this.grades.length === 0 ? this.grades[0].toString() : "",
+            grades: this.grades.length > 1 ? `${this.grades[0]}~${this.grades[this.grades.length - 1]}` : this.grades.length === 1 ? this.grades[0].toString() : "",
             curriculum: this.curriculum,
             courseArea: this.courseArea,
             code: `${this.baseCode}-${this.divCode}`,
@@ -456,7 +583,7 @@ export class Course {
             offeringCollege: this.offeringCollege,
             offeringDepartment: this.offeringDepartment,
             remarks: this.remarks,
-            evaluation: this.evaluation.toString()
+            evaluation: this.evaluation === 0 ? "없음" : this.evaluation.toFixed(2).toString()
         }
     }
 }

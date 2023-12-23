@@ -8,7 +8,7 @@ import useElementDimensions from "@/core/hooks/useElementDimensions";
 
 export interface TimetableProps {
     selectedCourses: Course[];
-    previewCourse?: Course;
+    previewCourse?: Course | null;
 }
 
 
