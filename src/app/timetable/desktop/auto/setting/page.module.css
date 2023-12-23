@@ -9,13 +9,12 @@
 }
 
 .top {
-    flex-shrink: 0;
     height: 100px;
     width: 100%;
-    min-width: 1200px;
+    min-width: 1280px;
     border-bottom: var(--border-dash);
     padding-bottom: 15px;
-    margin-bottom: 15px;
+    margin-top: 15px;
 }
 
 .middle {
@@ -27,11 +26,11 @@
 .middle_left {
     height: 100%;
     width: 25%;
-    min-height: 800px;
+    min-height: 700px;
     min-width: 500px;
-    padding-right: 14px;
+    padding-right: 5px;
     border-right: var(--border-dash);
-    margin-right: 15px;
+    margin-right: 5px;
 }
 
 .middle_right {

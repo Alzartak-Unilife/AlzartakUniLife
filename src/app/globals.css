@@ -1,7 +1,9 @@
 :root {
     --main-color: #d54728;
+    --sub-color:#FFFFFF;
     --border-dash: 1px dashed rgba(0, 0, 0, 0.4);
     --border-solid: 1px solid rgba(98, 98, 98, 0.4);
+    --sub-background-color: #fafafa;
     --table-attribute-background: #f2f2f2;
     --table-row-background: white;
 

@@ -1,8 +1,7 @@
 .timetable {
     height: calc(98% - 20px - 2px);
-    width: calc(100% - 30px - 2px);
-    margin: 10px;
-    margin-right: 20px;
+    width: calc(100% - 40px - 2px);
+    margin: 10px 20px;
     border: var(--border-solid);
     border-radius: 8px;
     overflow: hidden;

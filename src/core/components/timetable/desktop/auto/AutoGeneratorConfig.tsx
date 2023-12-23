@@ -16,19 +16,6 @@ export default function AutoGeneratorConfig() {
     const [hoveredCourse, setHoveredCourse] = useRecoilState<Course | null>(HoveredCourseAtom);
 
 
-    // Effect
-    // 컴포넌트가 마운트될 때 초기화, 언마운트될 때 실행될 클린업 // TOP으로 이동해야함
-    useEffect(() => {
-        setSelectedCourses([]);
-        setHoveredCourse(null);
-
-        return () => {
-            setSelectedCourses([]);
-            setHoveredCourse(null);
-        };
-    }, []);
-
-
     // Render
     return (
         <div className={styles.autoGeneratorConfig}>

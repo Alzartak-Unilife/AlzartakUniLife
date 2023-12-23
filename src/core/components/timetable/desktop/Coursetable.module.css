@@ -6,7 +6,7 @@
 }
 
 .course_list {
-    height: calc(50% - 10px);
+    height: calc(50% - 5px);
     width: 100%;
 }
 

@@ -1,0 +1,75 @@
+.courseSearch {
+    height: calc(100% - 15px - 5px - 2px);
+    width: calc(100% - 40px - 2px);
+    margin-left: 20px;
+    margin-right: 20px;
+    border: var(--border-solid);
+    border-radius: 8px;
+    padding-top: 15px;
+    padding-bottom: 5px;
+    background-color: var(--table-attribute-background);
+}
+
+.row {
+    height: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter {
+    height: 100%;
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttons {
+    height: 100%;
+    width: calc(20% - 30px);
+    padding-right: 30px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.dropdown,
+.textbox {
+    height: calc(30px - 2px);
+    width: calc(100% - 150px);
+    min-width: 100px;
+    border-radius: 8px;
+    border: var(--border-solid);
+    margin-left: 10px;
+}
+
+.dropdown {
+    padding: 5px;
+    text-align: center;
+}
+
+.textbox {
+    height: calc(30px - 5px);
+}
+
+.btnSearch,
+.btnReset {
+    height: calc(30px - 2px);
+    border: 1px solid var(--main-color);
+    margin: 0px 10px;
+    font-size: 16px;
+}
+
+.btnSearch {
+    width: 50px;
+    background-color: var(--main-color);
+    color: var(--sub-color);
+}
+
+.btnReset {
+    width: 100px;
+    background-color: var(--sub-color);
+    color: var(--main-color);
+}

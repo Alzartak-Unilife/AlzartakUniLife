@@ -134,7 +134,7 @@ export default function Coursetable() {
                         }}
 
                         numColumns={courseTableColumns.length}
-                        columnHeight={35}
+                        columnHeight={30}
                         columnWidths={courseTableColumns.map((column) => column.style)}
                         columnStyles={{
                             userSelect: "none",
@@ -142,7 +142,7 @@ export default function Coursetable() {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            height: "calc(35px - 1px)",
+                            height: "calc(30px - 2px)",
                             borderLeft: "var(--border-solid)",
                             borderBottom: "var(--border-solid)",
                         }}
@@ -155,7 +155,7 @@ export default function Coursetable() {
                         }}
 
                         numRows={offeredCourse.length}
-                        rowHeight={35}
+                        rowHeight={30}
                         rowStyles={{
                             default: {
                                 userSelect: "none",
@@ -223,14 +223,14 @@ export default function Coursetable() {
                         }}
 
                         numColumns={courseTableColumns.length}
-                        columnHeight={35}
+                        columnHeight={30}
                         columnStyles={{
                             userSelect: "none",
                             backgroundColor: "var(--table-attribute-background)",
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            height: "calc(35px - 1px)",
+                            height: "calc(30px - 2px)",
                             borderLeft: "var(--border-solid)",
                             borderBottom: "var(--border-solid)",
                         }}
@@ -244,7 +244,7 @@ export default function Coursetable() {
                         }}
 
                         numRows={selectedCourses.length}
-                        rowHeight={35}
+                        rowHeight={30}
                         rowStyles={{
                             default: {
                                 userSelect: "none",
