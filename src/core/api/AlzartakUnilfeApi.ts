@@ -25,6 +25,24 @@ function getApiUrl(path: string): string {
 
 
 /*****************************************************************
+ * Axios 요청에 사용될 기본 타임아웃 값을 반환하는 메서드입니다.
+ *****************************************************************/
+
+/**
+ * `getDefualtAxiosTimeout` 메서드는 Axios HTTP 요청의 기본 타임아웃 값을 설정합니다.
+ * 현재 이 메서드는 10초(10000 밀리초)로 타임아웃을 설정하여 반환합니다.
+ * 이 값을 사용하여 Axios 요청 시 기본적으로 설정할 타임아웃 값을 지정할 수 있습니다.
+ *
+ * @returns {number} 기본 타임아웃 값인 10000(10초)을 반환합니다.
+ */
+function getDefualtAxiosTimeout(): number {
+    return 10000;
+}
+
+
+
+
+/*****************************************************************
  * 조건에 맞는 개설 강좌 목록을 가져오는 API 메서드입니다.
 *****************************************************************/
 
@@ -88,6 +106,7 @@ export async function getOfferedCourses(param: {
             getApiUrl(`/search`),
             postData,
             {
+                timeout: getDefualtAxiosTimeout(),
                 headers: {
                     "Content-Type": "application/json"
                 },
