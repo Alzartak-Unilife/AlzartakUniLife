@@ -11,7 +11,10 @@ import { getOfferedCourses } from "@/core/api/AlzartakUnilfeApi";
 import CircularProgressOverlay from "../../../modules/circular-progress-overlay/CircularProgressOverlay";
 
 
-
+/**
+ * CourseSearch 컴포넌트는 강의 검색 기능을 제공합니다.
+ * 사용자는 다양한 조건을 설정하여 강의를 검색할 수 있습니다.
+ */
 export default function CourseSearch() {
     // Ref
     const majorSelectRef = useRef<HTMLSelectElement>(null);
@@ -2115,8 +2118,8 @@ export default function CourseSearch() {
 
     // Recoil
     const [offeredCourse, setOfferedCourse] = useRecoilState<Course[]>(autoOfferedCoursesAtom);
-    const [selectedCourses, setSelectedCourses] = useRecoilState<Course[]>(autoWishCoursesAtom);
-    const [hoveredCourse, setHoveredCourse] = useRecoilState<Course | null>(autoHoverCourseAtom);
+    const setSelectedCourses = useRecoilState<Course[]>(autoWishCoursesAtom)[1];
+    const setHoveredCourse = useRecoilState<Course | null>(autoHoverCourseAtom)[1];
 
 
     // State
@@ -2125,7 +2128,7 @@ export default function CourseSearch() {
     const [processDescription, setProcessDescription] = useState<number>(0);
     const [majorOptions, setMajorOptions] = useState<string[]>(collegeToMajorMapping['-선택-']);
     const [isCollegeAndMajorSelectEnabled, setIsCollegeAndMajorSelectEnabled] = useState<boolean>(false);
-    const [yearSemester, setYearSemester] = useState<{ year: number, semester: number }>({ year: 2023, semester: 1 });
+    const [yearSemester, setYearSemester] = useState<{ year: number, semester: number }>({ year: 0, semester: 0 });
     const [curriculum, setCurriculum] = useState<string>('-전체-');
     const [college, setCollege] = useState<string>('-선택-');
     const [major, setMajor] = useState<string>('-전체-');
@@ -2161,6 +2164,7 @@ export default function CourseSearch() {
     const handleCourseNameChange = (e: React.ChangeEvent<HTMLInputElement>) => setCourseName(e.target.value);
     const handleCourseCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => setCourseCode(e.target.value);
 
+    /** 강의 검색 처리 함수 */
     const handleSearchOfferedCourse = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setIsLoading(true);
         setProcessPercentage(0);
@@ -2172,7 +2176,7 @@ export default function CourseSearch() {
                     clearInterval(apiPercentageInterval);
                     return prevPercentage;
                 }
-                return prevPercentage + 0.8;
+                return prevPercentage + (80.0 / 150.0);
             });
             setProcessDescription(prevDescription => {
                 return (prevDescription + 0.2) % 4;
@@ -2180,7 +2184,7 @@ export default function CourseSearch() {
         }, 100);
 
         const checkValid = (value: string) => (value === '-전체-' || value === '-선택-' || value === '') ? "" : value;
-        const offeredCourse = await getOfferedCourses({
+        const { data: offeredCourse, message } = await getOfferedCourses({
             year: yearSemester.year,
             semester: yearSemester.semester,
             curriculum: checkValid(curriculum),
@@ -2192,27 +2196,31 @@ export default function CourseSearch() {
             professor: checkValid(professorName),
             lectureLanguage: checkValid(language),
         });
-
         clearInterval(apiPercentageInterval);
-        setProcessPercentage(70);
+        setProcessPercentage(80);
 
-        const setProgress = setInterval(() => {
-            setProcessPercentage(prevPercentage => {
-                if (prevPercentage >= 100) {
-                    clearInterval(setProgress);
-                    setIsLoading(false);
-                    return 0;
-                }
-                return Math.round(prevPercentage + 3);
-            });
-            setProcessDescription(prevDescription => {
-                return (prevDescription + 0.2) % 4;
-            });
-        }, 100);
-
-        setOfferedCourse(offeredCourse);
+        if (message === "SUCCESS") {
+            const setProgress = setInterval(() => {
+                setProcessPercentage(prevPercentage => {
+                    if (prevPercentage >= 100) {
+                        clearInterval(setProgress);
+                        setIsLoading(false);
+                        return 0;
+                    }
+                    return Math.round(prevPercentage + 3);
+                });
+                setProcessDescription(prevDescription => {
+                    return (prevDescription + 0.2) % 4;
+                });
+            }, 100);
+            setOfferedCourse(offeredCourse);
+        } else {
+            setIsLoading(false);
+            alert("서버와 연결을 실패했습니다");
+        }
     }
 
+    /** 초기화 처리 함수 */
     const handleReset = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setOfferedCourse([]);
         setSelectedCourses([]);
@@ -2221,7 +2229,16 @@ export default function CourseSearch() {
 
 
     // Effect
-    // 컴포넌트가 마운트될 때 초기화, 언마운트될 때 실행될 클린업 // TOP으로 이동해야함
+    /** 현재 날짜 기반 학기 설정 */
+    useEffect(() => {
+        const now = new Date();
+        now.setHours(now.getHours() + 9);
+        const currentYear = now.getFullYear();
+        const currentSemester = now.getMonth() < 7 ? 1 : 2;
+        setYearSemester({ year: currentYear, semester: currentSemester });
+    }, []);
+
+    /** 컴포넌트 마운트 및 언마운트 시 초기화 */
     useEffect(() => {
         setOfferedCourse([]);
         setSelectedCourses([]);
@@ -2234,6 +2251,7 @@ export default function CourseSearch() {
         };
     }, []);
 
+    /** 제공된 강의 목록에 대한 처리 */
     useEffect(() => {
         setProcessPercentage(100);
     }, [offeredCourse])

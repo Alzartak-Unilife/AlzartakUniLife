@@ -36,7 +36,7 @@ function getApiUrl(path: string): string {
  * @returns {number} 기본 타임아웃 값인 10000(10초)을 반환합니다.
  */
 function getDefualtAxiosTimeout(): number {
-    return 10000;
+    return 15000;
 }
 
 
@@ -98,8 +98,12 @@ export async function getOfferedCourses(param: {
     professor?: string;
     lectureLanguage?: string;
 }
-): Promise<Course[]> {
+): Promise<{
+    data: Course[];
+    message: "FAIL" | "SUCCESS";
+}> {
     let responseData: GetOfferedCoursesResponse = [];
+
     try {
         const postData = param;
         const response = await axios.post(
@@ -114,39 +118,43 @@ export async function getOfferedCourses(param: {
         );
         responseData = response.data;
     } catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-            responseData = error.response.data;
+        return {
+            data: [],
+            message: "FAIL"
         }
     }
 
-    return responseData.map(data => new Course(
-        data.year,
-        data.semester,
-        data.grades,
-        data.curriculum,
-        data.courseArea,
-        data.baseCode,
-        data.divCode,
-        data.courseName,
-        data.professor,
-        data.campus,
-        data.schedules.map(schedule => new Schedule(
-            schedule.day as Day,
-            new Time(schedule.time.begin, schedule.time.end),
-            schedule.room
+    return {
+        data: responseData.map(data => new Course(
+            data.year,
+            data.semester,
+            data.grades,
+            data.curriculum,
+            data.courseArea,
+            data.baseCode,
+            data.divCode,
+            data.courseName,
+            data.professor,
+            data.campus,
+            data.schedules.map(schedule => new Schedule(
+                schedule.day as Day,
+                new Time(schedule.time.begin, schedule.time.end),
+                schedule.room
+            )),
+            data.credit,
+            data.theory,
+            data.practice,
+            data.lectureType,
+            data.lectureCategory,
+            data.lectureLanguage,
+            data.requirementType,
+            data.offeringCollege,
+            data.offeringDepartment,
+            data.remarks,
+            data.avgEvaluation ?? 0
         )),
-        data.credit,
-        data.theory,
-        data.practice,
-        data.lectureType,
-        data.lectureCategory,
-        data.lectureLanguage,
-        data.requirementType,
-        data.offeringCollege,
-        data.offeringDepartment,
-        data.remarks,
-        data.avgEvaluation ?? 0
-    ));
+        message: "SUCCESS"
+    }
 }
 
 

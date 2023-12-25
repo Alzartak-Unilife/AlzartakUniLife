@@ -20,6 +20,8 @@ interface CoursetableProps {
 export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
     // Const
     const ratings = [5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1];
+    const offeredCourseTableAttributes: string[] = ["\u00A0", "학년/가진급", "교과과정", "학수강좌번호", "교과목명", "교원명", "수업캠퍼스", "강의평점", "학점", "강의종류", "\u00A0"];
+    const wishCourseTableAttributes: string[] = ["\u00A0", "학년/가진급", "교과과정", "학수강좌번호", "교과목명", "교원명", "수업캠퍼스", "선호도 설정", "학점", "강의종류", "\u00A0"];
 
 
     // Ref
@@ -31,10 +33,10 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
 
 
     // Recoil
-    const [offeredCourse, setOfferedCourse] = useRecoilState<Course[]>(autoOfferedCoursesAtom);
+    const offeredCourse = useRecoilValue<Course[]>(autoOfferedCoursesAtom);
     const setWishCourses = useRecoilState<Course[]>(autoWishCoursesAtom)[1];
     const sortedWishCourses = useRecoilValue<Course[]>(sortedAutoWishCoursesSelector);
-    const [hoveredCourse, setHoveredCourse] = useRecoilState<Course | null>(autoHoverCourseAtom);
+    const setHoveredCourse = useRecoilState<Course | null>(autoHoverCourseAtom)[1];
 
 
     /// Modal 
@@ -43,36 +45,6 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
 
     // Custom Hook
     const courseTableHeight = useElementDimensions(courseListTable, "Pure").height;
-
-
-    /** 테이블 헤더 설정  */
-    const offeredCourseTableColumns: { name: string, style: React.CSSProperties }[] = [
-        { name: "\u00A0", style: { width: "70px" } },
-        { name: "학년/가진급", style: { width: "110px" } },
-        { name: "교과과정", style: { width: "130px" } },
-        { name: "학수강좌번호", style: { width: "130px" } },
-        { name: "교과목명", style: { width: "calc(100% - 1115px - 5px)" } },
-        { name: "교원명", style: { width: "190px" } },
-        { name: "수업캠퍼스", style: { width: "105px" } },
-        { name: "강의평점", style: { width: "110px" } },
-        { name: "학점", style: { width: "50px" } },
-        { name: "강의종류", style: { width: "140px" } },
-        { name: "\u00A0", style: { width: "80px" } },
-    ];
-
-    const wishCourseTableColumns: { name: string, style: React.CSSProperties }[] = [
-        { name: "\u00A0", style: { width: "70px" } },
-        { name: "학년/가진급", style: { width: "110px" } },
-        { name: "교과과정", style: { width: "130px" } },
-        { name: "학수강좌번호", style: { width: "130px" } },
-        { name: "교과목명", style: { width: "calc(100% - 1115px - 5px)" } },
-        { name: "교원명", style: { width: "190px" } },
-        { name: "수업캠퍼스", style: { width: "105px" } },
-        { name: "선호도 설정", style: { width: "110px" } },
-        { name: "학점", style: { width: "50px" } },
-        { name: "강의종류", style: { width: "140px" } },
-        { name: "\u00A0", style: { width: "80px" } },
-    ];
 
 
     // Handler
@@ -145,7 +117,7 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                 <div className={styles.course_list__table} ref={courseListTable}>
                     <VirtualizedTable
                         windowHeight={courseTableHeight - 2}
-                        tableStyles={{
+                        tableStyle={{
                             height: "calc(100% - 2px)",
                             width: "calc(100% - 2px)",
                             overflow: "hidden",
@@ -153,72 +125,96 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                             border: "var(--border-solid)"
                         }}
 
-                        numColumns={offeredCourseTableColumns.length}
-                        columnHeight={30}
-                        columnWidths={offeredCourseTableColumns.map((column) => column.style)}
-                        columnStyles={{
-                            userSelect: "none",
-                            backgroundColor: "var(--table-attribute-background)",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            height: "calc(30px - 2px)",
-                            borderLeft: "var(--border-solid)",
-                            borderBottom: "var(--border-solid)",
+
+                        headerHeight={30}
+                        headerStyle={{
+                            default: {
+                                backgroundColor: "var(--table-attribute-background)",
+                            },
                         }}
-                        renderColumns={({ index, columnClassName, columnStyle }) => {
+                        attributeWidths={[
+                            { width: "70px" },
+                            { width: "110px" },
+                            { width: "130px" },
+                            { width: "130px" },
+                            { width: "calc(100% - 1115px - 5px)", minWidth: "200px" },
+                            { width: "190px" },
+                            { width: "105px" },
+                            { width: "110px" },
+                            { width: "50px" },
+                            { width: "140px" },
+                            { width: "80px" },
+                        ]}
+                        attributeStyle={{
+                            default: {
+                                borderLeft: "var(--border-solid)",
+                                borderBottom: "var(--border-solid)",
+                                userSelect: "none",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: "calc(30px - 2px)",
+                            },
+                            hover: {
+                                backgroundColor: "var(--main-color-light)",
+                            }
+                        }}
+                        renderHeader={({ index, attributeClassName: columnClassName, attributeStyle: columnStyle }) => {
                             return (
-                                <div key={index} className={columnClassName} style={{
-                                    ...columnStyle,
-                                    ...(index === 7 ? { backgroundColor: "var(--main-color-light)" } : {})
-                                }}>
-                                    {offeredCourseTableColumns[index].name}
+                                <div key={index} className={columnClassName} style={{ ...columnStyle, ...(index === 0 && { borderLeft: "0px" }) }}>
+                                    {offeredCourseTableAttributes[index]}
                                 </div>
                             );
                         }}
 
+
                         numRows={offeredCourse.length}
                         rowHeight={30}
-                        rowStyles={{
+                        rowStyle={{
                             default: {
+                                backgroundColor: "var(--sub-color)",
+                            },
+                            hover: {
+                                backgroundColor: "var(--main-color-light-light)",
+                            }
+                        }}
+                        cellStyle={{
+                            default: {
+                                borderLeft: "var(--border-solid)",
                                 userSelect: "none",
-                                backgroundColor: "var(--table-row-background)",
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
                                 cursor: "pointer",
+                            },
+                            hover: {
+                                backgroundColor: "var(--main-color-light)",
                             }
                         }}
-                        renderRows={({ index, rowClassName, rowStyle, itemClassName, itemStyles }) => {
+                        renderRows={({ index, rowClassName, rowStyle, cellClassName, cellStyles }) => {
                             const courseInfo = offeredCourse[index].printFormat();
                             return (
                                 <div key={index} id={`${index}`} className={rowClassName} style={rowStyle}
                                     onMouseOver={() => { handleHoverCourse(offeredCourse[index]); }}
                                     onMouseOut={() => { handleHoverCourse(null); }}
                                 >
-                                    <div className={itemClassName} style={itemStyles[0]}>
-                                        <button className={styles.course_list__positive_button} disabled={handleCheckDuplication(offeredCourse[index])} onClick={(e) => {
-                                            handleSelectCourse(e);
-                                            handleHoverCourse(null);
-                                        }}>
+                                    <div className={cellClassName} style={{ ...cellStyles[0], borderLeft: "0px" }}>
+                                        <button className={styles.course_list__positive_button} disabled={handleCheckDuplication(offeredCourse[index])} onClick={handleSelectCourse}>
                                             {"선택"}
                                         </button>
                                     </div>
-                                    <div className={itemClassName} style={itemStyles[1]}>{courseInfo.grades}</div>
-                                    <div className={itemClassName} style={itemStyles[2]}>{courseInfo.curriculum}</div>
-                                    <div className={itemClassName} style={itemStyles[3]}>{courseInfo.code}</div>
-                                    <div className={itemClassName} style={itemStyles[4]}>{courseInfo.name}</div>
-                                    <div className={itemClassName} style={itemStyles[5]} onClick={(e) => {
+                                    <div className={cellClassName} style={cellStyles[1]}>{courseInfo.grades}</div>
+                                    <div className={cellClassName} style={cellStyles[2]}>{courseInfo.curriculum}</div>
+                                    <div className={cellClassName} style={cellStyles[3]}>{courseInfo.code}</div>
+                                    <div className={cellClassName} style={cellStyles[4]}>{courseInfo.name}</div>
+                                    <div className={cellClassName} style={cellStyles[5]} onClick={(e) => {
                                         console.log(courseInfo)
                                     }}>{courseInfo.professor}</div>
-                                    <div className={itemClassName} style={itemStyles[6]}>{courseInfo.campus}</div>
-                                    <div className={itemClassName} style={{
-                                        ...itemStyles[7],
-                                        backgroundColor: "var(--main-color-light-light)"
-                                    }}>{courseInfo.evaluation}</div>
-                                    <div className={itemClassName} style={itemStyles[8]}>{courseInfo.credit}</div>
-                                    <div className={itemClassName} style={itemStyles[9]}>{courseInfo.lectureCategory}</div>
-                                    <div className={itemClassName} style={itemStyles[10]}>
+                                    <div className={cellClassName} style={cellStyles[6]}>{courseInfo.campus}</div>
+                                    <div className={cellClassName} style={cellStyles[7]}>{courseInfo.evaluation}</div>
+                                    <div className={cellClassName} style={cellStyles[8]}>{courseInfo.credit}</div>
+                                    <div className={cellClassName} style={cellStyles[9]}>{courseInfo.lectureCategory}</div>
+                                    <div className={cellClassName} style={cellStyles[10]}>
                                         <button className={styles.course_list__button} onClick={() => handleCourseDetail(offeredCourse[index])}>
                                             {"상세정보"}
                                         </button>
@@ -242,7 +238,7 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                 <div className={styles.course_list__table}>
                     <VirtualizedTable
                         windowHeight={courseTableHeight - 2}
-                        tableStyles={{
+                        tableStyle={{
                             height: "calc(100% - 2px)",
                             width: "calc(100% - 2px)",
                             overflow: "hidden",
@@ -250,43 +246,73 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                             border: "var(--border-solid)"
                         }}
 
-                        numColumns={wishCourseTableColumns.length}
-                        columnHeight={30}
-                        columnStyles={{
-                            userSelect: "none",
-                            backgroundColor: "var(--table-attribute-background)",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            height: "calc(30px - 2px)",
-                            borderLeft: "var(--border-solid)",
-                            borderBottom: "var(--border-solid)",
+
+                        headerHeight={30}
+                        headerStyle={{
+                            default: {
+                                backgroundColor: "var(--table-attribute-background)",
+                            },
                         }}
-                        columnWidths={wishCourseTableColumns.map((column) => column.style)}
-                        renderColumns={({ index, columnClassName, columnStyle }) => {
+                        attributeWidths={[
+                            { width: "70px" },
+                            { width: "110px" },
+                            { width: "130px" },
+                            { width: "130px" },
+                            { width: "calc(100% - 1115px - 5px)", minWidth: "200px" },
+                            { width: "190px" },
+                            { width: "105px" },
+                            { width: "110px" },
+                            { width: "50px" },
+                            { width: "140px" },
+                            { width: "80px" },
+                        ]}
+                        attributeStyle={{
+                            default: {
+                                borderLeft: "var(--border-solid)",
+                                borderBottom: "var(--border-solid)",
+                                userSelect: "none",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: "calc(30px - 2px)",
+                            },
+                            hover: {
+                                backgroundColor: "var(--main-color-light)",
+                            }
+                        }}
+                        renderHeader={({ index, attributeClassName: columnClassName, attributeStyle: columnStyle }) => {
                             return (
-                                <div key={index} className={columnClassName} style={{
-                                    ...columnStyle,
-                                    ...(index === 7 ? { backgroundColor: "var(--main-color-light)" } : {})
-                                }}>
-                                    {wishCourseTableColumns[index].name}
+                                <div key={index} className={columnClassName} style={{ ...columnStyle, ...(index === 0 && { borderLeft: "0px" }) }}>
+                                    {wishCourseTableAttributes[index]}
                                 </div>
                             );
                         }}
 
-                        numRows={sortedWishCourses.length}
+
+                        numRows={offeredCourse.length}
                         rowHeight={30}
-                        rowStyles={{
+                        rowStyle={{
                             default: {
+                                backgroundColor: "var(--sub-color)",
+                            },
+                            hover: {
+                                backgroundColor: "var(--main-color-light-light)",
+                            }
+                        }}
+                        cellStyle={{
+                            default: {
+                                borderLeft: "var(--border-solid)",
                                 userSelect: "none",
-                                backgroundColor: "var(--table-row-background)",
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
                                 cursor: "pointer",
+                            },
+                            hover: {
+                                backgroundColor: "var(--main-color-light)",
                             }
                         }}
-                        renderRows={({ index, rowClassName, rowStyle, itemClassName, itemStyles }) => {
+                        renderRows={({ index, rowClassName, rowStyle, cellClassName, cellStyles }) => {
                             const courses = sortedWishCourses[index];
                             const courseInfo = sortedWishCourses[index].printFormat();
                             return (
@@ -294,24 +320,20 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                                     onMouseOver={() => { handleHoverCourse(courses) }}
                                     onMouseOut={() => { handleHoverCourse(null); }}
                                 >
-                                    <div className={itemClassName} style={itemStyles[0]}>
-                                        <button className={styles.course_list__nagative_button} onClick={(e) => {
-                                            handleUnselectCourse(e);
-                                            handleHoverCourse(null);
-                                        }}>
+                                    <div className={cellClassName} style={{ ...cellStyles[0], borderLeft: "0px" }}>
+                                        <button className={styles.course_list__nagative_button} onClick={handleUnselectCourse}>
                                             {"취소"}
                                         </button>
                                     </div>
-                                    <div className={itemClassName} style={itemStyles[1]}>{courseInfo.grades}</div>
-                                    <div className={itemClassName} style={itemStyles[2]}>{courseInfo.curriculum}</div>
-                                    <div className={itemClassName} style={itemStyles[3]}>{courseInfo.code}</div>
-                                    <div className={itemClassName} style={itemStyles[4]}>{courseInfo.name}</div>
-                                    <div className={itemClassName} style={itemStyles[5]}>{courseInfo.professor}</div>
-                                    <div className={itemClassName} style={itemStyles[6]}>{courseInfo.campus}</div>
-                                    <div className={itemClassName} style={{
-                                        ...itemStyles[7],
-                                        backgroundColor: "var(--main-color-light-light)"
-                                    }}>
+                                    <div className={cellClassName} style={cellStyles[1]}>{courseInfo.grades}</div>
+                                    <div className={cellClassName} style={cellStyles[2]}>{courseInfo.curriculum}</div>
+                                    <div className={cellClassName} style={cellStyles[3]}>{courseInfo.code}</div>
+                                    <div className={cellClassName} style={cellStyles[4]}>{courseInfo.name}</div>
+                                    <div className={cellClassName} style={cellStyles[5]} onClick={(e) => {
+                                        console.log(courseInfo)
+                                    }}>{courseInfo.professor}</div>
+                                    <div className={cellClassName} style={cellStyles[6]}>{courseInfo.campus}</div>
+                                    <div className={cellClassName} style={cellStyles[7]}>
                                         <select value={courses.getRating().toFixed(2)} onChange={handleRerateCourse}
                                             style={{
                                                 backgroundColor: "transparent",
@@ -328,9 +350,9 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                                             )}
                                         </select>
                                     </div>
-                                    <div className={itemClassName} style={itemStyles[8]}>{courseInfo.credit}</div>
-                                    <div className={itemClassName} style={itemStyles[9]}>{courseInfo.lectureCategory}</div>
-                                    <div className={itemClassName} style={itemStyles[10]}>
+                                    <div className={cellClassName} style={cellStyles[8]}>{courseInfo.credit}</div>
+                                    <div className={cellClassName} style={cellStyles[9]}>{courseInfo.lectureCategory}</div>
+                                    <div className={cellClassName} style={cellStyles[10]}>
                                         <button className={styles.course_list__button} onClick={() => handleCourseDetail(courses)}>
                                             {"상세정보"}
                                         </button>

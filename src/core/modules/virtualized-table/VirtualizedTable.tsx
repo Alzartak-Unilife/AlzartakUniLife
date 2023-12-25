@@ -1,27 +1,34 @@
 import React, { useState, useCallback } from 'react';
-import styles from "./VirtualizedTable.module.css"
+import styles from "./VirtualizedTable.module.css";
 
 /*****************************************************************
- * 가상 스크롤링을 지원하는 테이블 컴포넌트입니다.
+ * VirtualizedTable은 화면에 표시되는 영역에 따라 동적으로 행을 렌더링하는 컴포넌트입니다.
+ * 이를 통해 대규모 데이터셋을 효율적으로 표시할 수 있습니다.
  *****************************************************************/
 
-/** VirtualizedTable의 속성 인터페이스 */
+/** VirtualizedTable 컴포넌트의 프로퍼티 정의 */
 export interface VirtualizedTableProps {
-    windowHeight: number;  // 윈도우 높이
-    tableStyles?: React.CSSProperties;  // 테이블 스타일
-    hideScrollbar?: boolean;  // 스크롤바 숨김 여부
+    windowHeight: number;                  // 테이블이 표시될 윈도우 높이
+    tableStyle?: React.CSSProperties;      // 테이블의 스타일
+    hideScrollbar?: boolean;               // 스크롤바 표시 여부
 
-    numColumns: number;  // 열의 개수
-    columnHeight: number;  // 열 높이
-    columnWidths: React.CSSProperties[];  // 각 열의 너비
-    columnStyles?: React.CSSProperties;  // 열 스타일
-    renderColumns: (item: { index: number; columnClassName: string; columnStyle: React.CSSProperties; }) => JSX.Element;  // 열 렌더링 함수
+    headerHeight: number;                  // 테이블 헤더의 높이
+    headerStyle?: { default?: React.CSSProperties, hover?: React.CSSProperties }; // 헤더 스타일
+    attributeWidths: {                     // 각 열의 너비 정의
+        width: React.CSSProperties['width'];
+        minWidth?: React.CSSProperties['minWidth'];
+        maxWidth?: React.CSSProperties['maxWidth'];
+    }[];
+    attributeStyle?: { default?: React.CSSProperties, hover?: React.CSSProperties }; // 열 스타일
+    renderHeader: (item: { index: number; attributeClassName: string; attributeStyle: React.CSSProperties; }) => JSX.Element; // 헤더 렌더링 함수
 
-    numRows: number;  // 행의 개수
-    rowHeight: number;  // 행 높이
-    rowStyles?: { default?: React.CSSProperties, hover?: React.CSSProperties };  // 행 스타일
-    renderRows: (item: { index: number; rowClassName: string; rowStyle: React.CSSProperties, itemClassName: string; itemStyles: React.CSSProperties[]; }) => JSX.Element;  // 행 렌더링 함수
+    numRows: number;                      // 표시될 행의 총 개수
+    rowHeight: number;                    // 각 행의 높이
+    rowStyle?: { default?: React.CSSProperties, hover?: React.CSSProperties }; // 행 스타일
+    cellStyle?: { default?: React.CSSProperties, hover?: React.CSSProperties }; // 셀 스타일
+    renderRows: (item: { index: number; rowClassName: string; rowStyle: React.CSSProperties, cellClassName: string; cellStyles: React.CSSProperties[]; }) => JSX.Element; // 행 렌더링 함수
 }
+
 
 /**
  * VirtualizedTable 함수 컴포넌트는 가상 스크롤링을 지원하는 테이블을 렌더링합니다.
@@ -33,92 +40,119 @@ export interface VirtualizedTableProps {
  * @returns {JSX.Element} 렌더링된 가상 스크롤 테이블입니다.
  */
 export default function VirtualizedTable({
-    windowHeight, tableStyles, hideScrollbar,
-    numColumns, columnHeight, columnWidths, columnStyles, renderColumns,
-    numRows, rowHeight, rowStyles, renderRows,
+    windowHeight, tableStyle, hideScrollbar,
+    headerHeight, headerStyle, attributeWidths, attributeStyle, renderHeader,
+    numRows, rowHeight, rowStyle, cellStyle, renderRows,
 }: VirtualizedTableProps): JSX.Element {
-    const [scrollTop, setScrollTop] = useState(0);  // 현재 스크롤 위치
+    // 현재 스크롤 위치 상태 관리
+    const [scrollTop, setScrollTop] = useState<number>(0);
 
-    // 테이블의 각 부분 높이 계산
-    const innerHeight = numRows * rowHeight;  // 테이블 본체 높이
-    const headerHeight = columnHeight;  // 헤더 높이
-    const bodyHeight = windowHeight - columnHeight;  // 테이블 본체가 차지하는 높이
 
-    // 현재 보이는 행의 범위 계산
-    const startIndex = Math.floor(scrollTop / rowHeight);  // 시작 인덱스
-    const endIndex = Math.min(numRows - 1, Math.floor((scrollTop + bodyHeight) / rowHeight));  // 종료 인덱스
-
-    // 마우스 오버된 행 추적
+    // 마우스 오버 상태 관리
+    const [hoveredHeader, setHoveredHeader] = useState<true | null>(null);
+    const [hoveredAttribute, setHoveredAttribute] = useState<number | null>(null);
     const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+    const [hoveredColumn, setHoveredColumn] = useState<number | null>(null);
+
+
+    // 테이블 높이와 현재 보이는 행의 범위 계산
+    const innerHeight = numRows * rowHeight;
+    const bodyHeight = windowHeight - headerHeight;
+    const startIndex = Math.floor(scrollTop / rowHeight);
+    const endIndex = Math.min(numRows - 1, Math.floor((scrollTop + bodyHeight) / rowHeight));
+
 
     // 스크롤 이벤트 핸들러
     const onScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-        setScrollTop(e.currentTarget.scrollTop);  // 스크롤 위치 업데이트
+        setScrollTop(e.currentTarget.scrollTop);
     }, []);
 
-    // 열 렌더링
-    const columns = [];
-    for (let i = 0; i < numColumns; i++) {
-        columns.push(
-            React.cloneElement(renderColumns({
-                index: i,
-                columnClassName: `${styles.virtualizedTable_column}`,
-                columnStyle: {
-                    flex: `0 0 ${columnWidths?.length ? columnWidths[i].width : "100px"}`,
-                    height: `${columnHeight}px`,
-                    textAlign: "center",
-                    ...columnStyles,
-                }
-            }), { key: `column-${i}` })
-        );
-    }
 
-    // 행 렌더링
-    const rows = [];
-    for (let i = startIndex; i <= endIndex; i++) {
-        rows.push(
-            React.cloneElement(renderRows({
-                index: i,
-                rowClassName: `${styles.virtualizedTable_row}`,
-                rowStyle: {
-                    display: "flex",
-                    position: "absolute",
-                    top: `${i * rowHeight}px`,
-                    width: "100%",
-                    height: `${rowHeight}px`,
-                    ...rowStyles?.default,
-                    ...(i === hoveredRow && rowStyles?.hover),
-                },
-                itemClassName: `${styles.virtualizedTable_item}`,
-                itemStyles: columnWidths.map((column) => ({
-                    flex: `0 0 ${column.width}`,
+    // 헤더 속성 렌더링 로직
+    const attributes = [];
+    // 각 열(속성)에 대해 반복하여 헤더를 렌더링
+    for (let attributeIdx = 0; attributeIdx < attributeWidths.length; attributeIdx++) {
+        // 각 헤더 열을 생성하여 attributes 배열에 추가
+        attributes.push(
+            React.cloneElement(renderHeader({
+                index: attributeIdx,
+                attributeClassName: `${styles.virtualizedTable_column}`,
+                attributeStyle: {
+                    ...attributeWidths[attributeIdx], // 각 열의 너비와 스타일 적용
                     height: `100%`,
-                    textAlign: "center",
-                    overflowX: "hidden",
-                    overflowY: "auto",
-                }))
+                    ...attributeStyle?.default,
+                    ...((attributeIdx === hoveredAttribute || attributeIdx === hoveredColumn) && attributeStyle?.hover),
+                }
             }), {
-                key: `row-${i}`,
-                onMouseEnter: () => setHoveredRow(i),
-                onMouseLeave: () => setHoveredRow(null)
+                key: `attribute-${attributeIdx}`,
+                onMouseEnter: () => setHoveredAttribute(attributeIdx), // 마우스 오버 이벤트 핸들러
+                onMouseLeave: () => setHoveredAttribute(null) // 마우스 리브 이벤트 핸들러
             })
         );
     }
 
-    // 가상 스크롤 테이블 렌더링
+
+    // 행 렌더링 로직
+    const rows = [];
+    // 현재 보이는 영역에 해당하는 행에 대해 반복하여 렌더링
+    for (let rowIdx = startIndex; rowIdx <= endIndex; rowIdx++) {
+        // 각 행을 렌더링하고 해당 행의 셀 스타일을 설정
+        const renderedRow = renderRows({
+            index: rowIdx,
+            rowClassName: `${styles.virtualizedTable_row}`,
+            rowStyle: {
+                display: "flex",
+                position: "absolute",
+                top: `${rowIdx * rowHeight}px`,
+                width: "100%",
+                height: `${rowHeight}px`,
+                ...rowStyle?.default,
+                ...(rowIdx === hoveredRow && rowStyle?.hover),
+            },
+            cellClassName: `${styles.virtualizedTable_column}`,
+            cellStyles: Array.from({ length: attributeWidths.length }, (_, columnIdx) => columnIdx).map((columnIdx) => ({
+                ...attributeWidths[columnIdx],
+                height: `100%`,
+                ...cellStyle?.default,
+                ...((rowIdx === hoveredRow && columnIdx === hoveredColumn) && cellStyle?.hover)
+            })),
+        });
+
+        // 각 행에 대한 마우스 이벤트 핸들러 설정
+        rows.push(
+            React.cloneElement(renderedRow, {
+                key: `row-${rowIdx}`,
+                onMouseEnter: () => setHoveredRow(rowIdx),
+                onMouseLeave: () => setHoveredRow(null),
+                children: React.Children.map(renderedRow.props.children, (child, columnIdx) =>
+                    React.cloneElement(child, {
+                        key: `column-${rowIdx}-${columnIdx}`,
+                        onMouseEnter: () => setHoveredColumn(columnIdx),
+                        onMouseLeave: () => setHoveredColumn(null),
+                    })
+                )
+            })
+        );
+    }
+
+
+    // 렌더링
     return (
-        <div className={styles.virtualizedTable} style={tableStyles}>
+        <div className={styles.virtualizedTable} style={tableStyle}>
             <div className={styles.table__header}
                 style={{
+                    display: "flex",
+                    width: `${hideScrollbar ? "100%" : "calc(100% - 0.65vw)"}`,
                     height: `${headerHeight}px`,
-                    maxHeight: `${headerHeight}px`,
-                    width: `${hideScrollbar ? "100%" : "calc(100% - 18px)"}`,
-                    borderRight: `${hideScrollbar ? "none" : `40px solid ${(columnStyles?.backgroundColor as string)?.split(' ').pop()}`}`,
-                    borderRightColor: `${(columnStyles?.backgroundColor as string)?.split(' ').pop()}`
-                }}>
-                <div className={styles.table__headers_columns}>
-                    {columns}
-                </div>
+                    borderRight: `${hideScrollbar ? "none" : `1vw solid ${(headerStyle?.default?.backgroundColor as string)?.split(' ').pop()}`}`,
+                    borderRightColor: `${(headerStyle?.default?.backgroundColor as string)?.split(' ').pop()}`,
+                    ...headerStyle?.default,
+                    ...(hoveredHeader && headerStyle?.hover),
+                }}
+                onMouseOver={() => setHoveredHeader(true)}
+                onMouseLeave={() => setHoveredHeader(null)}
+            >
+                {attributes}
             </div>
 
             <div className={styles.table__body}
@@ -128,10 +162,13 @@ export default function VirtualizedTable({
                     overflowY: `${hideScrollbar ? "hidden" : "scroll"}`
                 }}
                 onScroll={onScroll}>
-                <div className={styles.table__body_rows} style={{ height: `${innerHeight}px` }}>
+                <div className={styles.table__body_rows}
+                    style={{
+                        height: `${innerHeight}px`
+                    }}>
                     {rows}
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

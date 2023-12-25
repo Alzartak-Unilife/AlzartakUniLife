@@ -4,10 +4,6 @@
     overflow: hidden;
 }
 
-.table__header {
-    max-width: 100%;
-}
-
 .table__headers_columns {
     display: flex;
     justify-content: center;
@@ -24,7 +20,7 @@
 
 }
 
-.virtualizedTable_item {
+.virtualizedTable_column {
     height: 100%;
     width: 100%;
     display: flex;
