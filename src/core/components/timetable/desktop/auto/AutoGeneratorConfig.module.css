@@ -1,4 +1,5 @@
 .autoGeneratorConfig {
+    user-select: none;
     width: 100%;
     height: 100%;
     position: relative;
@@ -29,8 +30,9 @@
     border-radius: 5px;
 }
 
+
 /* timetable__field children */
-.timetable__name {
+.contents_title {
     height: 30px;
     width: 100%;
     margin-top: 10px;
@@ -43,12 +45,182 @@
     color: var(--main-color);
 }
 
-.timetable__display {
+.contents_display {
     height: calc(100% - 50px);
     width: 100%;
     display: flex;
+    flex-direction: column;
+    /*justify-content: center;*/
+    align-items: center;
+    background-color: var(--basic-white);
+}
+
+
+/* contents_display's child component*/
+.presets {
+    height: 30px;
+    width: calc(100% - 20px);
+    margin-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.preset_data {
+    height: calc(100% - 20px);
+    width: calc(100% - 20px);
+    margin-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: relative;
-    background-color: var(--basic-white);
+}
+
+
+
+/* presets's child component*/
+.presets .filter {
+    height: 100%;
+    width: calc(100% - 190px - 10px);
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.presets .buttons {
+    height: 100%;
+    width: 190px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.presets .dropdown {
+    height: calc(30px - 2px);
+    width: calc(100% - 10px);
+    min-width: 100px;
+    border-radius: 8px;
+    border: var(--border-solid);
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.presets .btnLoad,
+.presets .btnSave {
+    height: calc(30px - 2px);
+    border: 1px solid var(--main-color);
+    margin: 0px 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.presets .btnLoad {
+    width: 100px;
+    background-color: var(--main-color);
+    color: var(--sub-color);
+}
+
+.presets .btnSave {
+    width: 50px;
+    background-color: var(--sub-color);
+    color: var(--main-color);
+}
+
+
+/* preset_data's child component */
+.setting {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting_credit {
+    height: 30%;
+    width: 100%;
+}
+
+.setting_breakday {
+    height: 12.5%;
+    width: 100%;
+}
+
+.setting_breaktime {
+    height: 62.5%;
+    width: 100%;
+}
+
+
+/* setting_credit's child component */
+.setting_credit .radioButtons {
+    height: calc(30px - 2px - 10px);
+    width: calc(100% - 10px - 10px);
+    border-radius: 8px;
+    margin: 5px 0px;
+    margin-bottom: 15px;
+    padding: 5px;
+    border: var(--border-solid);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting_credit label {
+    margin: 0px 20px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.setting_credit label input {
+    margin-right: 5px;
+}
+
+.setting_credit .dropdown {
+    height: calc(30px - 2px);
+    width: calc(100% - 10px);
+    min-width: 100px;
+    border-radius: 8px;
+    border: var(--border-solid);
+    padding: 5px;
+    margin: 5px 0px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+
+
+/* setting_breakday's child component */
+.setting_breakday .checkbox {
+    height: calc(30px - 2px - 10px);
+    width: calc(100% - 10px - 10px);
+    margin-top: 10px;
+    border-radius: 8px;
+    margin: 5px 0px;
+    padding: 5px;
+    border: var(--border-solid);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting_breakday label {
+    margin: 0px 10px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.setting_breakday label input {
+    margin-right: 5px;
 }
