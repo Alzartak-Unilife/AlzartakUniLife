@@ -1,0 +1,58 @@
+.configPreset {
+    height: 30px;
+    width: calc(100% - 30px);
+    padding: 0px 15px;
+    display: flex;
+}
+
+
+/* configPreset's child components */
+.preset_select {
+    height: 100%;
+    width: calc(100% - 190px - 10px);
+    margin-right: 10px;
+}
+
+.preset_buttons {
+    height: 100%;
+    width: 190px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* preset_select's child components */
+.dropdown {
+    height: 30px;
+    width: 100%;
+    min-width: 100px;
+    border-radius: 8px;
+    border: var(--border-solid);
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+
+/* preset_buttons's child components */
+.btnLoad,
+.btnSave {
+    height: calc(30px - 2px);
+    border: 1px solid var(--main-color);
+    margin: 0px 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btnLoad {
+    width: 100px;
+    background-color: var(--main-color);
+    color: var(--sub-color);
+}
+
+.btnSave {
+    width: 50px;
+    background-color: var(--sub-color);
+    color: var(--main-color);
+}

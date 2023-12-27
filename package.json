@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@mui/icons-material": "^5.15.1",
+    "@types/js-cookie": "^3.0.6",
     "axios": "^1.6.2",
+    "js-cookie": "^3.0.5",
     "next": "14.0.4",
     "react": "^18",
     "react-circular-progressbar": "^2.1.0",

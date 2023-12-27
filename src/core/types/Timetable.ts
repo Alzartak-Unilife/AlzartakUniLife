@@ -1,6 +1,15 @@
 import { Day, Time } from "./Course";
 
 /**
+ * BreakDaysObject 타입은 요일별 공강 여부를 나타내는 객체의 타입입니다.
+ * 'days' 필드는 각 요일(Day 타입)에 대한 공강 여부를 boolean 값으로 가집니다.
+ * 예: { Mon: true, Tue: false, ... }
+ */
+export type BreakDaysObject = {
+    days: Record<Day, boolean>;
+}
+
+/**
  * BreakDays 클래스는 요일별 공강 여부를 관리합니다.
  */
 export class BreakDays {
@@ -11,17 +20,8 @@ export class BreakDays {
      * BreakDays 클래스의 생성자입니다.
      * 모든 요일의 공강 여부를 false로 초기화합니다.
      */
-    constructor() {
-        this.days = {
-            Mon: false,
-            Tue: false,
-            Wed: false,
-            Thu: false,
-            Fri: false,
-            Sat: false,
-            Sun: false,
-            None: false
-        };
+    constructor(daysObject?: BreakDaysObject) {
+        this.days = daysObject ? daysObject.days : { Mon: false, Tue: false, Wed: false, Thu: false, Fri: false, Sat: false, Sun: false, None: false };
     }
 
     /**
@@ -55,6 +55,28 @@ export class BreakDays {
     }
 
     /**
+     * `toObject` 메서드는 BreakDays 인스턴스의 상태를 일반 객체로 변환합니다.
+     * 이 메서드는 모든 요일의 공강 여부를 담은 객체를 반환합니다.
+     * @returns {BreakDaysObject} 요일별 공강 여부를 나타내는 객체
+     */
+    toObject(): BreakDaysObject {
+        return { days: { ...this.days } };
+    }
+
+    /**
+     * fromObject 메서드는 BreakDaysObject 타입의 객체를 BreakDays 인스턴스로 변환합니다.
+     * @param {BreakDaysObject} object - BreakDaysObject 타입의 객체입니다.
+     * @returns {BreakDays} BreakDays 인스턴스를 반환합니다.
+     */
+    public static fromObject(object: BreakDaysObject): BreakDays {
+        const instance = new BreakDays();
+        Object.keys(object.days).forEach(day => {
+            instance.setDay(day as Day, object.days[day as Day]);
+        });
+        return instance;
+    }
+
+    /**
      * 선택된 요일의 공강 여부를 문자열 형태로 반환합니다.
      * @returns {string} 선택된 요일들의 문자열입니다. 선택된 요일이 없으면 'None'을 반환합니다.
      */
@@ -69,6 +91,19 @@ export class BreakDays {
 
 
 
+
+/**
+ * BreaktimeObject 타입은 특정 요일에 설정된 공강 시간을 나타내는 객체의 타입입니다.
+ * 'day' 필드는 공강 요일을 나타내며, 'times' 필드는 시작(begin)과 종료(end) 시간을 숫자로 나타냅니다.
+ * 예: { day: "Mon", times: { begin: 540, end: 630 } }
+ */
+export type BreaktimeObject = {
+    day: Day;
+    times: {
+        begin: number;
+        end: number;
+    };
+}
 
 /**
  * Breaktime 클래스는 특정 요일에 설정된 시간대를 관리합니다.
@@ -126,6 +161,27 @@ export class Breaktime {
      */
     copy(): Breaktime {
         return new Breaktime(this.day, this.times.copy());
+    }
+
+    /**
+     * `toObject` 메서드는 Breaktime 인스턴스의 상태를 일반 객체로 변환합니다.
+     * 이 메서드는 공강 요일과 시간을 포함하는 객체를 반환합니다.
+     * @returns {BreaktimeObject} 공강 요일과 시간을 담은 객체
+     */
+    toObject(): BreaktimeObject {
+        return {
+            day: this.day,
+            times: { ...this.times.toObject() }
+        };
+    }
+
+    /**
+     * fromObject 메서드는 BreaktimeObject 타입의 객체를 Breaktime 인스턴스로 변환합니다.
+     * @param {BreaktimeObject} object - BreaktimeObject 타입의 객체입니다.
+     * @returns {Breaktime} Breaktime 인스턴스를 반환합니다.
+     */
+    public static fromObject(object: BreaktimeObject): Breaktime {
+        return new Breaktime(object.day, Time.fromObject(object.times));
     }
 
     /**

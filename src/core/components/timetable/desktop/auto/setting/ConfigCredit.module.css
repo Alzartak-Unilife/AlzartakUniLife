@@ -1,0 +1,70 @@
+.configCredit {
+    height: 130px;
+    width: calc(100% - 30px);
+    padding: 0px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+
+.credit_types {
+    height: calc(30px - 2px - 10px);
+    width: calc(100% - 2px - 50%);
+    border-radius: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 5px 25%;
+    border: var(--border-solid);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.credit_single {
+    height: 30px;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.credit_range {
+    height: 30px;
+    width: 100%;
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* credit_types's children components */
+.configCredit label {
+    cursor: pointer;
+}
+
+.configCredit label input {
+    margin-right: 5px;
+}
+
+
+/* credit_select's children components */
+.credit_select {
+    height: 30px;
+    width: 100%;
+}
+
+.credit_select_half {
+    height: 30px;
+    width: calc(50% - 20px);
+}
+
+.dropdown {
+    height: 30px;
+    width: 100%;
+    min-width: 100px;
+    border-radius: 8px;
+    border: var(--border-solid);
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+}

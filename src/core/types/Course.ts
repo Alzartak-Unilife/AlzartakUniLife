@@ -8,6 +8,17 @@ export type Day = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun" | "None"
 
 
 /**
+ * TimeObject 타입은 시작 시간과 종료 시간을 나타내는 객체의 타입입니다.
+ * 'begin'과 'end' 필드는 각각 시작 시간과 종료 시간을 숫자로 나타냅니다.
+ * 예: { begin: 540, end: 630 }
+ */
+export type TimeObject = {
+    begin: number;
+    end: number;
+}
+
+
+/**
  * `Time` 클래스는 시작 시간과 종료 시간을 나타내는 클래스입니다.
  */
 export class Time {
@@ -74,6 +85,24 @@ export class Time {
     }
 
     /**
+     * `toObject` 메서드는 Time 인스턴스의 상태를 일반 객체로 변환합니다.
+     * 이 메서드는 시작 시간과 종료 시간을 포함하는 객체를 반환합니다.
+     * @returns {TimeObject} 시작 시간과 종료 시간을 나타내는 객체
+     */
+    toObject(): TimeObject {
+        return { begin: this.begin, end: this.end };
+    }
+
+    /**
+     * fromObject 메서드는 TimeObject 타입의 객체를 Time 인스턴스로 변환합니다.
+     * @param {TimeObject} object - TimeObject 타입의 객체입니다.
+     * @returns {Time} Time 인스턴스를 반환합니다.
+     */
+    public static fromObject(object: TimeObject): Time {
+        return new Time(object.begin, object.end);
+    }
+
+    /**
      * `printFormat` 메서드는 `Time` 클래스 인스턴스의 시작 및 종료 시간을 포맷팅하여 문자열로 반환합니다.
      * 이 메서드는 내부적으로 `format` 함수를 사용하여 시간과 분을 00:00 형식으로 포맷팅합니다.
      * 예를 들어, 시작 시간이 90분이고 종료 시간이 150분인 경우, 
@@ -94,6 +123,12 @@ export class Time {
 
 
 
+
+export type ScheduleObject = {
+    day: Day;
+    time: TimeObject;
+    room: string;
+}
 
 /**
  * `Schedule` 클래스는 특정 강의 또는 이벤트의 스케줄을 나타냅니다.
@@ -175,6 +210,28 @@ export class Schedule {
     }
 
     /**
+     * fromObject 메서드는 ScheduleObject 타입의 객체를 Schedule 인스턴스로 변환합니다.
+     * @param {ScheduleObject} object - ScheduleObject 타입의 객체입니다.
+     * @returns {Schedule} Schedule 인스턴스를 반환합니다.
+     */
+    public static fromObject(object: ScheduleObject): Schedule {
+        return new Schedule(object.day, Time.fromObject(object.time), object.room);
+    }
+
+    /**
+     * `toObject` 메서드는 Schedule 인스턴스의 상태를 일반 객체로 변환합니다.
+     * 이 메서드는 요일, 시간, 장소를 포함하는 객체를 반환합니다.
+     * @returns {ScheduleObject} 요일, 시간, 장소를 나타내는 객체
+     */
+    toObject(): ScheduleObject {
+        return {
+            day: this.day,
+            time: this.time.toObject(),
+            room: this.room
+        };
+    }
+
+    /**
      * `printFormat` 메서드는 `Schedule` 클래스 인스턴스의 강의 또는 이벤트 정보를 포맷팅하여 문자열로 반환합니다.
      * 이 메서드는 강의 또는 이벤트의 요일, 시간 및 장소 정보를 결합하여 문자열로 표현합니다.
      * 예를 들어, 강의가 월요일에 오전 9시부터 오전 11시까지 '101호'에서 열린다면,
@@ -190,6 +247,58 @@ export class Schedule {
 
 
 
+
+/**
+ * CourseObject 타입은 대학 강의 또는 코스의 정보를 나타내는 객체의 타입입니다.
+ * - year: 개설년도
+ * - semester: 개설학기
+ * - grades: 학년/가진급학년 배열
+ * - curriculum: 교과과정
+ * - courseArea: 교과영역구분
+ * - baseCode: 학수강좌번호
+ * - divCode: 분반
+ * - name: 교과목명
+ * - professor: 교원명
+ * - campus: 수업캠퍼스
+ * - schedules: 강의 스케줄(요일/시간/강의실) 배열
+ * - credit: 학점
+ * - theory: 이론 시간
+ * - practice: 실습 시간
+ * - lectureType: 강의유형
+ * - lectureCategory: 강의종류
+ * - language: 원어강의
+ * - requirementType: 이수구분
+ * - offeringCollege: 개설대학
+ * - offeringDepartment: 개설학과/전공
+ * - remarks: 비고
+ * - evaluation: 강의평점
+ * - rating: 선호도(선택적)
+ */
+export type CourseObject = {
+    year: number;
+    semester: number;
+    grades: number[];
+    curriculum: string;
+    courseArea: string;
+    baseCode: string;
+    divCode: string;
+    name: string;
+    professor: string;
+    campus: string;
+    schedules: ScheduleObject[];
+    credit: number;
+    theory: number;
+    practice: number;
+    lectureType: string;
+    lectureCategory: string;
+    language: string;
+    requirementType: string;
+    offeringCollege: string;
+    offeringDepartment: string;
+    remarks: string;
+    evaluation: number;
+    rating: number;
+}
 
 /**
  * `Course` 클래스는 대학 강의 또는 코스에 대한 정보를 저장합니다.
@@ -555,6 +664,72 @@ export class Course {
             this.remarks,
             this.evaluation,
             this.rating
+        );
+    }
+
+    /**
+     * `toObject` 메서드는 Course 인스턴스의 상태를 일반 객체로 변환합니다.
+     * 이 메서드는 강의에 대한 모든 정보를 포함하는 객체를 반환합니다.
+     * @returns {CourseObject} 강의 정보를 나타내는 객체
+     */
+    toObject(): CourseObject {
+        return {
+            year: this.year,
+            semester: this.semester,
+            grades: this.grades,
+            curriculum: this.curriculum,
+            courseArea: this.courseArea,
+            baseCode: this.baseCode,
+            divCode: this.divCode,
+            name: this.name,
+            professor: this.professor,
+            campus: this.campus,
+            schedules: this.schedules.map(schedule => schedule.toObject()),
+            credit: this.credit,
+            theory: this.theory,
+            practice: this.practice,
+            lectureType: this.lectureType,
+            lectureCategory: this.lectureCategory,
+            language: this.language,
+            requirementType: this.requirementType,
+            offeringCollege: this.offeringCollege,
+            offeringDepartment: this.offeringDepartment,
+            remarks: this.remarks,
+            evaluation: this.evaluation,
+            rating: this.rating
+        };
+    }
+
+    /**
+     * fromObject 메서드는 CourseObject 타입의 객체를 Course 인스턴스로 변환합니다.
+     * @param {CourseObject} object - CourseObject 타입의 객체입니다.
+     * @returns {Course} Course 인스턴스를 반환합니다.
+     */
+    public static fromObject(object: CourseObject): Course {
+        return new Course(
+            object.year,
+            object.semester,
+            object.grades,
+            object.curriculum,
+            object.courseArea,
+            object.baseCode,
+            object.divCode,
+            object.name,
+            object.professor,
+            object.campus,
+            object.schedules.map(schedule => Schedule.fromObject(schedule)),
+            object.credit,
+            object.theory,
+            object.practice,
+            object.lectureType,
+            object.lectureCategory,
+            object.language,
+            object.requirementType,
+            object.offeringCollege,
+            object.offeringDepartment,
+            object.remarks,
+            object.evaluation,
+            object.rating
         );
     }
 
