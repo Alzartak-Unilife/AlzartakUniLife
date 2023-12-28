@@ -73,7 +73,10 @@ export class CombinatorWithSidetrack implements ICombinator {
         if (this.currState === this.STATE.END) return paths;
         if (this.currState === this.STATE.BEGIN) {
             const path = this.initializer();
-            if (path !== null) { paths.push(path); console.log(`path: ${path}`) }
+            if (path !== null) {
+                paths.push(path);
+                //console.log(`path: ${path}`)
+            }
         }
 
         const insert2prefix = (prefix: { set: Bit, conflict: Bit }, newVtx: number) => {
@@ -97,10 +100,10 @@ export class CombinatorWithSidetrack implements ICombinator {
                 currLastVtx = insert2prefix(currPrefix, (currNode as PhNode).value.next);
             }
 
-            console.log(`PQ: ${(currNode as PhNode).value.curr}, ${prevPrefix.set}, ${prevLastVtx} -> ${currPrefix.set}, ${currLastVtx}`)
+            //console.log(`PQ: ${(currNode as PhNode).value.curr}, ${prevPrefix.set}, ${prevLastVtx} -> ${currPrefix.set}, ${currLastVtx}`)
             if (!this.isPathConflict(currPrefix, this.suffixPath[this.nextVertex[currLastVtx]])) {
                 paths.push(Bitmask.union(currPrefix.set, this.suffixPath[this.nextVertex[currLastVtx]].set));
-                console.log(`path: ${Bitmask.union(currPrefix.set, this.suffixPath[this.nextVertex[currLastVtx]].set)}`)
+                //console.log(`path: ${Bitmask.union(currPrefix.set, this.suffixPath[this.nextVertex[currLastVtx]].set)}`)
             }
 
             // 현재 sidetrack은 포함하지 않음. 다른 sidetrack으로 대체 하거나 아예 대체하지 않음

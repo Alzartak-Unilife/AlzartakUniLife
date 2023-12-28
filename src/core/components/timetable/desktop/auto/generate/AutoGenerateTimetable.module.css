@@ -1,0 +1,51 @@
+.autoGenerateTimetable {
+    user-select: none;
+    width: 100%;
+    height: 100%;
+    min-width: 600px;
+    overflow: hidden;
+}
+
+.display_timetable {
+    width: 100%;
+    height: calc(100% - 80px);
+}
+
+.page_select {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page_index_button {
+    height: calc(40px - 2px);
+    width: calc(40px - 2px);
+    border: 1px solid var(--main-color);
+    margin: 0px 5px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: var(--sub-color);
+    color: var(--main-color);
+}
+
+.curr_page_index_button {
+    background-color: var(--main-color);
+    color: var(--sub-color);
+}
+
+.page_index_move_button {
+    height: calc(40px - 2px);
+    width: calc(25px - 2px);
+    border: 1px solid transparent;
+    margin: 0px 5px;
+    font-size: 35px;
+    cursor: pointer;
+    background-color: var(--sub-color);
+    color: var(--main-color);
+    vertical-align: middle;
+    position: relative;
+    top: -4px;
+}

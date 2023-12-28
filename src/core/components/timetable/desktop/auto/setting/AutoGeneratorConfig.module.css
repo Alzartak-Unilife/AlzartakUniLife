@@ -41,7 +41,7 @@
 }
 
 .config_timetable {
-    height: calc(100% - 20px - 20px);
+    height: calc(100% - 20px - 10px);
     width: calc(100% - 20px);
     margin-top: 20px;
     padding: 10px;
@@ -65,7 +65,12 @@
 }
 
 .config_breaktime {
-    height: calc(calc(100% - 135px - 55px) * 0.85);
+    height: calc(calc(100% - 135px - 55px - 65px) * 0.85);
+    width: 100%;
+}
+
+.create_timetable {
+    height: 65px;
     width: 100%;
 }
 

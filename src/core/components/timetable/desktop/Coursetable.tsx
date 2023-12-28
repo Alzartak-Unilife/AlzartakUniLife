@@ -4,10 +4,13 @@ import styles from "./Coursetable.module.css";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
 import { useModal } from "@/core/modules/modal/Modal";
 import VirtualizedTable from "@/core/modules/virtualized-table/VirtualizedTable";
+import { autoGeneratorConfigAtom } from "@/core/recoil/autoGeneratorConfigAtom";
 import { autoHoverCourseAtom } from "@/core/recoil/hoverCourseAtom";
 import { autoOfferedCoursesAtom } from "@/core/recoil/offeredCoursesAtom";
 import { autoWishCoursesAtom, sortedAutoWishCoursesSelector } from "@/core/recoil/wishCoursesAtom";
 import { Course } from "@/core/types/Course";
+import { IGeneratorConfig } from "@/core/types/IGeneratorConfig";
+import { BreakDays, Breaktime } from "@/core/types/Timetable";
 import { useCallback, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
@@ -19,7 +22,8 @@ interface CoursetableProps {
 
 export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
     // Const
-    const ratings = [5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1];
+    const essential = 6;
+    const ratings = [essential, 5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1];
     const offeredCourseTableAttributes: string[] = ["\u00A0", "학년/가진급", "교과과정", "학수강좌번호", "교과목명", "교원명", "수업캠퍼스", "강의평점", "학점", "강의종류", "\u00A0"];
     const wishCourseTableAttributes: string[] = ["\u00A0", "학년/가진급", "교과과정", "학수강좌번호", "교과목명", "교원명", "수업캠퍼스", "선호도 설정", "학점", "강의종류", "\u00A0"];
 
@@ -37,6 +41,7 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
     const setWishCourses = useRecoilState<Course[]>(autoWishCoursesAtom)[1];
     const sortedWishCourses = useRecoilValue<Course[]>(sortedAutoWishCoursesSelector);
     const setHoveredCourse = useRecoilState<Course | null>(autoHoverCourseAtom)[1];
+    const autoGeneratorConfig = useRecoilValue<IGeneratorConfig>(autoGeneratorConfigAtom);
 
 
     /// Modal 
@@ -83,13 +88,32 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
 
     /** 희망 과목 목록에서 과목 선호도 변경 */
     const handleRerateCourse = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newRating = parseFloat(e.currentTarget.value);
         const modifiedIndex = parseInt(e.currentTarget.parentElement?.parentElement?.id || "-1");
         const modifiedCourse = sortedWishCourses[modifiedIndex].copy();
-        modifiedCourse.setRating(parseFloat(e.currentTarget.value));
+
+        if (newRating === essential) {
+            const breakday: BreakDays = BreakDays.fromObject(autoGeneratorConfig.breakDays);
+            const breaktimes: Breaktime[] = autoGeneratorConfig.breaktimes.map((breaktimeObject) => Breaktime.fromObject(breaktimeObject));
+
+            const conflictWithbBeakday = modifiedCourse.getSchedules().some((schedule) => breakday.getDay(schedule.getDay()));
+            const conflictWithbBeaktime = modifiedCourse.getSchedules().some((schedule) =>
+                breaktimes.some((breaktime) => schedule.getDay() === breaktime.getDay() && schedule.getTime().conflictWith(breaktime.getTime())));
+
+            if (conflictWithbBeakday || conflictWithbBeaktime) {
+                if (conflictWithbBeakday && conflictWithbBeaktime) {
+                    alert("해당 과목은 '요일공강', '공강시간'과 겹치므로 필수과목에 추가할 수 없습니다.");
+                } else {
+                    alert(`해당 과목은${conflictWithbBeakday ? "'요일공강'" : "'공강시간'"}과 겹치므로 필수과목에 추가할 수 없습니다.`);
+                }
+                return;
+            }
+        }
+        modifiedCourse.setRating(newRating);
 
         const newWishCourses = sortedWishCourses.filter((course, index) => index !== modifiedIndex);
         setWishCourses([...newWishCourses, modifiedCourse]);
-    }, [sortedWishCourses, setWishCourses]);
+    }, [sortedWishCourses, setWishCourses, autoGeneratorConfig]);
 
 
     /** 과목 상세 정보 */
@@ -334,7 +358,9 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                                     }}>{courseInfo.professor}</div>
                                     <div className={cellClassName} style={cellStyles[6]}>{courseInfo.campus}</div>
                                     <div className={cellClassName} style={cellStyles[7]}>
-                                        <select value={courses.getRating().toFixed(2)} onChange={handleRerateCourse}
+                                        <select
+                                            value={courses.getRating().toFixed(2)}
+                                            onChange={handleRerateCourse}
                                             style={{
                                                 backgroundColor: "transparent",
                                                 fontSize: "16px",
@@ -344,8 +370,11 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                                                 textAlign: "center"
                                             }}>
                                             {[courses.getEvaluation(), ...ratings].sort((a, b) => b - a).map((rating, index) =>
-                                                <option key={index} style={courses.getEvaluation() === rating ? { backgroundColor: "var(--main-color-light)" } : {}}>
-                                                    {rating.toFixed(2)}
+                                                <option
+                                                    key={index}
+                                                    value={rating.toFixed(2)}
+                                                    style={courses.getEvaluation() === rating ? { backgroundColor: "var(--main-color-light)" } : {}}>
+                                                    {rating === essential ? "필수" : rating.toFixed(2)}
                                                 </option>
                                             )}
                                         </select>

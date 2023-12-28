@@ -1,7 +1,7 @@
 "use client"
 
 import styles from "./AutoGeneratorConfig.module.css"
-import { Course, Time } from "@/core/types/Course";
+import { Course } from "@/core/types/Course";
 import Timetable from "../../Timetable";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { autoHoverCourseAtom } from "@/core/recoil/hoverCourseAtom";
@@ -14,6 +14,8 @@ import ConfigBreaktime from "./ConfigBreaktime";
 import { IGeneratorConfig } from "@/core/types/IGeneratorConfig";
 import { autoWishCoursesAtom, sortedAutoWishCoursesSelector } from "@/core/recoil/wishCoursesAtom";
 import { LocalStorageProvider } from "@/core/modules/storage/AppStorageProvider";
+import { autoGeneratorConfigAtom } from "@/core/recoil/autoGeneratorConfigAtom";
+import CreateTimetable from "./CreateTimetable";
 
 
 
@@ -22,6 +24,7 @@ export default function AutoGeneratorConfig() {
     const hoveredCourse = useRecoilValue<Course | null>(autoHoverCourseAtom);
     const sortedWishCourses = useRecoilValue<Course[]>(sortedAutoWishCoursesSelector);
     const setWishCourses = useRecoilState<Course[]>(autoWishCoursesAtom)[1];
+    const [autoGeneratorConfig, setAutoGeneratorConfig] = useRecoilState<IGeneratorConfig>(autoGeneratorConfigAtom);
 
 
     // State
@@ -32,7 +35,6 @@ export default function AutoGeneratorConfig() {
     const [maxCredit, setMaxCredit] = useState<number>(0);
     const [breakDays, setBreakDays] = useState<BreakDays>(new BreakDays());
     const [breaktimes, setBreaktimes] = useState<Breaktime[]>([]);
-    const [generatorConfig, setGeneratorConfig] = useState<IGeneratorConfig>();
 
 
     // Effect
@@ -45,7 +47,7 @@ export default function AutoGeneratorConfig() {
             setBreakDays(BreakDays.fromObject(storedConfig.breakDays));
             setBreaktimes(storedConfig.breaktimes.map(b => Breaktime.fromObject(b)));
             setWishCourses(storedConfig.wishCourses.map(c => Course.fromObject(c)));
-            setGeneratorConfig(storedConfig);
+            setAutoGeneratorConfig(storedConfig);
         } else {
             const defaultConfig: IGeneratorConfig = {
                 creditType: "단일학점",
@@ -61,7 +63,7 @@ export default function AutoGeneratorConfig() {
             setBreakDays(new BreakDays());
             setBreaktimes([]);
             setWishCourses([]);
-            setGeneratorConfig(defaultConfig);
+            setAutoGeneratorConfig(defaultConfig);
         }
         setIsInitialLoadComplete(true);
     }, []);
@@ -76,13 +78,13 @@ export default function AutoGeneratorConfig() {
             breaktimes: breaktimes.map(breaktime => breaktime.toObject()),
             wishCourses: sortedWishCourses.map(course => course.toObject()),
         };
-        setGeneratorConfig(newConfig);
+        setAutoGeneratorConfig(newConfig);
     }, [creditType, minCredit, maxCredit, breakDays, breaktimes, sortedWishCourses, isInitialLoadComplete]);
 
     useEffect(() => {
         if (!isInitialLoadComplete) return;
-        LocalStorageProvider.set('generatorConfig', generatorConfig);
-    }, [generatorConfig, isInitialLoadComplete]);
+        LocalStorageProvider.set('generatorConfig', autoGeneratorConfig);
+    }, [autoGeneratorConfig, isInitialLoadComplete]);
 
 
     // Render
@@ -117,6 +119,7 @@ export default function AutoGeneratorConfig() {
                                     <ConfigBreakday
                                         breakDays={breakDays}
                                         setBreakDays={setBreakDays}
+                                        wishCourses={sortedWishCourses}
                                     />
                                 </div>
 
@@ -124,7 +127,12 @@ export default function AutoGeneratorConfig() {
                                     <ConfigBreaktime
                                         breaktimes={breaktimes}
                                         setBreaktimes={setBreaktimes}
+                                        wishCourses={sortedWishCourses}
                                     />
+                                </div>
+
+                                <div className={styles.create_timetable}>
+                                    <CreateTimetable />
                                 </div>
                             </div>
                         </div>
@@ -135,7 +143,7 @@ export default function AutoGeneratorConfig() {
                         </div>
                         <div className={styles.contents_display}>
                             <Timetable
-                                selectedCourses={hoveredCourse ? [hoveredCourse] : []}
+                                wishCourses={hoveredCourse ? [hoveredCourse] : []}
                             />
                         </div>
                     </div>

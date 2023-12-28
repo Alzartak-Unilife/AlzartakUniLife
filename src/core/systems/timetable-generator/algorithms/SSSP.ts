@@ -33,7 +33,7 @@ export class SSSP {
             for (const edge of graph.get(curr))
                 enque(curr, edge.next, weight + edge.weight, edge.edgeId);
         }
-        console.log(distance); console.log(prevVertex); console.log(prevEdgeId); console.log(visitedVertex);
+        //console.log(distance); console.log(prevVertex); console.log(prevEdgeId); console.log(visitedVertex);
         return { prevVertex: prevVertex, prevEdgeId: prevEdgeId, visitedVertex: visitedVertex, distance: distance };
     }
 

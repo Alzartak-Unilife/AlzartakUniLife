@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Course, CourseObject, Day, Schedule, Time } from "../types/Course";
+import { IGeneratorConfig } from "../types/IGeneratorConfig";
 
 
 
@@ -73,10 +74,9 @@ export async function getOfferedCourses(param: {
 }
 ): Promise<{
     data: Course[];
-    message: "FAIL" | "SUCCESS";
+    message: "SUCCESS" | "FAIL";
 }> {
     let responseData: GetOfferedCoursesResponse = { data: [], message: "FAIL" };
-
     try {
         const postData = param;
         const response = await axios.post(
@@ -102,6 +102,49 @@ export async function getOfferedCourses(param: {
         message: responseData.message
     }
 }
+
+
+
+
+/** 개설 강좌 응답 데이터 타입 */
+type GenerateTimetablesResponse = {
+    data: CourseObject[][];
+    message: "SUCCESS" | "FAIL";
+};
+
+
+export async function generateTimetables(param: IGeneratorConfig): Promise<{
+    data: Course[][];
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: GenerateTimetablesResponse = { data: [], message: "FAIL" };
+    try {
+        const postData = param;
+        const response = await axios.post(
+            getApiUrl(`/api/timetable/auto/generate`),
+            postData,
+            {
+                timeout: getDefualtAxiosTimeout(),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            data: [],
+            message: "FAIL"
+        }
+    }
+    return {
+        data: responseData.data.map((courseObjects) => courseObjects.map((courseObject) => Course.fromObject(courseObject))),
+        message: responseData.message
+    }
+}
+
+
+
 
 
 /*

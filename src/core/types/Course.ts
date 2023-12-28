@@ -75,6 +75,14 @@ export class Time {
         }
     }
 
+    equalWith(other: Time): boolean {
+        return this.getBegin() === other.getBegin() && this.getEnd() === other.getEnd();
+    }
+
+    conflictWith(other: Time): boolean {
+        return this.getBegin() < other.getEnd() && this.getEnd() > other.getBegin();
+    }
+
     /**
      * `copy` 메서드는 `Time` 인스턴스의 깊은 복사본을 생성합니다.
      * 이 메서드는 기존 `Time` 객체의 시작 및 종료 시간을 새 인스턴스로 복사하여 반환합니다.
@@ -197,6 +205,10 @@ export class Schedule {
      */
     setRoom(value: string): void {
         this.room = value;
+    }
+
+    conflictWith(other: Schedule): boolean {
+        return this.getDay() === other.getDay() && this.getTime().conflictWith(other.getTime());
     }
 
     /**
@@ -363,7 +375,7 @@ export class Course {
         this.offeringDepartment = offeringDepartment;
         this.remarks = remarks;
         this.evaluation = evaluation;
-        this.rating = evaluation;
+        this.rating = rating || evaluation;
     }
 
     /** 개설년도를 반환합니다. */
@@ -619,13 +631,10 @@ export class Course {
      * @returns {boolean} 시간표가 겹치면 true, 그렇지 않으면 false를 반환합니다.
      */
     conflictWith(other: Course): boolean {
+        if (this.baseCode === other.getBaseCode()) return true;
         for (const fstSchedule of this.getSchedules()) {
             for (const sndSchedule of other.getSchedules()) {
-                if (
-                    fstSchedule.getDay() === sndSchedule.getDay() && // 두 강의의 요일이 동일한 경우
-                    fstSchedule.getTime().getBegin() < sndSchedule.getTime().getEnd() && // 시작 시간이 겹치는 경우
-                    fstSchedule.getTime().getEnd() > sndSchedule.getTime().getBegin() // 종료 시간이 겹치는 경우
-                ) {
+                if (fstSchedule.conflictWith(sndSchedule)) {
                     return true; // 시간표가 겹칠 경우 true 반환
                 }
             }

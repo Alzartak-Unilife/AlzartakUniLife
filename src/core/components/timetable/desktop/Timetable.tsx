@@ -7,7 +7,7 @@ import useElementDimensions from "@/core/hooks/useElementDimensions";
 
 
 export interface TimetableProps {
-    selectedCourses: Course[];
+    wishCourses: Course[];
     previewCourse?: Course | null;
 }
 
@@ -15,7 +15,7 @@ export interface TimetableProps {
 type TimetableBlock = "REAL" | "SHADOW";
 
 
-export default function Timetable({ selectedCourses, previewCourse }: TimetableProps) {
+export default function Timetable({ wishCourses: selectedCourses, previewCourse }: TimetableProps) {
     // Ref
     const timetable = useRef<HTMLDivElement>(null);
 
@@ -70,7 +70,6 @@ export default function Timetable({ selectedCourses, previewCourse }: TimetableP
                 newCourseByDay["None"].push(["SHADOW", 0, previewCourse]);
             }
         }
-
         setCourseByDay(newCourseByDay);
     }, [selectedCourses, previewCourse]);
 

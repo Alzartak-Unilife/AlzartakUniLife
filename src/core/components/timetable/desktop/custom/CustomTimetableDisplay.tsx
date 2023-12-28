@@ -24,7 +24,7 @@ export default function CustomTimetableDisplay() {
                 </div>
                 <div className={styles.timetable__display}>
                     <Timetable
-                        selectedCourses={selectedCourses}
+                        wishCourses={selectedCourses}
                         previewCourse={hoveredCourse}
                     />
                 </div>

@@ -2,8 +2,8 @@
 
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import styles from "./ConfigBreaktime.module.css";
-import { Day, Time } from "@/core/types/Course";
-import { BreakDays, Breaktime } from "@/core/types/Timetable";
+import { Course, Day, Time } from "@/core/types/Course";
+import { Breaktime } from "@/core/types/Timetable";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
 import VirtualizedTable from "@/core/modules/virtualized-table/VirtualizedTable";
 
@@ -11,13 +11,16 @@ import VirtualizedTable from "@/core/modules/virtualized-table/VirtualizedTable"
 interface ConfigBreaktimeProps {
     breaktimes: Breaktime[]
     setBreaktimes: Dispatch<SetStateAction<Breaktime[]>>;
+    wishCourses: Course[];
 }
 
-export default function ConfigBreaktime({ breaktimes, setBreaktimes }: ConfigBreaktimeProps) {
+export default function ConfigBreaktime({ breaktimes, setBreaktimes, wishCourses }: ConfigBreaktimeProps) {
     // Const
+    const essentialRating = 6;
     const days: Day[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const minutes: number[] = Array.from({ length: 31 }, (_, i) => 480 + i * 30);
     const breaktimeTableAttributes: string[] = ["\u00A0", "공강 시간"];
+
 
     // Ref
     const breaktimeTable = useRef<HTMLDivElement>(null);
@@ -41,6 +44,19 @@ export default function ConfigBreaktime({ breaktimes, setBreaktimes }: ConfigBre
 
     const handleSelectBreaktime = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const newBreaktime = new Breaktime(day, new Time(startTime, endTime));
+        const checkDuplication = breaktimes.some((breaktime) => breaktime.equalWith(newBreaktime));
+        const checkConflictWithEssential = wishCourses.some((course) =>
+            course.getRating() === essentialRating && course.getSchedules().some((schedule) =>
+                schedule.getDay() === newBreaktime.getDay() && schedule.getTime().conflictWith(newBreaktime.getTime())));
+
+        if (checkDuplication || checkConflictWithEssential) {
+            if (checkDuplication) {
+                alert("이미 추가된 공강 시간입니다.");
+            } else {
+                alert("필수과목과 시간이 겹칩니다.");
+            }
+            return;
+        }
         setBreaktimes([...breaktimes, newBreaktime]);
     };
 

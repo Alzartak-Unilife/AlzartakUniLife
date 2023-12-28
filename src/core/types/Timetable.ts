@@ -99,7 +99,7 @@ export class BreakDays {
  */
 export type BreaktimeObject = {
     day: Day;
-    times: {
+    time: {
         begin: number;
         end: number;
     };
@@ -111,7 +111,7 @@ export type BreaktimeObject = {
  */
 export class Breaktime {
     private day: Day;   // 공강 요일
-    private times: Time; // 공강 시간
+    private time: Time; // 공강 시간
 
     /**
      * Breaktime 클래스의 생성자입니다.
@@ -120,7 +120,7 @@ export class Breaktime {
      */
     constructor(day: Day, times: Time) {
         this.day = day;
-        this.times = times;
+        this.time = times;
     }
 
     /**
@@ -143,8 +143,8 @@ export class Breaktime {
      * 공강 시간을 가져옵니다.
      * @returns {Time} 현재 설정된 공강 시간
      */
-    getTimes(): Time {
-        return this.times;
+    getTime(): Time {
+        return this.time;
     }
 
     /**
@@ -152,7 +152,11 @@ export class Breaktime {
      * @param {Time} times - 새로 설정할 공강 시간
      */
     setTimes(times: Time): void {
-        this.times = times;
+        this.time = times;
+    }
+
+    equalWith(breaktime: Breaktime): boolean {
+        return this.getDay() === breaktime.getDay() && this.getTime().equalWith(breaktime.getTime());
     }
 
     /**
@@ -160,7 +164,7 @@ export class Breaktime {
      * @returns {Breaktime} 새로운 Breaktime 인스턴스
      */
     copy(): Breaktime {
-        return new Breaktime(this.day, this.times.copy());
+        return new Breaktime(this.day, this.time.copy());
     }
 
     /**
@@ -171,7 +175,7 @@ export class Breaktime {
     toObject(): BreaktimeObject {
         return {
             day: this.day,
-            times: { ...this.times.toObject() }
+            time: { ...this.time.toObject() }
         };
     }
 
@@ -181,7 +185,7 @@ export class Breaktime {
      * @returns {Breaktime} Breaktime 인스턴스를 반환합니다.
      */
     public static fromObject(object: BreaktimeObject): Breaktime {
-        return new Breaktime(object.day, Time.fromObject(object.times));
+        return new Breaktime(object.day, Time.fromObject(object.time));
     }
 
     /**
@@ -189,6 +193,6 @@ export class Breaktime {
      * @returns {string} "요일, 시작시간 ~ 종료시간" 형태의 문자열
      */
     printFormat(): string {
-        return `${this.day}, ${this.times.printFormat()}`;
+        return `${this.day}, ${this.time.printFormat()}`;
     }
 }

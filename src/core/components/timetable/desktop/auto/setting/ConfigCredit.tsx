@@ -44,7 +44,13 @@ export default function ConfigCredit({ creditType, setCreditType, minCredit, set
             {creditType === "단일학점" ? (
                 <div className={styles.credit_single}>
                     <div className={styles.credit_select}>
-                        <select className={styles.dropdown} value={`${minCredit === 0 ? `-학점 선택-` : `${minCredit}학점`}`} onChange={(e) => setMinCredit(e.target.selectedIndex)}>
+                        <select
+                            className={styles.dropdown}
+                            value={`${minCredit === 0 ? `-학점 선택-` : `${minCredit}학점`}`}
+                            onChange={(e) => {
+                                setMinCredit(e.target.selectedIndex);
+                                setMaxCredit(e.target.selectedIndex);
+                            }}>
                             {Array.from({ length: 25 }, (_, idx) => idx).map((presetIdx) =>
                                 <option key={presetIdx}>
                                     {presetIdx === 0 ? `-학점 선택-` : `${presetIdx}학점`}
