@@ -13,6 +13,7 @@ import { IGeneratorConfig } from "@/core/types/IGeneratorConfig";
 import { BreakDays, Breaktime } from "@/core/types/Timetable";
 import { useCallback, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import Swal from "sweetalert2";
 
 
 interface CoursetableProps {
@@ -101,11 +102,16 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                 breaktimes.some((breaktime) => schedule.getDay() === breaktime.getDay() && schedule.getTime().conflictWith(breaktime.getTime())));
 
             if (conflictWithbBeakday || conflictWithbBeaktime) {
-                if (conflictWithbBeakday && conflictWithbBeaktime) {
-                    alert("해당 과목은 '요일공강', '공강시간'과 겹치므로 필수과목에 추가할 수 없습니다.");
-                } else {
-                    alert(`해당 과목은${conflictWithbBeakday ? "'요일공강'" : "'공강시간'"}과 겹치므로 필수과목에 추가할 수 없습니다.`);
-                }
+                const comment = conflictWithbBeakday && conflictWithbBeaktime
+                    ? "해당 과목은 요일공강, 일일공강과 겹치므로</br>필수과목에 추가할 수 없습니다."
+                    : `해당 과목은 ${conflictWithbBeakday ? "요일공강" : "일일공강"}과 겹치므로</br>필수과목에 추가할 수 없습니다.`
+                Swal.fire({
+                    heightAuto: false,
+                    scrollbarPadding: false,
+                    html: `<h2 style="font-size: 20px; user-select: none;">${comment}</h2>`,
+                    icon: 'error',
+                    confirmButtonText: '<span style="font-size: 15px; user-select: none;">닫기</span>',
+                })
                 return;
             }
         }

@@ -9,6 +9,7 @@ import { autoHoverCourseAtom } from "@/core/recoil/hoverCourseAtom";
 import { autoOfferedCoursesAtom } from "@/core/recoil/offeredCoursesAtom";
 import { getOfferedCourses } from "@/core/api/AlzartakUnilfeApi";
 import CircularProgressOverlay from "../../../modules/circular-progress-overlay/CircularProgressOverlay";
+import Swal from "sweetalert2";
 
 
 /**
@@ -2217,7 +2218,14 @@ export default function CourseSearch() {
             setOfferedCourse(offeredCourse);
         } else {
             setIsLoading(false);
-            alert("서버와 연결을 실패했습니다");
+            const comment = "알 수 없는 이유로 서버에 연결을 할 수 없습니다";
+            Swal.fire({
+                heightAuto: false,
+                scrollbarPadding: false,
+                html: `<h2 style="font-size: 20px; user-select: none;">${comment}</h2>`,
+                icon: 'error',
+                confirmButtonText: '<span style="font-size: 15px; user-select: none;">닫기</span>',
+            })
         }
     }
 

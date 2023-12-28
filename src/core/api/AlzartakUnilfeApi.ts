@@ -106,7 +106,7 @@ export async function getOfferedCourses(param: {
 
 
 
-/** 개설 강좌 응답 데이터 타입 */
+
 type GenerateTimetablesResponse = {
     data: CourseObject[][];
     message: "SUCCESS" | "FAIL";
@@ -143,6 +143,30 @@ export async function generateTimetables(param: IGeneratorConfig): Promise<{
     }
 }
 
+
+
+
+type TestDelayResponse = {
+    message: "SUCCESS" | "FAIL";
+};
+
+export async function testDelay(): Promise<{
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: TestDelayResponse = { message: "FAIL" };
+    try {
+        const response = await axios.get(
+            getApiUrl(`/api/test/delay`),
+            {
+                timeout: getDefualtAxiosTimeout(),
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return { message: "FAIL" }
+    }
+    return { message: responseData.message }
+}
 
 
 

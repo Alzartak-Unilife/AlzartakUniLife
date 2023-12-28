@@ -6,6 +6,7 @@ import { Course, Day, Time } from "@/core/types/Course";
 import { Breaktime } from "@/core/types/Timetable";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
 import VirtualizedTable from "@/core/modules/virtualized-table/VirtualizedTable";
+import Swal from "sweetalert2";
 
 
 interface ConfigBreaktimeProps {
@@ -50,11 +51,14 @@ export default function ConfigBreaktime({ breaktimes, setBreaktimes, wishCourses
                 schedule.getDay() === newBreaktime.getDay() && schedule.getTime().conflictWith(newBreaktime.getTime())));
 
         if (checkDuplication || checkConflictWithEssential) {
-            if (checkDuplication) {
-                alert("이미 추가된 공강 시간입니다.");
-            } else {
-                alert("필수과목과 시간이 겹칩니다.");
-            }
+            const comment = checkDuplication ? "이미 추가된 공강 시간입니다" : "필수과목과 시간이 겹칩니다";
+            Swal.fire({
+                heightAuto: false,
+                scrollbarPadding: false,
+                html: `<h2 style="font-size: 20px; user-select: none;">${comment}</h2>`,
+                icon: 'error',
+                confirmButtonText: '<span style="font-size: 15px; user-select: none;">닫기</span>',
+            })
             return;
         }
         setBreaktimes([...breaktimes, newBreaktime]);

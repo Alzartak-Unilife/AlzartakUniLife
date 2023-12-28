@@ -101,10 +101,10 @@ export default function AutoGenerateTimetable() {
                     }
                     setTimetables(genTimetables);
                 } else {
-                    await Swal.fire({
+                    Swal.fire({
                         heightAuto: false,
                         scrollbarPadding: false,
-                        html: '<h2 style="font-size: 20px; user-select: none;">생성된 시간표가 없습니다.</h2>',
+                        html: '<h2 style="font-size: 20px; user-select: none;">생성된 시간표가 없습니다</h2>',
                         icon: 'error',
                         confirmButtonText: '<span style="font-size: 15px; user-select: none;">설정 페이지로 돌아가기</span>',
                         didClose() { router.replace("./setting") },

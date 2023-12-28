@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 import styles from "./ConfigBreakday.module.css";
 import { Course, Day } from "@/core/types/Course";
 import { BreakDays } from "@/core/types/Timetable";
+import Swal from "sweetalert2";
 
 
 interface ConfigBreakdayProps {
@@ -22,7 +23,17 @@ export default function ConfigBreakday({ breakDays, setBreakDays, wishCourses }:
     const handleBreakDay = (day: Day) => {
         if (!breakDays.getDay(day)) {
             const checkConflictWithEssential = wishCourses.some((course) => course.getRating() === essentialRating && course.getSchedules().some((schedule) => schedule.getDay() === day));
-            if (checkConflictWithEssential) { alert("필수과목과 요일이 겹칩니다."); return; }
+            if (checkConflictWithEssential) {
+                const comment = "필수과목과 요일이 겹칩니다";
+                Swal.fire({
+                    heightAuto: false,
+                    scrollbarPadding: false,
+                    html: `<h2 style="font-size: 20px; user-select: none;">${comment}</h2>`,
+                    icon: 'error',
+                    confirmButtonText: '<span style="font-size: 15px; user-select: none;">닫기</span>',
+                })
+                return;
+            }
         }
         const newBreakDay = breakDays.copy();
         newBreakDay.setDay(day, !newBreakDay.getDay(day));
