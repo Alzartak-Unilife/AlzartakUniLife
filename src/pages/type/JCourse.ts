@@ -1,0 +1,28 @@
+export interface JCourse {
+    "강의년도": string | undefined;
+    "강의학기": string | undefined;
+    "번호": number | undefined;
+    "학년/가진급학년": string | undefined;
+    "교과과정": string | undefined;
+    "교과영역구분": string | undefined;
+    "학수강좌번호": string | undefined;
+    "교과목명": string | undefined;
+    "교원명": string | undefined;
+    "수업캠퍼스": string | undefined;
+    "요일/시간": string | undefined;
+    "강의실": string | undefined;
+    "학점": string | undefined;
+    "이론": string | undefined;
+    "실습": string | undefined;
+    "공학설계": string | undefined;
+    "강의계획서": string | undefined;
+    "교과목해설": string | undefined;
+    "강의유형": string | undefined;
+    "강의종류": string | undefined;
+    "원어강의": string | undefined;
+    "이수구분": string | undefined;
+    "개설대학": string | undefined;
+    "개설학과/전공": string | undefined;
+    "비고": string | undefined;
+    "교과목영문명": string | undefined;
+};

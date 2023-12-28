@@ -289,7 +289,7 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                         }}
 
 
-                        numRows={offeredCourse.length}
+                        numRows={sortedWishCourses.length}
                         rowHeight={30}
                         rowStyle={{
                             default: {

@@ -2118,8 +2118,8 @@ export default function CourseSearch() {
 
     // Recoil
     const [offeredCourse, setOfferedCourse] = useRecoilState<Course[]>(autoOfferedCoursesAtom);
-    const setSelectedCourses = useRecoilState<Course[]>(autoWishCoursesAtom)[1];
-    const setHoveredCourse = useRecoilState<Course | null>(autoHoverCourseAtom)[1];
+    const setWishCourses = useRecoilState<Course[]>(autoWishCoursesAtom)[1];
+    const setHoverCourse = useRecoilState<Course | null>(autoHoverCourseAtom)[1];
 
 
     // State
@@ -2196,6 +2196,7 @@ export default function CourseSearch() {
             professor: checkValid(professorName),
             lectureLanguage: checkValid(language),
         });
+
         clearInterval(apiPercentageInterval);
         setProcessPercentage(80);
 
@@ -2222,9 +2223,16 @@ export default function CourseSearch() {
 
     /** 초기화 처리 함수 */
     const handleReset = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setCurriculum('-전체-');
+        setCollege('-선택-');
+        setMajor('-전체-');
+        setLectureCategory('-전체-');
+        setLanguage('-전체-');
+        setProfessorName('');
+        setCourseName('');
+        setCourseCode('');
         setOfferedCourse([]);
-        setSelectedCourses([]);
-        setHoveredCourse(null);
+        setHoverCourse(null);
     }
 
 
@@ -2241,13 +2249,13 @@ export default function CourseSearch() {
     /** 컴포넌트 마운트 및 언마운트 시 초기화 */
     useEffect(() => {
         setOfferedCourse([]);
-        setSelectedCourses([]);
-        setHoveredCourse(null);
+        setWishCourses([]);
+        setHoverCourse(null);
 
         return () => {
             setOfferedCourse([]);
-            setSelectedCourses([]);
-            setHoveredCourse(null);
+            setWishCourses([]);
+            setHoverCourse(null);
         };
     }, []);
 

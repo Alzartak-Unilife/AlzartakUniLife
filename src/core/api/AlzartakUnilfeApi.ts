@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Course, Day, Schedule, Time } from "../types/Course";
+import { Course, CourseObject, Day, Schedule, Time } from "../types/Course";
 
 
 
@@ -14,7 +14,8 @@ import { Course, Day, Schedule, Time } from "../types/Course";
  * @returns {string} 구성된 API URL을 반환합니다.
  */
 function getApiUrl(path: string): string {
-    const apiUrl = `http://3.37.210.242:8080${path}`;
+    //const apiUrl = `http://3.37.210.242:8080${path}`;
+    const apiUrl = `http://localhost:3000${path}`;
     const now = new Date();
     const formattedTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}:${now.getMilliseconds().toString().padStart(3, '0')}`;
     console.log(`[${formattedTime}] request: ${apiUrl}`);
@@ -48,37 +49,9 @@ function getDefualtAxiosTimeout(): number {
 
 /** 개설 강좌 응답 데이터 타입 */
 type GetOfferedCoursesResponse = {
-    courseId: number;
-    year: number;
-    semester: number;
-    grades: number[];
-    curriculum: string;
-    courseArea: string;
-    baseCode: string;
-    divCode: string;
-    courseName: string;
-    professor: string;
-    campus: string;
-    schedules: {
-        day: string;
-        time: {
-            begin: number;
-            end: number;
-        };
-        room: string;
-    }[];
-    credit: number;
-    theory: number;
-    practice: number;
-    lectureType: string;
-    lectureCategory: string;
-    lectureLanguage: string;
-    requirementType: string;
-    offeringCollege: string;
-    offeringDepartment: string;
-    remarks: string;
-    avgEvaluation?: number;
-}[];
+    data: CourseObject[];
+    message: "SUCCESS" | "FAIL";
+};
 
 /**
  * 서버에서 특정 조건에 맞는 개설 강좌 목록을 가져옵니다.
@@ -89,25 +62,25 @@ type GetOfferedCoursesResponse = {
 export async function getOfferedCourses(param: {
     year: number;
     semester: number;
-    curriculum?: string;
-    offeringCollege?: string;
-    offeringDepartment?: string;
-    baseCode?: string;
-    courseName?: string;
-    lectureCategory?: string;
-    professor?: string;
-    lectureLanguage?: string;
+    curriculum: string;
+    offeringCollege: string;
+    offeringDepartment: string;
+    baseCode: string;
+    courseName: string;
+    lectureCategory: string;
+    professor: string;
+    lectureLanguage: string;
 }
 ): Promise<{
     data: Course[];
     message: "FAIL" | "SUCCESS";
 }> {
-    let responseData: GetOfferedCoursesResponse = [];
+    let responseData: GetOfferedCoursesResponse = { data: [], message: "FAIL" };
 
     try {
         const postData = param;
         const response = await axios.post(
-            getApiUrl(`/search`),
+            getApiUrl(`/api/course/get`),
             postData,
             {
                 timeout: getDefualtAxiosTimeout(),
@@ -125,35 +98,8 @@ export async function getOfferedCourses(param: {
     }
 
     return {
-        data: responseData.map(data => new Course(
-            data.year,
-            data.semester,
-            data.grades,
-            data.curriculum,
-            data.courseArea,
-            data.baseCode,
-            data.divCode,
-            data.courseName,
-            data.professor,
-            data.campus,
-            data.schedules.map(schedule => new Schedule(
-                schedule.day as Day,
-                new Time(schedule.time.begin, schedule.time.end),
-                schedule.room
-            )),
-            data.credit,
-            data.theory,
-            data.practice,
-            data.lectureType,
-            data.lectureCategory,
-            data.lectureLanguage,
-            data.requirementType,
-            data.offeringCollege,
-            data.offeringDepartment,
-            data.remarks,
-            data.avgEvaluation ?? 0
-        )),
-        message: "SUCCESS"
+        data: responseData.data.map((courseObject) => Course.fromObject(courseObject)),
+        message: responseData.message
     }
 }
 
