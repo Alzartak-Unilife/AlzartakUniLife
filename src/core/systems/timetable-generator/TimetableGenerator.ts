@@ -129,11 +129,12 @@ function constructCombinatorWithSidetrack(essentialCourses: Course[], normalCour
                 }
             }
         }
+
         for (let uIdx = 0; uIdx < normalCourses.length; uIdx++) {
             for (let free = 0; free <= creditFreeRide; free++) {
-                if (normLev - free < 0) continue;
+                if (normLev - free <= 0) continue;
                 const [u, v, w] = [vertexConv.substitute(uIdx, normLev - free), sink, rating2weight(PREFER.NONE)];
-                //console.log(`${u}->${v}: ${w}`);
+                console.log(`${u}->${v}: ${w}`);
                 graph.addDirectedEdge(u, v, w);
                 revgraph.addDirectedEdge(v, u, w);
             }

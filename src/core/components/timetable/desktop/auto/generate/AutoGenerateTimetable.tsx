@@ -10,9 +10,15 @@ import { autoGeneratorConfigAtom } from "@/core/recoil/autoGeneratorConfigAtom";
 import { Course } from "@/core/types/Course";
 import { generateTimetables } from "@/core/api/AlzartakUnilfeApi";
 import CircularProgressOverlay from "@/core/modules/circular-progress-overlay/CircularProgressOverlay";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 
 export default function AutoGenerateTimetable() {
+    // Const
+    const router = useRouter();
+
+
     // Ref
     const autoGenerateTimetable = useRef<HTMLDivElement>(null);
 
@@ -81,7 +87,7 @@ export default function AutoGenerateTimetable() {
                             setIsLoading(false);
                             return 0;
                         }
-                        return Math.round(prevPercentage + 3);
+                        return Math.round(prevPercentage + 5);
                     });
                     setProcessDescription(prevDescription => {
                         return (prevDescription + 0.2) % 4;
@@ -95,7 +101,18 @@ export default function AutoGenerateTimetable() {
                     }
                     setTimetables(genTimetables);
                 } else {
-
+                    await Swal.fire({
+                        heightAuto: false,
+                        scrollbarPadding: false,
+                        html: '<h2 style="font-size: 20px; user-select: none;">생성된 시간표가 없습니다.</h2>',
+                        icon: 'error',
+                        confirmButtonText: '<span style="font-size: 15px; user-select: none;">설정 페이지로 돌아가기</span>',
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            router.replace("./setting")
+                        }
+                    });
                 }
             }
         })()
