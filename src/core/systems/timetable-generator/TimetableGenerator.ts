@@ -189,7 +189,9 @@ export class TimetableGenerator {
                 if (newComb.length > 0) this.combinations.push(...newComb);
                 else { this.combinator = null; return res; }   // 더 이상 조합 생성이 불가능한 경우 조합 생성기를 제거(더 이상 필요가 없다)하고 리턴
             }
-            res.push(this.bit2Course(this.combinations[i]));
+            const courses = this.bit2Course(this.combinations[i]);
+            if (courses.length > 0)
+                res.push(this.bit2Course(this.combinations[i]));
         }
         return res;
     }

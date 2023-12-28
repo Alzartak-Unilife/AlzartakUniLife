@@ -69,7 +69,6 @@ export default function AutoGenerateTimetable() {
     }, [timetableDisplayCount, timetables]);
 
     useEffect(() => {
-        console.log(maxPageIndex, currPageIndex)
         if (maxPageIndex < currPageIndex) {
             setCurrPageIndex(maxPageIndex);
         }
@@ -79,34 +78,38 @@ export default function AutoGenerateTimetable() {
     // Render
     return (
         <div className={styles.autoGenerateTimetable} ref={autoGenerateTimetable}>
-            <div className={styles.display_timetable}>
-                <DisplayTimetable
-                    timetableIdx={currPageIndex * timetableDisplayCount + 1}
-                    timetables={getCurrentPageTimetables()}
-                />
-            </div>
-            <div className={styles.page_select}>
-                <button className={styles.page_index_move_button} onClick={() => { setCurrPageIndex(0) }}>{"«"}</button>
-                <button className={styles.page_index_move_button} onClick={() => {
-                    setCurrPageIndex(Math.max(0, currPageIndex - pageDisplayCount))
-                }}>{"‹"}</button>
-                {Array.from(
-                    { length: Math.min(pageDisplayCount, maxPageIndex - (Math.floor(currPageIndex / pageDisplayCount) * pageDisplayCount) + 1) },
-                    (_, idx) => (Math.floor(currPageIndex / pageDisplayCount) * pageDisplayCount) + idx
-                ).map((pageIndex) =>
-                    <button
-                        className={[styles.page_index_button, `${currPageIndex === pageIndex ? [styles.curr_page_index_button] : []}`].join(' ')}
-                        key={pageIndex}
-                        value={pageIndex}
-                        onClick={(e) => setCurrPageIndex(pageIndex)}
-                    >
-                        {pageIndex + 1}
-                    </button>)}
-                <button className={styles.page_index_move_button} onClick={() => {
-                    setCurrPageIndex(Math.min(maxPageIndex, currPageIndex + pageDisplayCount))
-                }}>{"›"}</button>
-                <button className={styles.page_index_move_button} onClick={() => { setCurrPageIndex(maxPageIndex) }}>{"»"}</button>
-            </div>
+            {timetables.length > 0 ? (<>
+                <div className={styles.display_timetable}>
+                    <DisplayTimetable
+                        timetableIdx={currPageIndex * timetableDisplayCount + 1}
+                        timetables={getCurrentPageTimetables()}
+                    />
+                </div>
+                <div className={styles.page_select}>
+                    <button className={styles.page_index_move_button} onClick={() => { setCurrPageIndex(0) }}>{"«"}</button>
+                    <button className={styles.page_index_move_button} onClick={() => {
+                        setCurrPageIndex(Math.max(0, currPageIndex - pageDisplayCount))
+                    }}>{"‹"}</button>
+                    {Array.from(
+                        { length: Math.min(pageDisplayCount, maxPageIndex - (Math.floor(currPageIndex / pageDisplayCount) * pageDisplayCount) + 1) },
+                        (_, idx) => (Math.floor(currPageIndex / pageDisplayCount) * pageDisplayCount) + idx
+                    ).map((pageIndex) =>
+                        <button
+                            className={[styles.page_index_button, `${currPageIndex === pageIndex ? [styles.curr_page_index_button] : []}`].join(' ')}
+                            key={pageIndex}
+                            value={pageIndex}
+                            onClick={(e) => setCurrPageIndex(pageIndex)}
+                        >
+                            {pageIndex + 1}
+                        </button>)}
+                    <button className={styles.page_index_move_button} onClick={() => {
+                        setCurrPageIndex(Math.min(maxPageIndex, currPageIndex + pageDisplayCount))
+                    }}>{"›"}</button>
+                    <button className={styles.page_index_move_button} onClick={() => { setCurrPageIndex(maxPageIndex) }}>{"»"}</button>
+                </div>
+            </>) : (<>
+
+            </>)}
         </div>
     );
 }

@@ -10,8 +10,12 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 export function middleware(request: NextRequest): NextResponse {
     switch (request.nextUrl.pathname) {
-        case "/": return caseRootUrl(request);
-        default: return caseDefault(request);
+        case "/": {
+            return caseRootUrl(request);
+        }
+        default: {
+            return caseDefault(request);
+        }
     }
 }
 
@@ -46,6 +50,25 @@ function caseRootUrl(request: NextRequest): NextResponse {
 
     return NextResponse.redirect(new URL(redirectUrl));
 }
+
+
+/*
+function caseAutoGenerateUrl(request: NextRequest): NextResponse {
+    // Referer 헤더를 확인합니다.
+    const referer = request.headers.get('referer');
+
+    // 현재 요청 URL을 구합니다.
+    const currentUrl = request.nextUrl.clone();
+
+    // Referer와 현재 요청 URL이 같으면 새로고침으로 간주합니다.
+    if (referer && new URL(referer).pathname === currentUrl.pathname) {
+        // 이전 페이지로 리다이렉트합니다.
+        return NextResponse.redirect(new URL('/previous-page', currentUrl));
+    }
+
+    // 다른 경우에는 기본 처리를 계속합니다.
+    return NextResponse.next();
+}*/
 
 
 /**
