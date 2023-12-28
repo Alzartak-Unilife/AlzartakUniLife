@@ -107,12 +107,9 @@ export default function AutoGenerateTimetable() {
                         html: '<h2 style="font-size: 20px; user-select: none;">생성된 시간표가 없습니다.</h2>',
                         icon: 'error',
                         confirmButtonText: '<span style="font-size: 15px; user-select: none;">설정 페이지로 돌아가기</span>',
-                        allowOutsideClick: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            router.replace("./setting")
-                        }
-                    });
+                        didClose() { router.replace("./setting") },
+                        didOpen() { router.prefetch("./setting") }
+                    })
                 }
             }
         })()
