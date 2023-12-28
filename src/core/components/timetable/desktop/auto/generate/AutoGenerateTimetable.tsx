@@ -9,6 +9,7 @@ import { IGeneratorConfig } from "@/core/types/IGeneratorConfig";
 import { autoGeneratorConfigAtom } from "@/core/recoil/autoGeneratorConfigAtom";
 import { Course } from "@/core/types/Course";
 import { generateTimetables } from "@/core/api/AlzartakUnilfeApi";
+import CircularProgressOverlay from "@/core/modules/circular-progress-overlay/CircularProgressOverlay";
 
 
 export default function AutoGenerateTimetable() {
@@ -17,6 +18,9 @@ export default function AutoGenerateTimetable() {
 
 
     // State
+    const [isLoading, setIsLoading] = useState(false);
+    const [processPercentage, setProcessPercentage] = useState<number>(0);
+    const [processDescription, setProcessDescription] = useState<number>(0);
     const [timetableDisplayCount, setTimetableDisplayCount] = useState<number>(0);
     const [pageDisplayCount, setPageDisplayCount] = useState<number>(5);
     const [maxPageIndex, setMaxPageIndex] = useState<number>(0);
@@ -48,8 +52,43 @@ export default function AutoGenerateTimetable() {
     useEffect(() => {
         (async () => {
             if (timetableDisplayCount > 0) {
+                setIsLoading(true);
+                setProcessPercentage(0);
+                setProcessDescription(0);
+
+                const apiPercentageInterval = setInterval(() => {
+                    setProcessPercentage(prevPercentage => {
+                        if (prevPercentage >= 80) {
+                            clearInterval(apiPercentageInterval);
+                            return prevPercentage;
+                        }
+                        return prevPercentage + (80.0 / 150.0);
+                    });
+                    setProcessDescription(prevDescription => {
+                        return (prevDescription + 0.2) % 4;
+                    });
+                }, 100);
+
                 const { data: genTimetables, message } = await generateTimetables(autoGeneratorConfig);
-                if (message === "SUCCESS") {
+
+                clearInterval(apiPercentageInterval);
+                setProcessPercentage(80);
+
+                const setProgress = setInterval(() => {
+                    setProcessPercentage(prevPercentage => {
+                        if (prevPercentage >= 100) {
+                            clearInterval(setProgress);
+                            setIsLoading(false);
+                            return 0;
+                        }
+                        return Math.round(prevPercentage + 3);
+                    });
+                    setProcessDescription(prevDescription => {
+                        return (prevDescription + 0.2) % 4;
+                    });
+                }, 100);
+
+                if (message === "SUCCESS" && genTimetables.length > 0) {
                     if (genTimetables.length % timetableDisplayCount !== 0) {
                         for (let i = ((Math.floor(genTimetables.length / timetableDisplayCount) + 1) * timetableDisplayCount) - genTimetables.length; i > 0; i--)
                             genTimetables.push([]);
@@ -78,6 +117,17 @@ export default function AutoGenerateTimetable() {
     // Render
     return (
         <div className={styles.autoGenerateTimetable} ref={autoGenerateTimetable}>
+            {isLoading &&
+                <CircularProgressOverlay
+                    percentage={Math.min(100, processPercentage)}
+                    description={`시간표 생성 중${".".repeat(Math.floor(processDescription))}`}
+                    trailColor={"var(--main-color-light-light)"}
+                    pathColor={"var(--main-color)"}
+                    textColor={"var(--main-color)"}
+                    textSize={20}
+                />
+            }
+
             {timetables.length > 0 ? (<>
                 <div className={styles.display_timetable}>
                     <DisplayTimetable
