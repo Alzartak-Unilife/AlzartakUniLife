@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import styles from "./Timetable.module.css"
+import styles from "./DisplayTimetable.module.css"
 import { Course, Day, Schedule, Time } from "@/core/types/Course";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
 
 
-export interface TimetableProps {
+export interface DisplayTimetableProps {
     wishCourses: Course[];
     previewCourse?: Course | null;
 }
@@ -15,7 +15,7 @@ export interface TimetableProps {
 type TimetableBlock = "REAL" | "SHADOW";
 
 
-export default function Timetable({ wishCourses: selectedCourses, previewCourse }: TimetableProps) {
+export default function DisplayTimetable({ wishCourses: selectedCourses, previewCourse }: DisplayTimetableProps) {
     // Ref
     const timetable = useRef<HTMLDivElement>(null);
 
@@ -172,7 +172,7 @@ export default function Timetable({ wishCourses: selectedCourses, previewCourse 
 
     // Render
     return (
-        <div className={styles.timetable} ref={timetable}>
+        <div className={styles.wrapper} ref={timetable}>
             <div className={styles.timetable__head}>
                 <table className={styles.timetable__head_table} >
                     <tbody>

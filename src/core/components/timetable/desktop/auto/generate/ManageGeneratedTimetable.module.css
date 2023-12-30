@@ -1,4 +1,4 @@
-.autoGenerateTimetable {
+.wrapper {
     user-select: none;
     width: 100%;
     height: 100%;
@@ -48,4 +48,18 @@
     vertical-align: middle;
     position: relative;
     top: -4px;
+}
+
+.btnConfirm {
+    height: calc(40px - 2px);
+    border: 1px solid var(--main-color);
+    margin: 0px 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.btnConfirm {
+    width: 200px;
+    background-color: var(--main-color);
+    color: var(--sub-color);
 }

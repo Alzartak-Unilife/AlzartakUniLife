@@ -1,4 +1,4 @@
-.autoGeneratorConfig {
+.wrapper {
     user-select: none;
     width: 100%;
     height: 100%;
@@ -33,18 +33,14 @@
 
 
 /* contents_display's child component */
-.select_preset {
-    height: 30px;
-    width: calc(100% - 20px);
-    margin-top: 20px;
-    padding: 0px 10px;
-}
-
 .config_timetable {
-    height: calc(100% - 20px - 10px);
-    width: calc(100% - 20px);
-    margin-top: 20px;
-    padding: 10px;
+    height: calc(100% - 30px - 20px);
+    width: calc(100% - 40px);
+    margin: 20px;
+    margin-top: 10px;
+    padding-top: 20px;
+    border-radius: 8px;
+    border: var(--border-solid);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -79,7 +75,7 @@
 .contents_title {
     height: 30px;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 20px;
     position: relative;
     display: flex;
     justify-content: center;

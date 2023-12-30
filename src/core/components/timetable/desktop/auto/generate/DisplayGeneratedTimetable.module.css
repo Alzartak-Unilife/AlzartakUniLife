@@ -1,4 +1,4 @@
-.displayTimetable {
+.wrapper {
     height: calc(100% - 30px);
     width: 100%;
     margin: 15px 0px;
@@ -33,15 +33,14 @@
     width: calc(100% - 40px);
     padding: 0px 20px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     text-decoration: none;
 }
 
-.btnSelect {
+.btnSave {
     height: calc(40px - 2px);
-    width: calc(100% - 2px);
+    width: calc(49% - 2px);
     border: 1px solid var(--main-color);
     font-size: 18px;
     font-weight: 600;
@@ -50,8 +49,20 @@
     color: var(--sub-color);
 }
 
+.btnModify {
+    height: calc(40px - 2px);
+    width: calc(49% - 2px);
+    border: 1px solid var(--main-color);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: var(--sub-color);
+    color: var(--main-color);
+}
+
 .btnConfirm,
-.btnCancel {
+.btnCancel,
+.btnOkAndModify {
     height: calc(40px - 2px);
     border: 1px solid var(--main-color);
     margin: 0px 10px;
@@ -60,13 +71,19 @@
 }
 
 .btnConfirm {
-    width: 80px;
+    width: 100px;
     background-color: var(--main-color);
     color: var(--sub-color);
 }
 
 .btnCancel {
-    width: 80px;
+    width: 100px;
+    background-color: var(--sub-color);
+    color: var(--main-color);
+}
+
+.btnOkAndModify {
+    width: 220px;
     background-color: var(--sub-color);
     color: var(--main-color);
 }

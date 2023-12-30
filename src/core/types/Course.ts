@@ -650,12 +650,14 @@ export class Course {
      * @param {Course} other 비교할 다른 `Course` 인스턴스입니다.
      * @returns {boolean} 시간표가 겹치면 true, 그렇지 않으면 false를 반환합니다.
      */
-    conflictWith(other: Course): boolean {
-        if (this.baseCode === other.getBaseCode()) return true;
-        for (const fstSchedule of this.getSchedules()) {
-            for (const sndSchedule of other.getSchedules()) {
-                if (fstSchedule.conflictWith(sndSchedule)) {
-                    return true; // 시간표가 겹칠 경우 true 반환
+    conflictWith(other: Course, compareOptions = { baseCode: true, schedule: true }): boolean {
+        if (compareOptions.baseCode && this.baseCode === other.getBaseCode()) return true;
+        if (compareOptions.schedule) {
+            for (const fstSchedule of this.getSchedules()) {
+                for (const sndSchedule of other.getSchedules()) {
+                    if (fstSchedule.conflictWith(sndSchedule)) {
+                        return true; // 시간표가 겹칠 경우 true 반환
+                    }
                 }
             }
         }

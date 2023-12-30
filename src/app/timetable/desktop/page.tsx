@@ -7,10 +7,10 @@ export default function TimetableDesktop() {
         <div className={styles.page}>
             <div className={styles.select_page}>
                 <Link className={styles.btnAuto} href={"./desktop/auto/setting"}>
-                    시간표 자동 생성기
+                    스마트 시간표 생성
                 </Link>
-                <Link className={styles.btnCustom} href={"./desktop/custom"}>
-                    시간표 직접 만들기
+                <Link className={styles.btnCustom} href={"./desktop/custom/maker"}>
+                    커스텀 타임테이블
                 </Link>
             </div>
         </div>

@@ -14,7 +14,7 @@ export default function ConfigCredit() {
 
     // Render
     return (
-        <div className={styles.configCredit}>
+        <div className={styles.wrapper}>
 
             <label>학점 타입</label>
             <div className={styles.credit_types}>

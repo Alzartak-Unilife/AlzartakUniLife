@@ -1,19 +1,21 @@
 "use client"
 
 import { Course } from "@/core/types/Course";
-import styles from "./DisplayTimetable.module.css";
-import Timetable from "../../Timetable";
+import styles from "./DisplayGeneratedTimetable.module.css";
+import DisplayTimetable from "../../DisplayTimetable";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { testDelay } from "@/core/api/AlzartakUnilfeApi";
+import { getTimetableAll, saveTimetable, testDelay, updateMakerConfig } from "@/core/api/AlzartakUnilfeApi";
+import { Timetable } from "@/core/types/Timetable";
+import { MakerConfig } from "@/core/types/MakerConfig";
 
 
-interface DisplayTimetableProps {
+interface DisplayGeneratedTimetableProps {
     timetableIdx: number;
     timetables: Course[][];
 }
 
-export default function DisplayTimetable({ timetableIdx, timetables }: DisplayTimetableProps) {
+export default function DisplayGeneratedTimetable({ timetableIdx, timetables }: DisplayGeneratedTimetableProps) {
     // Const
     const router = useRouter();
 
@@ -29,6 +31,27 @@ export default function DisplayTimetable({ timetableIdx, timetables }: DisplayTi
         const minutes = String(koreanTime.getMinutes()).padStart(2, '0');
         const seconds = String(koreanTime.getSeconds()).padStart(2, '0');
         return `${year}-${month}-${day}, ${hours}:${minutes}:${seconds}`;
+    }
+
+    const handleEditTimetable = (courses: Course[]) => {
+        updateMakerConfig(new MakerConfig(courses)).then(({ message }) => {
+            if (message === "SUCCESS") {
+                Swal.close();
+                window.open("../custom/maker", '_blank');
+            } else {
+                Swal.fire({
+                    heightAuto: false,
+                    scrollbarPadding: false,
+                    html: `<h2 style="font-size: 25px;">알 수 없는 이유로 페이지 이동에 실패하였습니다</h2>`,
+                    icon: 'error',
+                    buttonsStyling: false,
+                    customClass: {
+                        confirmButton: `${styles.btnConfirm}`,
+                    },
+                    confirmButtonText: '확인',
+                });
+            }
+        })
     }
 
     const handleSelectTimtable = (courses: Course[]) => {
@@ -69,7 +92,6 @@ export default function DisplayTimetable({ timetableIdx, timetables }: DisplayTi
                         }
                     }
                 }).then((result) => {
-
                     if (result.isConfirmed) {
                         Swal.fire({
                             title: '처리 중...',
@@ -80,18 +102,25 @@ export default function DisplayTimetable({ timetableIdx, timetables }: DisplayTi
                             }
                         });
 
-                        testDelay().then(response => {
+                        saveTimetable(new Timetable("", result.value, courses).toObject()).then(response => {
                             if (response.message === "SUCCESS") {
                                 Swal.fire({
                                     heightAuto: false,
                                     scrollbarPadding: false,
-                                    html: `<h2 style="font-size: 25px;">시간표 '${result.value}' 를 저장하였습니다</h2>`,
+                                    html: `<h2 style="font-size: 25px;">시간표를 저장하였습니다</h2>`,
                                     icon: 'success',
+                                    showCancelButton: true,
                                     buttonsStyling: false,
                                     customClass: {
                                         confirmButton: `${styles.btnConfirm}`,
+                                        cancelButton: `${styles.btnOkAndModify}`
                                     },
                                     confirmButtonText: '확인',
+                                    cancelButtonText: '시간표 편집 하기',
+                                }).then((result) => {
+                                    if (result.dismiss === Swal.DismissReason.cancel) {
+                                        handleEditTimetable(courses);
+                                    }
                                 });
                             } else {
                                 Swal.fire({
@@ -109,7 +138,6 @@ export default function DisplayTimetable({ timetableIdx, timetables }: DisplayTi
                         })
                     }
                 });
-
             }
         })
     };
@@ -117,7 +145,7 @@ export default function DisplayTimetable({ timetableIdx, timetables }: DisplayTi
 
     // Render
     return (
-        <div className={styles.displayTimetable}>
+        <div className={styles.wrapper}>
             {timetables.map((courses, idx) => {
                 return (
                     <div key={idx} className={styles.timetable_field}>
@@ -128,16 +156,20 @@ export default function DisplayTimetable({ timetableIdx, timetables }: DisplayTi
                         </div>
 
                         <div className={styles.timetable_body}>
-                            <Timetable
+                            <DisplayTimetable
                                 wishCourses={courses}
                             />
                         </div>
 
                         <div className={styles.timetable_select}>
-                            {courses.length > 0 &&
-                                <button className={styles.btnSelect} onClick={() => { handleSelectTimtable(courses); }}>
+                            {courses.length > 0 && <>
+                                <button className={styles.btnSave} onClick={() => { handleSelectTimtable(courses); }}>
                                     시간표 저장
-                                </button>}
+                                </button>
+                                <button className={styles.btnModify} onClick={() => { handleEditTimetable(courses); }}>
+                                    시간표 편집
+                                </button>
+                            </>}
                         </div>
                     </div>
                 );

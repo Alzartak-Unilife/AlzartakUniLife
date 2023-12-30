@@ -1,4 +1,4 @@
-.timetable {
+.wrapper {
     height: calc(98% - 20px - 2px);
     width: calc(100% - 40px - 2px);
     margin: 10px 20px;

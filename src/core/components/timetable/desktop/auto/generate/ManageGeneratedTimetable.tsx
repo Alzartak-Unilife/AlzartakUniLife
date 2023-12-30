@@ -1,9 +1,9 @@
 "use client"
 
 import useElementDimensions from "@/core/hooks/useElementDimensions";
-import styles from "./AutoGenerateTimetable.module.css";
+import styles from "./ManageGeneratedTimetable.module.css";
 import { useEffect, useRef, useState } from "react";
-import DisplayTimetable from "./DisplayTimetable";
+import DisplayGeneratedTimetable from "./DisplayGeneratedTimetable";
 import { useRecoilValue } from "recoil";
 import { GeneratorConfig } from "@/core/types/GeneratorConfig";
 import { generatorConfigAtom } from "@/core/recoil/generatorConfigAtom";
@@ -14,7 +14,7 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 
 
-export default function AutoGenerateTimetable() {
+export default function ManageGeneratedTimetable() {
     // Const
     const router = useRouter();
 
@@ -31,6 +31,7 @@ export default function AutoGenerateTimetable() {
     const [pageDisplayCount, setPageDisplayCount] = useState<number>(5);
     const [maxPageIndex, setMaxPageIndex] = useState<number>(0);
     const [currPageIndex, setCurrPageIndex] = useState<number>(0);
+    const [orignTimetables, setOrignTimetables] = useState<Course[][]>([]);
     const [timetables, setTimetables] = useState<Course[][]>([]);
 
 
@@ -56,61 +57,73 @@ export default function AutoGenerateTimetable() {
     }, [autoGenerateTimetableWidth]);
 
     useEffect(() => {
-        if (timetableDisplayCount > 0) {
-            setIsLoading(true);
-            setProcessPercentage(0);
-            setProcessDescription(0);
+        setIsLoading(true);
+        setProcessPercentage(0);
+        setProcessDescription(0);
 
-            const apiProgressInterval = setInterval(() => {
+        const apiProgressInterval = setInterval(() => {
+            setProcessPercentage(prevPercentage => {
+                if (prevPercentage >= 80) {
+                    clearInterval(apiProgressInterval);
+                    return prevPercentage;
+                }
+                return prevPercentage + (80.0 / 150.0);
+            });
+            setProcessDescription(prevDescription => {
+                return (prevDescription + 0.2) % 4;
+            });
+        }, 100);
+
+        generateTimetables(generatorConfig.toObject()).then(({ data: genTimetables, message }) => {
+            setProcessPercentage(80);
+
+            const setProgress = setInterval(() => {
                 setProcessPercentage(prevPercentage => {
-                    if (prevPercentage >= 80) {
-                        clearInterval(apiProgressInterval);
-                        return prevPercentage;
+                    if (prevPercentage >= 100) {
+                        clearInterval(setProgress);
+                        setIsLoading(false);
+                        return 0;
                     }
-                    return prevPercentage + (80.0 / 150.0);
+                    return Math.round(prevPercentage + 5);
                 });
                 setProcessDescription(prevDescription => {
                     return (prevDescription + 0.2) % 4;
                 });
             }, 100);
 
-            generateTimetables(generatorConfig.toObject()).then(({ data: genTimetables, message }) => {
-                setProcessPercentage(80);
+            if (message === "SUCCESS" && genTimetables.length > 0) {
+                setOrignTimetables(genTimetables);
+            } else {
+                Swal.fire({
+                    heightAuto: false,
+                    scrollbarPadding: false,
+                    html: '<h2 style="font-size: 20px; user-select: none;">생성된 시간표가 없습니다</h2>',
+                    icon: 'error',
+                    buttonsStyling: false,
+                    customClass: {
+                        confirmButton: `${styles.btnConfirm}`,
+                        cancelButton: `${styles.btnCancel}`
+                    },
+                    confirmButtonText: '<span style="font-size: 15px; user-select: none;">설정 페이지로 돌아가기</span>',
+                    didClose() { router.replace("./setting") },
+                    didOpen() { router.prefetch("./setting") }
+                })
+            }
+        });
+    }, [setIsLoading, setProcessPercentage, setProcessDescription, generatorConfig, setOrignTimetables]);
 
-                const setProgress = setInterval(() => {
-                    setProcessPercentage(prevPercentage => {
-                        if (prevPercentage >= 100) {
-                            clearInterval(setProgress);
-                            setIsLoading(false);
-                            return 0;
-                        }
-                        return Math.round(prevPercentage + 5);
-                    });
-                    setProcessDescription(prevDescription => {
-                        return (prevDescription + 0.2) % 4;
-                    });
-                }, 100);
 
-                if (message === "SUCCESS" && genTimetables.length > 0) {
-                    if (genTimetables.length % timetableDisplayCount !== 0) {
-                        for (let i = ((Math.floor(genTimetables.length / timetableDisplayCount) + 1) * timetableDisplayCount) - genTimetables.length; i > 0; i--)
-                            genTimetables.push([]);
-                    }
-                    setTimetables(genTimetables);
-                } else {
-                    Swal.fire({
-                        heightAuto: false,
-                        scrollbarPadding: false,
-                        html: '<h2 style="font-size: 20px; user-select: none;">생성된 시간표가 없습니다</h2>',
-                        icon: 'error',
-                        confirmButtonText: '<span style="font-size: 15px; user-select: none;">설정 페이지로 돌아가기</span>',
-                        didClose() { router.replace("./setting") },
-                        didOpen() { router.prefetch("./setting") }
-                    })
-                }
-            });
+    useEffect(() => {
+        if (orignTimetables.length > 0) {
+            const dummyTimetables: Course[][] = [];
+            if (orignTimetables.length % timetableDisplayCount !== 0) {
+                for (let i = ((Math.floor(orignTimetables.length / timetableDisplayCount) + 1) * timetableDisplayCount) - orignTimetables.length; i > 0; i--)
+                    dummyTimetables.push([]);
+            }
+            setTimetables([...orignTimetables, ...dummyTimetables]);
         }
-    }, [timetableDisplayCount, generatorConfig]);
+    }, [timetableDisplayCount, orignTimetables, setTimetables])
+
 
     useEffect(() => {
         if (timetables.length > 0 && timetableDisplayCount > 0) {
@@ -128,7 +141,7 @@ export default function AutoGenerateTimetable() {
 
     // Render
     return (
-        <div className={styles.autoGenerateTimetable} ref={autoGenerateTimetable}>
+        <div className={styles.wrapper} ref={autoGenerateTimetable}>
             {isLoading &&
                 <CircularProgressOverlay
                     percentage={Math.min(100, processPercentage)}
@@ -140,9 +153,9 @@ export default function AutoGenerateTimetable() {
                 />
             }
 
-            {timetables.length > 0 ? (<>
+            {timetables.length > 0 && (<>
                 <div className={styles.display_timetable}>
-                    <DisplayTimetable
+                    <DisplayGeneratedTimetable
                         timetableIdx={currPageIndex * timetableDisplayCount + 1}
                         timetables={getCurrentPageTimetables()}
                     />
@@ -169,11 +182,7 @@ export default function AutoGenerateTimetable() {
                     }}>{"›"}</button>
                     <button className={styles.page_index_move_button} onClick={() => { setCurrPageIndex(maxPageIndex) }}>{"»"}</button>
                 </div>
-            </>) : (<>
-
             </>)}
         </div>
     );
 }
-
-//AutoGenerateTimetable

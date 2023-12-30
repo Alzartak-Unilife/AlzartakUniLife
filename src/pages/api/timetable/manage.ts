@@ -1,7 +1,8 @@
 import MongoDbProvider from '@/core/modules/database/MongoDbProvider';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]';
+import { authOptions } from '../auth/[...nextauth]';
+
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
     const db = await MongoDbProvider.getDb(process.env.ALZARTAK_MONGODB_URI);
@@ -9,16 +10,19 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     switch (request.method) {
         case "GET": {
-            if (session === null) { 
+            if (session === null) {
                 response.status(500).json({ data: null, message: "FAIL" });
             } else {
                 try {
-                    const result = await db.collection("timetable_generator_config").findOne(
-                        { owner: session.user?.email },
-                        { projection: { _id: 0, owner: 0 } }
-                    );
-                    response.status(200).json({ data: result, message: "SUCCESS" });
-
+                    const result = await db.collection("timetables").find({ owner: session.user?.email }).toArray();
+                    response.status(200).json({
+                        data: result.map((res) => ({
+                            id: res._id.toString(),
+                            name: res.name,
+                            courses: res.courses
+                        })),
+                        message: "SUCCESS"
+                    });
                 } catch (error) {
                     response.status(500).json({ data: null, message: "FAIL" });
                 }
@@ -30,10 +34,11 @@ export default async function handler(request: NextApiRequest, response: NextApi
                 response.status(500).json({ message: "FAIL" });
             } else {
                 try {
-                    const count = await db.collection("timetable_generator_config").countDocuments({ owner: session.user?.email });
-                    if (count === 0) {
-                        await db.collection("timetable_generator_config").insertOne({ owner: session.user?.email, ...request.body });
-                    }
+                    await db.collection("timetables").insertOne({
+                        owner: session.user?.email,
+                        name: request.body.name,
+                        courses: request.body.courses
+                    });
                     response.status(200).json({ message: "SUCCESS" });
                 } catch (error) {
                     response.status(500).json({ message: "FAIL" });
@@ -46,10 +51,14 @@ export default async function handler(request: NextApiRequest, response: NextApi
                 response.status(500).json({ message: "FAIL" });
             } else {
                 try {
-                    await db.collection("timetable_generator_config").updateOne(
+                    await db.collection("timetables").updateOne(
                         { owner: session.user?.email },
-                        { $set: { owner: session.user?.email, ...request.body } },
-                        { upsert: true }
+                        {
+                            $set: {
+                                name: request.body.name,
+                                courses: request.body.courses,
+                            }
+                        }
                     );
                     response.status(200).json({ message: "SUCCESS" });
                 } catch (error) {

@@ -1,6 +1,8 @@
 import axios from "axios";
-import { Course, CourseObject, Day, Schedule, Time } from "../types/Course";
-import { GeneratorConfigObject } from "../types/GeneratorConfig";
+import { Course, CourseObject } from "../types/Course";
+import { GeneratorConfig, GeneratorConfigObject } from "../types/GeneratorConfig";
+import { Timetable, TimetableObject } from "../types/Timetable";
+import { MakerConfig, MakerConfigObject } from "../types/MakerConfig";
 
 
 
@@ -106,19 +108,27 @@ export async function getOfferedCourses(param: {
 
 
 
+/*****************************************************************
+ * 자동 시간표 생성기의 설정을 가져오는 API 메서드입니다.
+*****************************************************************/
 
-
-type GetAutoTimetableConfigResponse = {
+/** 자동 시간표 생성기 설정 응답 데이터 타입 */
+type GetGeneratorConfigResponse = {
     data: GeneratorConfigObject | null;
     message: "SUCCESS" | "FAIL";
 };
 
-
-export async function getAutoTimetableConfig(): Promise<{
-    data: GeneratorConfigObject | null;
+/**
+ * 서버에서 자동 시간표 생성기의 설정을 가져옵니다.
+ * @returns {Promise<GetGeneratorConfigResponse>} 
+ * GeneratorConfigObject와 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 null과 "FAIL" 메시지를 반환합니다.
+ */
+export async function getGeneratorConfig(): Promise<{
+    data: GeneratorConfig | null;
     message: "SUCCESS" | "FAIL";
 }> {
-    let responseData: GetAutoTimetableConfigResponse = { data: null, message: "FAIL" };
+    let responseData: GetGeneratorConfigResponse = { data: null, message: "FAIL" };
     try {
         const response = await axios.get(
             getApiUrl(`/api/timetable/auto/config`),
@@ -133,22 +143,37 @@ export async function getAutoTimetableConfig(): Promise<{
             message: "FAIL"
         }
     }
-    return responseData;
+    return {
+        data: responseData.data === null ? null : GeneratorConfig.fromObject(responseData.data),
+        message: responseData.message
+    };
 }
 
 
 
-type CreateAutoTimetableConfigResponse = {
+
+/*****************************************************************
+ * 자동 시간표 생성기의 설정을 서버에 저장하는 API 메서드입니다.
+*****************************************************************/
+
+/** 자동 시간표 생성기 설정 저장 응답 데이터 타입 */
+type CreateGeneratorConfigResponse = {
     message: "SUCCESS" | "FAIL";
 };
 
-
-export async function createAutoTimetableConfig(param: GeneratorConfigObject): Promise<{
+/**
+ * 서버에 자동 시간표 생성기의 설정을 저장합니다.
+ * @param {GeneratorConfig} param - 저장할 시간표 생성기 설정입니다.
+ * @returns {Promise<CreateGeneratorConfigResponse>} 
+ * 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
+ */
+export async function createGeneratorConfig(param: GeneratorConfig): Promise<{
     message: "SUCCESS" | "FAIL";
 }> {
-    let responseData: CreateAutoTimetableConfigResponse = { message: "FAIL" };
+    let responseData: CreateGeneratorConfigResponse = { message: "FAIL" };
     try {
-        const postData = param;
+        const postData = param.toObject();
         const response = await axios.post(
             getApiUrl(`/api/timetable/auto/config`),
             postData,
@@ -171,17 +196,28 @@ export async function createAutoTimetableConfig(param: GeneratorConfigObject): P
 
 
 
-type UpdateAutoTimetableConfigResponse = {
+/*****************************************************************
+ * 자동 시간표 생성기의 설정을 서버에서 업데이트하는 API 메서드입니다.
+*****************************************************************/
+
+/** 자동 시간표 생성기 설정 업데이트 응답 데이터 타입 */
+type UpdateGeneratorConfigResponse = {
     message: "SUCCESS" | "FAIL";
 };
 
-
-export async function updateAutoTimetableConfig(param: GeneratorConfigObject): Promise<{
+/**
+ * 서버에서 자동 시간표 생성기의 설정을 업데이트합니다.
+ * @param {GeneratorConfig} param - 업데이트할 시간표 생성기 설정입니다.
+ * @returns {Promise<UpdateGeneratorConfigResponse>} 
+ * 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
+ */
+export async function updateGeneratorConfig(param: GeneratorConfig): Promise<{
     message: "SUCCESS" | "FAIL";
 }> {
-    let responseData: UpdateAutoTimetableConfigResponse = { message: "FAIL" };
+    let responseData: UpdateGeneratorConfigResponse = { message: "FAIL" };
     try {
-        const postData = param;
+        const postData = param.toObject();
         const response = await axios.patch(
             getApiUrl(`/api/timetable/auto/config`),
             postData,
@@ -204,13 +240,8 @@ export async function updateAutoTimetableConfig(param: GeneratorConfigObject): P
 
 
 
-
-
-
-
-
 /*****************************************************************
- * 시간표 생성기 구성에 따라 가능한 시간표 조합들을 생성하는 API 메서드입니다.
+ * 시간표 생성기 설정에 따라 가능한 시간표 조합들을 생성하는 API 메서드입니다.
 *****************************************************************/
 
 /** 시간표 생성 응답 데이터 타입 */
@@ -220,7 +251,7 @@ type GenerateTimetablesResponse = {
 };
 
 /**
- * 서버에서 주어진 시간표 생성기 구성에 따라 가능한 시간표 조합들을 생성합니다.
+ * 서버에서 주어진 시간표 생성기 설정에 따라 가능한 시간표 조합들을 생성합니다.
  * @param {GeneratorConfigObject} param - 시간표 생성에 사용되는 매개 변수들입니다.
  * @returns {Promise<{data: Course[][], message: "SUCCESS" | "FAIL"}>} 
  * 생성된 시간표의 배열과 처리 결과 메시지를 포함하는 객체를 반환합니다.
@@ -255,6 +286,283 @@ export async function generateTimetables(param: GeneratorConfigObject): Promise<
         message: responseData.message
     }
 }
+
+
+
+
+/*****************************************************************
+ * 사용자 지정 시간표 설정을 가져오는 API 메서드입니다.
+*****************************************************************/
+
+/** 사용자 지정 시간표 설정 응답 데이터 타입 */
+type GetMakerConfigResponse = {
+    data: MakerConfigObject | null;
+    message: "SUCCESS" | "FAIL";
+};
+
+/**
+ * 서버에서 사용자 지정 시간표 설정을 가져옵니다.
+ * @returns {Promise<GetMakerConfigResponse>} 
+ * MakerConfigObject와 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 null과 "FAIL" 메시지를 반환합니다.
+ */
+export async function getMakerConfig(): Promise<{
+    data: MakerConfig | null;
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: GetMakerConfigResponse = { data: null, message: "FAIL" };
+    try {
+        const response = await axios.get(
+            getApiUrl(`/api/timetable/custom/config`),
+            {
+                timeout: getDefualtAxiosTimeout(),
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            data: null,
+            message: "FAIL"
+        }
+    }
+    return {
+        data: responseData.data === null ? null : MakerConfig.fromObject(responseData.data),
+        message: responseData.message
+    };
+}
+
+
+
+
+/*****************************************************************
+ * 사용자 지정 시간표 설정을 서버에 저장하는 API 메서드입니다.
+*****************************************************************/
+
+/** 사용자 지정 시간표 설정 저장 응답 데이터 타입 */
+type CreateMakerConfigResponse = {
+    message: "SUCCESS" | "FAIL";
+};
+
+/**
+ * 서버에 사용자 지정 시간표 설정을 저장합니다.
+ * @param {MakerConfig} param - 저장할 사용자 지정 시간표 설정입니다.
+ * @returns {Promise<CreateMakerConfigResponse>} 
+ * 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
+ */
+export async function createMakerConfig(param: MakerConfig): Promise<{
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: CreateMakerConfigResponse = { message: "FAIL" };
+    try {
+        const postData = param.toObject();
+        const response = await axios.post(
+            getApiUrl(`/api/timetable/custom/config`),
+            postData,
+            {
+                timeout: getDefualtAxiosTimeout(),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            message: "FAIL"
+        }
+    }
+    return responseData;
+}
+
+
+
+
+/*****************************************************************
+ * 사용자 지정 시간표 설정을 서버에서 업데이트하는 API 메서드입니다.
+*****************************************************************/
+
+/** 사용자 지정 시간표 설정 업데이트 응답 데이터 타입 */
+type UpdateMakerConfigResponse = {
+    message: "SUCCESS" | "FAIL";
+};
+
+/**
+ * 서버에서 사용자 지정 시간표 설정을 업데이트합니다.
+ * @param {MakerConfig} param - 업데이트할 사용자 지정 시간표 설정입니다.
+ * @returns {Promise<UpdateMakerConfigResponse>} 
+ * 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
+ */
+export async function updateMakerConfig(param: MakerConfig): Promise<{
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: UpdateMakerConfigResponse = { message: "FAIL" };
+    try {
+        const postData = param;
+        const response = await axios.patch(
+            getApiUrl(`/api/timetable/custom/config`),
+            postData,
+            {
+                timeout: getDefualtAxiosTimeout(),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            message: "FAIL"
+        }
+    }
+    return responseData;
+}
+
+
+
+
+
+/*****************************************************************
+ * 모든 시간표를 가져오는 API 메서드입니다.
+*****************************************************************/
+
+/** 모든 시간표 구성 응답 데이터 타입 */
+type GetTimetableAllResponse = {
+    data: TimetableObject[];
+    message: "SUCCESS" | "FAIL";
+};
+
+/**
+ * 서버에서 모든 시간표를 가져옵니다.
+ * @returns {Promise<GetTimetableAllResponse>} 
+ * Timetable 인스턴스 배열과 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 빈 배열과 "FAIL" 메시지를 반환합니다.
+ */
+export async function getTimetableAll(): Promise<{
+    data: Timetable[];
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: GetTimetableAllResponse = { data: [], message: "FAIL" };
+    try {
+        const response = await axios.get(
+            getApiUrl(`/api/timetable/manage`),
+            {
+                timeout: getDefualtAxiosTimeout(),
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            data: [],
+            message: "FAIL"
+        }
+    }
+    return {
+        data: responseData.data.map((timetableObject) => Timetable.fromObject(timetableObject)),
+        message: responseData.message
+    };
+}
+
+
+
+
+/*****************************************************************
+ * 새로운 시간표를 서버에 저장하는 API 메서드입니다.
+*****************************************************************/
+
+/** 시간표 저장 응답 데이터 타입 */
+type SaveTimetableResponse = {
+    message: "SUCCESS" | "FAIL";
+};
+
+/**
+ * 서버에 새로운 시간표를 저장합니다.
+ * @param {TimetableObject} param - 저장할 시간표 구성 객체입니다.
+ * @returns {Promise<SaveTimetableResponse>} 
+ * 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
+ */
+export async function saveTimetable(param: TimetableObject): Promise<{
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: SaveTimetableResponse = { message: "FAIL" };
+    try {
+        const postData = param;
+        const response = await axios.post(
+            getApiUrl(`/api/timetable/manage`),
+            postData,
+            {
+                timeout: getDefualtAxiosTimeout(),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            message: "FAIL"
+        }
+    }
+    return responseData;
+}
+
+
+
+
+/*****************************************************************
+ * 기존 시간표를 서버에서 업데이트하는 API 메서드입니다.
+*****************************************************************/
+
+/** 시간표 업데이트 응답 데이터 타입 */
+type UpdateTimetableResponse = {
+    message: "SUCCESS" | "FAIL";
+};
+
+/**
+ * 서버에서 기존 시간표를 업데이트합니다.
+ * @param {TimetableObject} param - 업데이트할 시간표 구성 객체입니다.
+ * @returns {Promise<UpdateTimetableResponse>} 
+ * 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
+ */
+export async function updateTimetable(param: TimetableObject): Promise<{
+    message: "SUCCESS" | "FAIL";
+}> {
+    if (param.id === "") return { message: "FAIL" };
+    let responseData: UpdateTimetableResponse = { message: "FAIL" };
+    try {
+        const postData = param;
+        const response = await axios.post(
+            getApiUrl(`/api/timetable/manage`),
+            postData,
+            {
+                timeout: getDefualtAxiosTimeout(),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            message: "FAIL"
+        }
+    }
+    return responseData;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

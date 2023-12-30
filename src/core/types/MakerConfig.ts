@@ -2,24 +2,24 @@ import { Course, CourseObject } from "./Course";
 
 
 /**
- * CustomConfigObject 타입은 사용자 지정 설정의 상태를 나타내는 객체의 타입입니다.
+ * MakerConfigObject 타입은 사용자 지정 설정의 상태를 나타내는 객체의 타입입니다.
  * 이 타입은 사용자가 선택한 강의 목록을 CourseObject 배열로 저장합니다.
  */
-export type CustomConfigObject = {
+export type MakerConfigObject = {
     wishCourses: CourseObject[];
 }
 
 
 /**
- * CustomConfig 클래스는 사용자 지정 설정을 관리하는 클래스입니다.
+ * MakerConfig 클래스는 사용자 지정 설정을 관리하는 클래스입니다.
  * 이 클래스는 사용자가 선택한 강의 목록을 관리하며,
  * 강의 목록은 Course 인스턴스의 배열로 저장됩니다.
  */
-export class CustomConfig {
+export class MakerConfig {
     private wishCourses: Course[];
 
     /**
-     * CustomConfig 클래스의 생성자입니다.
+     * MakerConfig 클래스의 생성자입니다.
      * @param {Course[]} wishCourses - 사용자가 선택한 강의 목록입니다.
      */
     constructor(wishCourses: Course[]) {
@@ -44,18 +44,18 @@ export class CustomConfig {
 
     /**
      * CustomConfig 인스턴스의 깊은 복사본을 생성합니다.
-     * @returns {CustomConfig} 깊은 복사된 CustomConfig 인스턴스
+     * @returns {MakerConfig} 깊은 복사된 CustomConfig 인스턴스
      */
-    copy(): CustomConfig {
+    copy(): MakerConfig {
         const copiedCourses = this.wishCourses.map(course => course.copy());
-        return new CustomConfig(copiedCourses);
+        return new MakerConfig(copiedCourses);
     }
 
     /**
      * CustomConfig 인스턴스의 상태를 일반 객체로 변환합니다.
-     * @returns {CustomConfigObject} CustomConfig의 상태를 나타내는 객체
+     * @returns {MakerConfigObject} CustomConfig의 상태를 나타내는 객체
      */
-    toObject(): CustomConfigObject {
+    toObject(): MakerConfigObject {
         return {
             wishCourses: this.wishCourses.map(course => course.toObject())
         };
@@ -63,11 +63,11 @@ export class CustomConfig {
 
     /**
      * CustomConfigObject 타입의 객체를 CustomConfig 인스턴스로 변환합니다.
-     * @param {CustomConfigObject} object - CustomConfigObject 타입의 객체입니다.
-     * @returns {CustomConfig} CustomConfig 인스턴스
+     * @param {MakerConfigObject} object - CustomConfigObject 타입의 객체입니다.
+     * @returns {MakerConfig} CustomConfig 인스턴스
      */
-    public static fromObject(object: CustomConfigObject): CustomConfig {
+    public static fromObject(object: MakerConfigObject): MakerConfig {
         const courses = object.wishCourses.map(courseObject => Course.fromObject(courseObject));
-        return new CustomConfig(courses);
+        return new MakerConfig(courses);
     }
 }

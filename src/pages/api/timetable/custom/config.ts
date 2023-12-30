@@ -9,11 +9,11 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     switch (request.method) {
         case "GET": {
-            if (session === null) { 
+            if (session === null) {
                 response.status(500).json({ data: null, message: "FAIL" });
             } else {
                 try {
-                    const result = await db.collection("timetable_generator_config").findOne(
+                    const result = await db.collection("timetable_maker_config").findOne(
                         { owner: session.user?.email },
                         { projection: { _id: 0, owner: 0 } }
                     );
@@ -30,9 +30,9 @@ export default async function handler(request: NextApiRequest, response: NextApi
                 response.status(500).json({ message: "FAIL" });
             } else {
                 try {
-                    const count = await db.collection("timetable_generator_config").countDocuments({ owner: session.user?.email });
+                    const count = await db.collection("timetable_maker_config").countDocuments({ owner: session.user?.email });
                     if (count === 0) {
-                        await db.collection("timetable_generator_config").insertOne({ owner: session.user?.email, ...request.body });
+                        await db.collection("timetable_maker_config").insertOne({ owner: session.user?.email, ...request.body });
                     }
                     response.status(200).json({ message: "SUCCESS" });
                 } catch (error) {
@@ -46,7 +46,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
                 response.status(500).json({ message: "FAIL" });
             } else {
                 try {
-                    await db.collection("timetable_generator_config").updateOne(
+                    await db.collection("timetable_maker_config").updateOne(
                         { owner: session.user?.email },
                         { $set: { owner: session.user?.email, ...request.body } },
                         { upsert: true }

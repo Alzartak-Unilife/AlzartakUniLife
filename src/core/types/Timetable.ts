@@ -1,4 +1,4 @@
-import { Day, Time } from "./Course";
+import { Course, CourseObject, Day, Time } from "./Course";
 
 /**
  * BreakDaysObject 타입은 요일별 공강 여부를 나타내는 객체의 타입입니다.
@@ -199,5 +199,103 @@ export class Breaktime {
      */
     printFormat(): string {
         return `${this.day}, ${this.time.printFormat()}`;
+    }
+}
+
+
+
+
+/**
+ * TimetableObject 타입은 시간표 데이터를 나타내는 객체의 구조를 정의합니다.
+ * - id: 시간표의 고유 식별자입니다.
+ * - name: 시간표의 이름입니다.
+ * - courses: 시간표에 포함된 강의들을 나타내는 CourseObject 배열입니다.
+ */
+export type TimetableObject = {
+    id: string;
+    name: string;
+    courses: CourseObject[];
+}
+
+/**
+ * Timetable 클래스는 시간표의 데이터를 관리하고 조작하는 데 사용됩니다.
+ * 이 클래스는 시간표의 고유 ID, 이름 및 강의 목록을 속성으로 가집니다.
+ */
+export class Timetable {
+    private id: string;
+    private name: string;
+    private courses: Course[];
+
+    /**
+     * Timetable 클래스의 생성자입니다.
+     * @param {string} id - 시간표의 고유 ID입니다.
+     * @param {string} name - 시간표의 이름입니다.
+     * @param {Course[]} courses - 시간표에 포함된 강의 목록입니다.
+     */
+    constructor(id: string, name: string, courses: Course[]) {
+        this.id = id;
+        this.name = name;
+        this.courses = courses;
+    }
+
+    /** 시간표의 ID를 반환합니다. */
+    getId(): string {
+        return this.id;
+    }
+
+    /** 시간표의 ID를 설정합니다. */
+    setId(value: string): void {
+        this.id = value;
+    }
+
+    /** 시간표의 이름을 반환합니다. */
+    getName(): string {
+        return this.name;
+    }
+
+    /** 시간표의 이름을 설정합니다. */
+    setName(value: string): void {
+        this.name = value;
+    }
+
+    /** 시간표에 포함된 강의 목록을 반환합니다. */
+    getCourses(): Course[] {
+        return this.courses;
+    }
+
+    /** 시간표에 포함된 강의 목록을 설정합니다. */
+    setCourses(value: Course[]): void {
+        this.courses = value;
+    }
+
+    /**
+     * Timetable 인스턴스의 깊은 복사본을 생성합니다.
+     * @returns {Timetable} 깊은 복사된 Timetable 인스턴스
+     */
+    copy(): Timetable {
+        const copiedCourses = this.courses.map(course => course.copy());
+        return new Timetable(this.id, this.name, copiedCourses);
+    }
+
+    /**
+     * Timetable 인스턴스를 TimetableObject 타입의 객체로 변환합니다.
+     * @returns {TimetableObject} Timetable 인스턴스를 나타내는 객체
+     */
+    toObject(): TimetableObject {
+        return {
+            id: this.id,
+            name: this.name,
+            courses: this.courses.map(course => course.toObject())
+        };
+    }
+
+    /**
+     * TimetableObject 타입의 객체를 Timetable 인스턴스로 변환합니다.
+     * @param {TimetableObject} object - TimetableObject 타입의 객체입니다.
+     * @returns {Timetable} Timetable 인스턴스
+     */
+    public static fromObject(object: TimetableObject): Timetable {
+        const courses = object.courses.map(courseObject => Course.fromObject(courseObject));
+        return new Timetable(object.id, object.name, courses);
     }
 }

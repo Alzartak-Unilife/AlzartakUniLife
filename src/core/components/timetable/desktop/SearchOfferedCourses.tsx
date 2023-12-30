@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react";
-import styles from "./CourseSearch.module.css"
+import styles from "./SearchOfferedCourses.module.css"
 import { Course } from "@/core/types/Course";
 import { useRecoilState } from "recoil";
 import { getOfferedCourses } from "@/core/api/AlzartakUnilfeApi";
@@ -11,7 +11,7 @@ import { offeredCoursesAtomFamily } from "@/core/recoil/offeredCoursesAtomFamily
 import { hoverCourseAtomFamily } from "@/core/recoil/hoverCourseAtomFamily";
 
 
-interface CourseSearch {
+interface SearchOfferedCoursesProps {
     pageType: "autoPage" | "customPage"
 }
 
@@ -20,7 +20,7 @@ interface CourseSearch {
  * CourseSearch 컴포넌트는 강의 검색 기능을 제공합니다.
  * 사용자는 다양한 조건을 설정하여 강의를 검색할 수 있습니다.
  */
-export default function CourseSearch({ pageType }: CourseSearch) {
+export default function SearchOfferedCourses({ pageType }: SearchOfferedCoursesProps) {
     // Ref
     const majorSelectRef = useRef<HTMLSelectElement>(null);
 
@@ -2122,7 +2122,7 @@ export default function CourseSearch({ pageType }: CourseSearch) {
 
 
     // Recoil
-    const [offeredCourse, setOfferedCourse] = useRecoilState<Course[]>(offeredCoursesAtomFamily(pageType));
+    const [offeredCourses, setOfferedCourses] = useRecoilState<Course[]>(offeredCoursesAtomFamily(pageType));
     const setHoverCourse = useRecoilState<Course | null>(hoverCourseAtomFamily(pageType))[1];
 
 
@@ -2218,7 +2218,7 @@ export default function CourseSearch({ pageType }: CourseSearch) {
                     return (prevDescription + 0.2) % 4;
                 });
             }, 100);
-            setOfferedCourse(offeredCourse);
+            setOfferedCourses(offeredCourse);
         } else {
             setIsLoading(false);
             const comment = "알 수 없는 이유로 서버에 연결을 할 수 없습니다";
@@ -2242,7 +2242,7 @@ export default function CourseSearch({ pageType }: CourseSearch) {
         setProfessorName('');
         setCourseName('');
         setCourseCode('');
-        setOfferedCourse([]);
+        setOfferedCourses([]);
         setHoverCourse(null);
     }
 
@@ -2259,11 +2259,11 @@ export default function CourseSearch({ pageType }: CourseSearch) {
 
     /** 컴포넌트 마운트 및 언마운트 시 초기화 */
     useEffect(() => {
-        setOfferedCourse([]);
+        setOfferedCourses([]);
         setHoverCourse(null);
 
         return () => {
-            setOfferedCourse([]);
+            setOfferedCourses([]);
             setHoverCourse(null);
         };
     }, []);
@@ -2271,12 +2271,12 @@ export default function CourseSearch({ pageType }: CourseSearch) {
     /** 제공된 강의 목록에 대한 처리 */
     useEffect(() => {
         setProcessPercentage(100);
-    }, [offeredCourse])
+    }, [offeredCourses])
 
 
     // Render
     return (
-        <div className={styles.courseSearch}>
+        <div className={styles.wrapper}>
             {isLoading &&
                 <CircularProgressOverlay
                     percentage={processPercentage}
@@ -2311,7 +2311,7 @@ export default function CourseSearch({ pageType }: CourseSearch) {
                 </div>
                 <div className={styles.buttons}>
                     <button className={styles.btnSearch} onClick={handleSearchOfferedCourse}>조회</button>
-                    <button className={styles.btnReset} onClick={handleReset}>화면초기화</button>
+                    <button className={styles.btnReset} onClick={handleReset}>검색 초기화</button>
                 </div>
             </div>
 

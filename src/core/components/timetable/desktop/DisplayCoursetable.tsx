@@ -1,28 +1,27 @@
 "use client"
 
-import styles from "./Coursetable.module.css";
+import styles from "./DisplayCoursetable.module.css";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
 import { useModal } from "@/core/modules/modal/Modal";
 import VirtualizedTable from "@/core/modules/virtualized-table/VirtualizedTable";
-import { customConfigAtom, customConfigWishCoursesSelector } from "@/core/recoil/customConfigAtom";
+import { makerConfigAtom, makerConfigWishCoursesSelector } from "@/core/recoil/makerConfigAtom";
 import { generatorConfigAtom, generatorConfigWishCoursesSelector } from "@/core/recoil/generatorConfigAtom";
 import { hoverCourseAtomFamily } from "@/core/recoil/hoverCourseAtomFamily";
 import { offeredCoursesAtomFamily } from "@/core/recoil/offeredCoursesAtomFamily";
 import { Course } from "@/core/types/Course";
-import { CustomConfig } from "@/core/types/CustomConfig";
-import { GeneratorConfig, GeneratorConfigObject } from "@/core/types/GeneratorConfig";
-import { BreakDays, Breaktime } from "@/core/types/Timetable";
+import { MakerConfig } from "@/core/types/MakerConfig";
+import { GeneratorConfig } from "@/core/types/GeneratorConfig";
 import { useCallback, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import Swal from "sweetalert2";
 
 
-interface CoursetableProps {
+interface DisplayCoursetableProps {
     pageType: "autoPage" | "customPage"
 }
 
 
-export default function Coursetable({ pageType }: CoursetableProps) {
+export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps) {
     // Const
     const essential = 6;
     const ratings = [essential, 5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1];
@@ -40,9 +39,9 @@ export default function Coursetable({ pageType }: CoursetableProps) {
 
     // Recoil
     const offeredCourse = useRecoilValue<Course[]>(offeredCoursesAtomFamily(pageType));
-    const [wishCourses, setWishCourses] = useRecoilState(pageType === "autoPage" ? generatorConfigWishCoursesSelector : customConfigWishCoursesSelector);
+    const [wishCourses, setWishCourses] = useRecoilState(pageType === "autoPage" ? generatorConfigWishCoursesSelector : makerConfigWishCoursesSelector);
     const setHoveredCourse = useRecoilState<Course | null>(hoverCourseAtomFamily(pageType))[1];
-    const timetableConfig = useRecoilValue<GeneratorConfig | CustomConfig>(pageType === "autoPage" ? generatorConfigAtom : customConfigAtom);
+    const timetableConfig = useRecoilValue<GeneratorConfig | MakerConfig>(pageType === "autoPage" ? generatorConfigAtom : makerConfigAtom);
 
 
     /// Modal 
@@ -72,8 +71,8 @@ export default function Coursetable({ pageType }: CoursetableProps) {
             if (pageType === "autoPage") {
                 setWishCourses([...wishCourses, selectedCourse.copy()]);
             } else {
-                const conflictCourses = wishCourses.filter(course => course.conflictWith(selectedCourse));
-                if (conflictCourses.length === 0) {
+                const conflictCourses = wishCourses.filter(course => !course.conflictWith(selectedCourse, { baseCode: false, schedule: true }));
+                if (conflictCourses.length === wishCourses.length) {
                     setWishCourses([...wishCourses, selectedCourse.copy()]);
                 } else {
                     Swal.fire({
@@ -93,8 +92,7 @@ export default function Coursetable({ pageType }: CoursetableProps) {
                         cancelButtonText: '취소',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            const filteredCourses = wishCourses.filter(course => !course.conflictWith(selectedCourse));
-                            setWishCourses([...wishCourses, selectedCourse.copy()]);
+                            setWishCourses([...conflictCourses, selectedCourse.copy()]);
                         }
                     });
                 }
@@ -139,6 +137,11 @@ export default function Coursetable({ pageType }: CoursetableProps) {
                         html: `<h2 style="font-size: 20px; user-select: none;">${comment}</h2>`,
                         icon: 'error',
                         confirmButtonText: '<span style="font-size: 15px; user-select: none;">닫기</span>',
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: `${styles.btnConfirm}`,
+                            cancelButton: `${styles.btnCancel}`
+                        },
                     })
                     return;
                 }
@@ -167,7 +170,7 @@ export default function Coursetable({ pageType }: CoursetableProps) {
 
     // Render
     return (
-        <div className={styles.coursetable}>
+        <div className={styles.wrapper}>
             <div className={styles.course_list}>
                 <div className={styles.course_list__table_info}>
                     <div className={styles.course_list__title}>강의 시간표 목록</div>

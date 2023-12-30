@@ -1,23 +1,16 @@
-.customTimetableDisplay {
+.wrapper {
+    user-select: none;
     width: 100%;
     height: 100%;
     position: relative;
 }
 
-.setting__field,
 .timetable__field {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-}
-
-.setting__field {
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    border-radius: 5px;
 }
 
 .timetable__field {
@@ -29,8 +22,9 @@
     border-radius: 5px;
 }
 
+
 /* timetable__field children */
-.timetable__name {
+.contents_title {
     height: 30px;
     width: 100%;
     margin-top: 10px;
@@ -43,12 +37,12 @@
     color: var(--main-color);
 }
 
-.timetable__display {
+.contents_display {
     height: calc(100% - 50px);
     width: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: relative;
     background-color: var(--basic-white);
 }

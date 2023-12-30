@@ -59,6 +59,11 @@ export default function ConfigBreaktime() {
                 html: `<h2 style="font-size: 20px; user-select: none;">${comment}</h2>`,
                 icon: 'error',
                 confirmButtonText: '<span style="font-size: 15px; user-select: none;">닫기</span>',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: `${styles.btnConfirm}`,
+                    cancelButton: `${styles.btnCancel}`
+                },
             })
             return;
         }
@@ -83,7 +88,7 @@ export default function ConfigBreaktime() {
 
     // Render
     return (
-        <div className={styles.configBreaktime}>
+        <div className={styles.wrapper}>
             <label>일일 공강</label>
             <div className={styles.breakday_select}>
                 <select

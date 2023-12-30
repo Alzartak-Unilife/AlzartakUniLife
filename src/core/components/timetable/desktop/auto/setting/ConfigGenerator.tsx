@@ -1,25 +1,24 @@
 "use client"
 
-import styles from "./AutoGeneratorConfig.module.css"
+import styles from "./ConfigGenerator.module.css"
 import { Course } from "@/core/types/Course";
-import Timetable from "../../Timetable";
+import DisplayTimetable from "../../DisplayTimetable";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useCallback, useEffect, useState } from "react";
 import { BreakDays } from "@/core/types/Timetable";
-import ConfigPreset from "./ConfigPreset";
 import ConfigCredit from "./ConfigCredit";
 import ConfigBreakday from "./ConfigBreakday";
 import ConfigBreaktime from "./ConfigBreaktime";
-import { GeneratorConfig, GeneratorConfigObject } from "@/core/types/GeneratorConfig";
+import { GeneratorConfig } from "@/core/types/GeneratorConfig";
 import { generatorConfigAtom } from "@/core/recoil/generatorConfigAtom";
-import CreateTimetable from "./CreateTimetable";
-import { createAutoTimetableConfig, getAutoTimetableConfig, updateAutoTimetableConfig } from "@/core/api/AlzartakUnilfeApi";
+import GenerateTimetable from "./GenerateTimetable";
+import { createGeneratorConfig, getGeneratorConfig, updateGeneratorConfig } from "@/core/api/AlzartakUnilfeApi";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { hoverCourseAtomFamily } from "@/core/recoil/hoverCourseAtomFamily";
 
 
-export default function AutoGeneratorConfig() {
+export default function ConfigGenerator() {
     // Router
     const router = useRouter();
 
@@ -50,24 +49,24 @@ export default function AutoGeneratorConfig() {
 
     // Effect
     useEffect(() => {
-        getAutoTimetableConfig().then(({ data: storedConfig, message }) => {
+        getGeneratorConfig().then(({ data: storedConfig, message }) => {
             if (storedConfig) {
-                setGeneratorConfig(GeneratorConfig.fromObject(storedConfig));
+                setGeneratorConfig(storedConfig);
                 setIsInitialLoadComplete(true);
             } else {
-                const defaultConfig: GeneratorConfigObject = {
+                const defaultConfig = GeneratorConfig.fromObject({
                     creditType: "단일학점",
                     minCredit: 0,
                     maxCredit: 0,
                     breakDays: new BreakDays().toObject(),
                     breaktimes: [],
                     wishCourses: []
-                };
-                createAutoTimetableConfig(defaultConfig).then(({ message }) => {
+                });
+                createGeneratorConfig(defaultConfig).then(({ message }) => {
                     if (message === "FAIL") {
                         handleServerError();
                     } else {
-                        setGeneratorConfig(GeneratorConfig.fromObject(defaultConfig));
+                        setGeneratorConfig(defaultConfig);
                     }
                     setIsInitialLoadComplete(true);
                 })
@@ -78,7 +77,7 @@ export default function AutoGeneratorConfig() {
 
     useEffect(() => {
         if (!isInitialLoadComplete) return;
-        updateAutoTimetableConfig(generatorConfig.toObject()).then(({ message }) => {
+        updateGeneratorConfig(generatorConfig).then(({ message }) => {
             if (message === "FAIL") {
                 handleServerError();
             }
@@ -89,7 +88,7 @@ export default function AutoGeneratorConfig() {
 
     // Render
     return (
-        <div className={styles.autoGeneratorConfig}>
+        <div className={styles.wrapper}>
             {isInitialLoadComplete && (
                 <>
                     <div className={styles.setting__field} style={{ zIndex: hoverCourse ? 0 : 1 }}>
@@ -97,12 +96,6 @@ export default function AutoGeneratorConfig() {
                             시간표 설정
                         </div>
                         <div className={styles.contents_display}>
-                            <div className={styles.select_preset}>
-                                <ConfigPreset
-                                    settingPreset={settingPreset}
-                                    setSettingPreset={setSettingPreset}
-                                />
-                            </div>
                             <div className={styles.config_timetable}>
                                 <div className={styles.config_credit}>
                                     <ConfigCredit />
@@ -117,7 +110,7 @@ export default function AutoGeneratorConfig() {
                                 </div>
 
                                 <div className={styles.create_timetable}>
-                                    <CreateTimetable />
+                                    <GenerateTimetable />
                                 </div>
                             </div>
                         </div>
@@ -127,7 +120,7 @@ export default function AutoGeneratorConfig() {
                             {`'${hoverCourse !== null ? hoverCourse.getName() : "undefind"}' 강의 시간`}
                         </div>
                         <div className={styles.contents_display}>
-                            <Timetable
+                            <DisplayTimetable
                                 wishCourses={hoverCourse ? [hoverCourse] : []}
                             />
                         </div>

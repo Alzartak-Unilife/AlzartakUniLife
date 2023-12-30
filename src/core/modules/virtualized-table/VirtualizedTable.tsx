@@ -142,7 +142,7 @@ export default function VirtualizedTable({
             <div className={styles.table__header}
                 style={{
                     display: "flex",
-                    width: `${hideScrollbar ? "100%" : "calc(100% - 0.65vw)"}`,
+                    width: `${hideScrollbar ? "100%" : "calc(100% - 0.7vw)"}`,
                     height: `${headerHeight}px`,
                     borderRight: `${hideScrollbar ? "none" : `1vw solid ${(headerStyle?.default?.backgroundColor as string)?.split(' ').pop()}`}`,
                     borderRightColor: `${(headerStyle?.default?.backgroundColor as string)?.split(' ').pop()}`,
