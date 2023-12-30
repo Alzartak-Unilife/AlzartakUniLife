@@ -4,8 +4,8 @@ import styles from "./CustomTimetableDisplay.module.css"
 import { Course } from "@/core/types/Course";
 import Timetable from "../Timetable";
 import { useRecoilState } from "recoil";
-import { customWishCoursesAtom } from "@/core/recoil/wishCoursesAtom";
-import { customHoverCourseAtom } from "@/core/recoil/hoverCourseAtom";
+import { customWishCoursesAtom } from "@/core/recoil/wishCoursesAtomFamily";
+import { customHoverCourseAtom } from "@/core/recoil/hoverCourseAtomFamily";
 
 export default function CustomTimetableDisplay() {
     // Recoil

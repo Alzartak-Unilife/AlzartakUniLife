@@ -131,7 +131,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     switch (request.method) {
         case "GET": {
             try {
-                const resultClear = await db.collection('courses').deleteMany();
+                const resultClear = await db.collection('courses').deleteMany({});
                 if (await db.collection('courses').countDocuments() === 0) {
                     try {
                         const result = await db.collection('courses').insertMany(courseObjects);

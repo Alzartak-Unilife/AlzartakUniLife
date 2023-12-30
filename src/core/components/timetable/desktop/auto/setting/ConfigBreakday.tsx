@@ -1,22 +1,22 @@
 "use client"
 
-import { Dispatch, SetStateAction } from "react";
 import styles from "./ConfigBreakday.module.css";
 import { Course, Day } from "@/core/types/Course";
-import { BreakDays } from "@/core/types/Timetable";
 import Swal from "sweetalert2";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { generatorConfigBreakDaysSelector, generatorConfigWishCoursesSelector } from "@/core/recoil/generatorConfigAtom";
+import { BreakDays } from "@/core/types/Timetable";
 
 
-interface ConfigBreakdayProps {
-    breakDays: BreakDays;
-    setBreakDays: Dispatch<SetStateAction<BreakDays>>;
-    wishCourses: Course[];
-}
-
-export default function ConfigBreakday({ breakDays, setBreakDays, wishCourses }: ConfigBreakdayProps) {
+export default function ConfigBreakday() {
     // Const
     const essentialRating = 6;
     const days: Day[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+
+    // Recoil
+    const [breakDays, setBreakDays] = useRecoilState<BreakDays>(generatorConfigBreakDaysSelector);
+    const wishCourses = useRecoilValue<Course[]>(generatorConfigWishCoursesSelector);
 
 
     // Hnalder

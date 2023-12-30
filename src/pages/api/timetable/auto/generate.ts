@@ -1,11 +1,11 @@
 import { TimetableGenerator } from '@/core/systems/timetable-generator/TimetableGenerator';
-import { IGeneratorConfig } from '@/core/types/IGeneratorConfig';
+import { GeneratorConfigObject } from '@/core/types/GeneratorConfig';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
     switch (request.method) {
         case "POST": {
-            const param = request.body as IGeneratorConfig;
+            const param = request.body as GeneratorConfigObject;
             try {
                 const timetableGen = new TimetableGenerator(param);
                 const genTimetables = timetableGen.getCourseCombination(0, 500).map((courses) => courses.map((course) => course.toObject()));

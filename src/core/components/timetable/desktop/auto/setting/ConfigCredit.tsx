@@ -1,19 +1,17 @@
 "use client"
 
-import { Dispatch, SetStateAction } from "react";
 import styles from "./ConfigCredit.module.css";
+import { useRecoilState } from "recoil";
+import { generatorConfigCreditTypeSelector, generatorConfigMaxCreditSelector, generatorConfigMinCreditSelector } from "@/core/recoil/generatorConfigAtom";
 
 
-interface ConfigCreditProps {
-    creditType: "단일학점" | "범위학점";
-    setCreditType: Dispatch<SetStateAction<"단일학점" | "범위학점">>;
-    minCredit: number;
-    setMinCredit: Dispatch<SetStateAction<number>>;
-    maxCredit: number;
-    setMaxCredit: Dispatch<SetStateAction<number>>;
-}
+export default function ConfigCredit() {
+    // Recoil
+    const [creditType, setCreditType] = useRecoilState(generatorConfigCreditTypeSelector);
+    const [minCredit, setMinCredit] = useRecoilState(generatorConfigMinCreditSelector);
+    const [maxCredit, setMaxCredit] = useRecoilState(generatorConfigMaxCreditSelector);
 
-export default function ConfigCredit({ creditType, setCreditType, minCredit, setMinCredit, maxCredit, setMaxCredit }: ConfigCreditProps) {
+
     // Render
     return (
         <div className={styles.configCredit}>

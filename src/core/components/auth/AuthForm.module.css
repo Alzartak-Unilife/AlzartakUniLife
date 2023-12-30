@@ -1,15 +1,6 @@
-.page {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    scroll-behavior: smooth;
-    overflow: auto;
-}
-
-.select_page {
+.authForm {
+    height: calc(100% - 60px);
+    width: calc(100% - 40px);
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
@@ -17,8 +8,8 @@
     justify-content: center;
 }
 
-.btnAuto,
-.btnCustom {
+.signin,
+.signup {
     height: calc(60px - 4px);
     width: calc(450px - 4px);
     border: 2px solid var(--main-color);
@@ -31,12 +22,15 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--sub-color);
-    color: var(--main-color);
+    cursor: pointer;
 }
 
-.btnAuto:hover,
-.btnCustom:hover {
+.signin {
     background-color: var(--main-color);
     color: var(--sub-color);
+}
+
+.signup {
+    background-color: var(--sub-color);
+    color: var(--main-color);
 }

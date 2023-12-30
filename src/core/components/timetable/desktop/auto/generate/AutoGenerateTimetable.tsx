@@ -5,8 +5,8 @@ import styles from "./AutoGenerateTimetable.module.css";
 import { useEffect, useRef, useState } from "react";
 import DisplayTimetable from "./DisplayTimetable";
 import { useRecoilValue } from "recoil";
-import { IGeneratorConfig } from "@/core/types/IGeneratorConfig";
-import { autoGeneratorConfigAtom } from "@/core/recoil/autoGeneratorConfigAtom";
+import { GeneratorConfig } from "@/core/types/GeneratorConfig";
+import { generatorConfigAtom } from "@/core/recoil/generatorConfigAtom";
 import { Course } from "@/core/types/Course";
 import { generateTimetables } from "@/core/api/AlzartakUnilfeApi";
 import CircularProgressOverlay from "@/core/modules/circular-progress-overlay/CircularProgressOverlay";
@@ -35,7 +35,7 @@ export default function AutoGenerateTimetable() {
 
 
     // Recoil
-    const autoGeneratorConfig = useRecoilValue<IGeneratorConfig>(autoGeneratorConfigAtom);
+    const generatorConfig = useRecoilValue<GeneratorConfig>(generatorConfigAtom);
 
 
     // Custom Hook
@@ -56,28 +56,25 @@ export default function AutoGenerateTimetable() {
     }, [autoGenerateTimetableWidth]);
 
     useEffect(() => {
-        (async () => {
-            if (timetableDisplayCount > 0) {
-                setIsLoading(true);
-                setProcessPercentage(0);
-                setProcessDescription(0);
+        if (timetableDisplayCount > 0) {
+            setIsLoading(true);
+            setProcessPercentage(0);
+            setProcessDescription(0);
 
-                const apiPercentageInterval = setInterval(() => {
-                    setProcessPercentage(prevPercentage => {
-                        if (prevPercentage >= 80) {
-                            clearInterval(apiPercentageInterval);
-                            return prevPercentage;
-                        }
-                        return prevPercentage + (80.0 / 150.0);
-                    });
-                    setProcessDescription(prevDescription => {
-                        return (prevDescription + 0.2) % 4;
-                    });
-                }, 100);
+            const apiProgressInterval = setInterval(() => {
+                setProcessPercentage(prevPercentage => {
+                    if (prevPercentage >= 80) {
+                        clearInterval(apiProgressInterval);
+                        return prevPercentage;
+                    }
+                    return prevPercentage + (80.0 / 150.0);
+                });
+                setProcessDescription(prevDescription => {
+                    return (prevDescription + 0.2) % 4;
+                });
+            }, 100);
 
-                const { data: genTimetables, message } = await generateTimetables(autoGeneratorConfig);
-
-                clearInterval(apiPercentageInterval);
+            generateTimetables(generatorConfig.toObject()).then(({ data: genTimetables, message }) => {
                 setProcessPercentage(80);
 
                 const setProgress = setInterval(() => {
@@ -111,15 +108,16 @@ export default function AutoGenerateTimetable() {
                         didOpen() { router.prefetch("./setting") }
                     })
                 }
-            }
-        })()
-    }, [timetableDisplayCount, autoGeneratorConfig]);
+            });
+        }
+    }, [timetableDisplayCount, generatorConfig]);
 
     useEffect(() => {
         if (timetables.length > 0 && timetableDisplayCount > 0) {
             setMaxPageIndex((Math.floor(timetables.length / timetableDisplayCount) + ((timetables.length % timetableDisplayCount) !== 0 ? 1 : 0)) - 1);
         }
     }, [timetableDisplayCount, timetables]);
+
 
     useEffect(() => {
         if (maxPageIndex < currPageIndex) {

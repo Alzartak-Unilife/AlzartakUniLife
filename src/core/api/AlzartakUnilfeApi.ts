@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Course, CourseObject, Day, Schedule, Time } from "../types/Course";
-import { IGeneratorConfig } from "../types/IGeneratorConfig";
+import { GeneratorConfigObject } from "../types/GeneratorConfig";
 
 
 
@@ -107,13 +107,126 @@ export async function getOfferedCourses(param: {
 
 
 
+
+type GetAutoTimetableConfigResponse = {
+    data: GeneratorConfigObject | null;
+    message: "SUCCESS" | "FAIL";
+};
+
+
+export async function getAutoTimetableConfig(): Promise<{
+    data: GeneratorConfigObject | null;
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: GetAutoTimetableConfigResponse = { data: null, message: "FAIL" };
+    try {
+        const response = await axios.get(
+            getApiUrl(`/api/timetable/auto/config`),
+            {
+                timeout: getDefualtAxiosTimeout(),
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            data: null,
+            message: "FAIL"
+        }
+    }
+    return responseData;
+}
+
+
+
+type CreateAutoTimetableConfigResponse = {
+    message: "SUCCESS" | "FAIL";
+};
+
+
+export async function createAutoTimetableConfig(param: GeneratorConfigObject): Promise<{
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: CreateAutoTimetableConfigResponse = { message: "FAIL" };
+    try {
+        const postData = param;
+        const response = await axios.post(
+            getApiUrl(`/api/timetable/auto/config`),
+            postData,
+            {
+                timeout: getDefualtAxiosTimeout(),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            message: "FAIL"
+        }
+    }
+    return responseData;
+}
+
+
+
+
+type UpdateAutoTimetableConfigResponse = {
+    message: "SUCCESS" | "FAIL";
+};
+
+
+export async function updateAutoTimetableConfig(param: GeneratorConfigObject): Promise<{
+    message: "SUCCESS" | "FAIL";
+}> {
+    let responseData: UpdateAutoTimetableConfigResponse = { message: "FAIL" };
+    try {
+        const postData = param;
+        const response = await axios.patch(
+            getApiUrl(`/api/timetable/auto/config`),
+            postData,
+            {
+                timeout: getDefualtAxiosTimeout(),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }
+        );
+        responseData = response.data;
+    } catch (error) {
+        return {
+            message: "FAIL"
+        }
+    }
+    return responseData;
+}
+
+
+
+
+
+
+
+
+
+/*****************************************************************
+ * 시간표 생성기 구성에 따라 가능한 시간표 조합들을 생성하는 API 메서드입니다.
+*****************************************************************/
+
+/** 시간표 생성 응답 데이터 타입 */
 type GenerateTimetablesResponse = {
     data: CourseObject[][];
     message: "SUCCESS" | "FAIL";
 };
 
-
-export async function generateTimetables(param: IGeneratorConfig): Promise<{
+/**
+ * 서버에서 주어진 시간표 생성기 구성에 따라 가능한 시간표 조합들을 생성합니다.
+ * @param {GeneratorConfigObject} param - 시간표 생성에 사용되는 매개 변수들입니다.
+ * @returns {Promise<{data: Course[][], message: "SUCCESS" | "FAIL"}>} 
+ * 생성된 시간표의 배열과 처리 결과 메시지를 포함하는 객체를 반환합니다.
+ * 요청이 실패하면 빈 배열과 "FAIL" 메시지를 반환합니다.
+*/
+export async function generateTimetables(param: GeneratorConfigObject): Promise<{
     data: Course[][];
     message: "SUCCESS" | "FAIL";
 }> {
@@ -142,6 +255,16 @@ export async function generateTimetables(param: IGeneratorConfig): Promise<{
         message: responseData.message
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

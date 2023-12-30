@@ -5,8 +5,14 @@ export default function TimetableDesktop() {
     // Render
     return (
         <div className={styles.page}>
-            <Link href={"./desktop/auto/setting"}><button>시간표 자동 생성</button></Link>
-            <Link href={"./desktop/custom"}><button>시간표 만들기</button></Link>
+            <div className={styles.select_page}>
+                <Link className={styles.btnAuto} href={"./desktop/auto/setting"}>
+                    시간표 자동 생성기
+                </Link>
+                <Link className={styles.btnCustom} href={"./desktop/custom"}>
+                    시간표 직접 만들기
+                </Link>
+            </div>
         </div>
     );
 }

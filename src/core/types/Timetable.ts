@@ -155,6 +155,11 @@ export class Breaktime {
         this.time = times;
     }
 
+    /**
+     * Breaktime 인스턴스와 다른 Breaktime 인스턴스가 동일한지 비교하는 메서드입니다.
+     * @param {Breaktime} breaktime - 비교할 다른 Breaktime 인스턴스입니다.
+     * @returns {boolean} 두 인스턴스가 동일한 요일과 시간을 가지면 true, 그렇지 않으면 false를 반환합니다.
+     */
     equalWith(breaktime: Breaktime): boolean {
         return this.getDay() === breaktime.getDay() && this.getTime().equalWith(breaktime.getTime());
     }

@@ -1,21 +1,17 @@
 "use client"
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./ConfigBreaktime.module.css";
 import { Course, Day, Time } from "@/core/types/Course";
 import { Breaktime } from "@/core/types/Timetable";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
 import VirtualizedTable from "@/core/modules/virtualized-table/VirtualizedTable";
 import Swal from "sweetalert2";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { generatorConfigBreaktimesSelector, generatorConfigWishCoursesSelector } from "@/core/recoil/generatorConfigAtom";
 
 
-interface ConfigBreaktimeProps {
-    breaktimes: Breaktime[]
-    setBreaktimes: Dispatch<SetStateAction<Breaktime[]>>;
-    wishCourses: Course[];
-}
-
-export default function ConfigBreaktime({ breaktimes, setBreaktimes, wishCourses }: ConfigBreaktimeProps) {
+export default function ConfigBreaktime() {
     // Const
     const essentialRating = 6;
     const days: Day[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -31,6 +27,11 @@ export default function ConfigBreaktime({ breaktimes, setBreaktimes, wishCourses
     const [day, setDay] = useState<Day>("Mon");
     const [startTime, setStartTime] = useState(480);
     const [endTime, setEndTime] = useState(510);
+
+
+    // Recoil
+    const [breaktimes, setBreaktimes] = useRecoilState<Breaktime[]>(generatorConfigBreaktimesSelector);
+    const wishCourses = useRecoilValue<Course[]>(generatorConfigWishCoursesSelector);
 
 
     // Custom Hook

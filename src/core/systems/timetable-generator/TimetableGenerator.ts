@@ -4,7 +4,7 @@ import { Bit, Bitmask } from "./data-structures/Bitmask";
 import { VertexConverter } from "./algorithms/VertexConverter";
 import { WeightedGraph } from "./data-structures/WeightedGraph";
 import { ICombinator } from "./algorithms/ICombinator";
-import { IGeneratorConfig } from "@/core/types/IGeneratorConfig";
+import { GeneratorConfigObject } from "@/core/types/GeneratorConfig";
 
 
 /** sidetrack을 이용한 조합 생성기를 반환 */
@@ -153,7 +153,7 @@ export class TimetableGenerator {
     private combinations: Bit[];
 
 
-    constructor(generatorConfig: IGeneratorConfig) {
+    constructor(generatorConfig: GeneratorConfigObject) {
         const essentialRating = 6;
         const essentialCourses = generatorConfig.wishCourses.filter((courseObject) => courseObject.rating === essentialRating).map((courseObject) => Course.fromObject(courseObject));
         const normalCourses = generatorConfig.wishCourses.filter((courseObject) => courseObject.rating !== essentialRating).map((courseObject) => Course.fromObject(courseObject));

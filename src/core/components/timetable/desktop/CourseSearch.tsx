@@ -4,19 +4,23 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./CourseSearch.module.css"
 import { Course } from "@/core/types/Course";
 import { useRecoilState } from "recoil";
-import { autoWishCoursesAtom } from "@/core/recoil/wishCoursesAtom";
-import { autoHoverCourseAtom } from "@/core/recoil/hoverCourseAtom";
-import { autoOfferedCoursesAtom } from "@/core/recoil/offeredCoursesAtom";
 import { getOfferedCourses } from "@/core/api/AlzartakUnilfeApi";
 import CircularProgressOverlay from "../../../modules/circular-progress-overlay/CircularProgressOverlay";
 import Swal from "sweetalert2";
+import { offeredCoursesAtomFamily } from "@/core/recoil/offeredCoursesAtomFamily";
+import { hoverCourseAtomFamily } from "@/core/recoil/hoverCourseAtomFamily";
+
+
+interface CourseSearch {
+    pageType: "autoPage" | "customPage"
+}
 
 
 /**
  * CourseSearch 컴포넌트는 강의 검색 기능을 제공합니다.
  * 사용자는 다양한 조건을 설정하여 강의를 검색할 수 있습니다.
  */
-export default function CourseSearch() {
+export default function CourseSearch({ pageType }: CourseSearch) {
     // Ref
     const majorSelectRef = useRef<HTMLSelectElement>(null);
 
@@ -2118,9 +2122,8 @@ export default function CourseSearch() {
 
 
     // Recoil
-    const [offeredCourse, setOfferedCourse] = useRecoilState<Course[]>(autoOfferedCoursesAtom);
-    const setWishCourses = useRecoilState<Course[]>(autoWishCoursesAtom)[1];
-    const setHoverCourse = useRecoilState<Course | null>(autoHoverCourseAtom)[1];
+    const [offeredCourse, setOfferedCourse] = useRecoilState<Course[]>(offeredCoursesAtomFamily(pageType));
+    const setHoverCourse = useRecoilState<Course | null>(hoverCourseAtomFamily(pageType))[1];
 
 
     // State
@@ -2257,12 +2260,10 @@ export default function CourseSearch() {
     /** 컴포넌트 마운트 및 언마운트 시 초기화 */
     useEffect(() => {
         setOfferedCourse([]);
-        setWishCourses([]);
         setHoverCourse(null);
 
         return () => {
             setOfferedCourse([]);
-            setWishCourses([]);
             setHoverCourse(null);
         };
     }, []);

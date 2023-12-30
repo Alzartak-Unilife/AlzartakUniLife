@@ -4,12 +4,13 @@ import styles from "./Coursetable.module.css";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
 import { useModal } from "@/core/modules/modal/Modal";
 import VirtualizedTable from "@/core/modules/virtualized-table/VirtualizedTable";
-import { autoGeneratorConfigAtom } from "@/core/recoil/autoGeneratorConfigAtom";
-import { autoHoverCourseAtom } from "@/core/recoil/hoverCourseAtom";
-import { autoOfferedCoursesAtom } from "@/core/recoil/offeredCoursesAtom";
-import { autoWishCoursesAtom, sortedAutoWishCoursesSelector } from "@/core/recoil/wishCoursesAtom";
+import { customConfigAtom, customConfigWishCoursesSelector } from "@/core/recoil/customConfigAtom";
+import { generatorConfigAtom, generatorConfigWishCoursesSelector } from "@/core/recoil/generatorConfigAtom";
+import { hoverCourseAtomFamily } from "@/core/recoil/hoverCourseAtomFamily";
+import { offeredCoursesAtomFamily } from "@/core/recoil/offeredCoursesAtomFamily";
 import { Course } from "@/core/types/Course";
-import { IGeneratorConfig } from "@/core/types/IGeneratorConfig";
+import { CustomConfig } from "@/core/types/CustomConfig";
+import { GeneratorConfig, GeneratorConfigObject } from "@/core/types/GeneratorConfig";
 import { BreakDays, Breaktime } from "@/core/types/Timetable";
 import { useCallback, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -17,11 +18,11 @@ import Swal from "sweetalert2";
 
 
 interface CoursetableProps {
-    checkCourseConflict: boolean;
+    pageType: "autoPage" | "customPage"
 }
 
 
-export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
+export default function Coursetable({ pageType }: CoursetableProps) {
     // Const
     const essential = 6;
     const ratings = [essential, 5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1];
@@ -38,11 +39,10 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
 
 
     // Recoil
-    const offeredCourse = useRecoilValue<Course[]>(autoOfferedCoursesAtom);
-    const setWishCourses = useRecoilState<Course[]>(autoWishCoursesAtom)[1];
-    const sortedWishCourses = useRecoilValue<Course[]>(sortedAutoWishCoursesSelector);
-    const setHoveredCourse = useRecoilState<Course | null>(autoHoverCourseAtom)[1];
-    const autoGeneratorConfig = useRecoilValue<IGeneratorConfig>(autoGeneratorConfigAtom);
+    const offeredCourse = useRecoilValue<Course[]>(offeredCoursesAtomFamily(pageType));
+    const [wishCourses, setWishCourses] = useRecoilState(pageType === "autoPage" ? generatorConfigWishCoursesSelector : customConfigWishCoursesSelector);
+    const setHoveredCourse = useRecoilState<Course | null>(hoverCourseAtomFamily(pageType))[1];
+    const timetableConfig = useRecoilValue<GeneratorConfig | CustomConfig>(pageType === "autoPage" ? generatorConfigAtom : customConfigAtom);
 
 
     /// Modal 
@@ -67,59 +67,89 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
     const handleSelectCourse = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const selectedIndex = parseInt(e.currentTarget.parentElement?.parentElement?.id || "-1");
         const selectedCourse = offeredCourse[selectedIndex];
+
         if (setWishCourses) {
-            if (checkCourseConflict && sortedWishCourses.some((course) => course.conflictWith(selectedCourse))) {
-                alert("기존에 선택한 과목과 시간이 겹칩니다.");
+            if (pageType === "autoPage") {
+                setWishCourses([...wishCourses, selectedCourse.copy()]);
             } else {
-                setWishCourses([...sortedWishCourses, selectedCourse.copy()]);
+                const conflictCourses = wishCourses.filter(course => course.conflictWith(selectedCourse));
+                if (conflictCourses.length === 0) {
+                    setWishCourses([...wishCourses, selectedCourse.copy()]);
+                } else {
+                    Swal.fire({
+                        heightAuto: false,
+                        scrollbarPadding: false,
+                        html: `<h2 style="font-size: 25px; z-index: 2000;">
+                                    '${conflictCourses.map((course) => course.getName()).join(",")}' 수업과 시간이 겹칩니다. 추가하면 기존 수업은 삭제됩니다. 추가하시겠습니까?
+                                </h2>`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: `${styles.btnConfirm}`,
+                            cancelButton: `${styles.btnCancel}`
+                        },
+                        confirmButtonText: '추가하기',
+                        cancelButtonText: '취소',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const filteredCourses = wishCourses.filter(course => !course.conflictWith(selectedCourse));
+                            setWishCourses([...wishCourses, selectedCourse.copy()]);
+                        }
+                    });
+                }
             }
         }
-    }, [offeredCourse, sortedWishCourses, setWishCourses]);
+    }, [pageType, offeredCourse, wishCourses, setWishCourses]);
 
 
     /** 선택된 과목 리스트에서 과목 선택 취소 */
     const handleUnselectCourse = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const selectedIndex = parseInt(e.currentTarget.parentElement?.parentElement?.id || "-1");
         if (setWishCourses) {
-            const newWishCourses = sortedWishCourses.filter((course, index) => index !== selectedIndex);
+            const newWishCourses = wishCourses.filter((course, index) => index !== selectedIndex);
             setWishCourses(newWishCourses);
         }
-    }, [sortedWishCourses, setWishCourses]);
+    }, [wishCourses, setWishCourses]);
 
 
     /** 희망 과목 목록에서 과목 선호도 변경 */
     const handleRerateCourse = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
         const newRating = parseFloat(e.currentTarget.value);
         const modifiedIndex = parseInt(e.currentTarget.parentElement?.parentElement?.id || "-1");
-        const modifiedCourse = sortedWishCourses[modifiedIndex].copy();
+        const modifiedCourse = wishCourses[modifiedIndex].copy();
 
-        if (newRating === essential) {
-            const breakday: BreakDays = BreakDays.fromObject(autoGeneratorConfig.breakDays);
-            const breaktimes: Breaktime[] = autoGeneratorConfig.breaktimes.map((breaktimeObject) => Breaktime.fromObject(breaktimeObject));
+        if (pageType === "autoPage") {
+            if (newRating === essential) {
+                const autoConfig = timetableConfig as GeneratorConfig;
+                const breakday = autoConfig.getBreakDays();
+                const breaktimes = autoConfig.getBreaktimes();
 
-            const conflictWithbBeakday = modifiedCourse.getSchedules().some((schedule) => breakday.getDay(schedule.getDay()));
-            const conflictWithbBeaktime = modifiedCourse.getSchedules().some((schedule) =>
-                breaktimes.some((breaktime) => schedule.getDay() === breaktime.getDay() && schedule.getTime().conflictWith(breaktime.getTime())));
+                const conflictWithbBeakday = modifiedCourse.getSchedules().some((schedule) => breakday.getDay(schedule.getDay()));
+                const conflictWithbBeaktime = modifiedCourse.getSchedules().some((schedule) =>
+                    breaktimes.some((breaktime) => schedule.getDay() === breaktime.getDay() && schedule.getTime().conflictWith(breaktime.getTime())));
 
-            if (conflictWithbBeakday || conflictWithbBeaktime) {
-                const comment = conflictWithbBeakday && conflictWithbBeaktime
-                    ? "해당 과목은 요일공강, 일일공강과 겹치므로</br>필수과목에 추가할 수 없습니다."
-                    : `해당 과목은 ${conflictWithbBeakday ? "요일공강" : "일일공강"}과 겹치므로</br>필수과목에 추가할 수 없습니다.`
-                Swal.fire({
-                    heightAuto: false,
-                    scrollbarPadding: false,
-                    html: `<h2 style="font-size: 20px; user-select: none;">${comment}</h2>`,
-                    icon: 'error',
-                    confirmButtonText: '<span style="font-size: 15px; user-select: none;">닫기</span>',
-                })
-                return;
+                if (conflictWithbBeakday || conflictWithbBeaktime) {
+                    const comment = conflictWithbBeakday && conflictWithbBeaktime
+                        ? "해당 과목은 요일공강, 일일공강과 겹치므로</br>필수과목에 추가할 수 없습니다."
+                        : `해당 과목은 ${conflictWithbBeakday ? "요일공강" : "일일공강"}과 겹치므로</br>필수과목에 추가할 수 없습니다.`
+                    Swal.fire({
+                        heightAuto: false,
+                        scrollbarPadding: false,
+                        html: `<h2 style="font-size: 20px; user-select: none;">${comment}</h2>`,
+                        icon: 'error',
+                        confirmButtonText: '<span style="font-size: 15px; user-select: none;">닫기</span>',
+                    })
+                    return;
+                }
             }
         }
+
         modifiedCourse.setRating(newRating);
 
-        const newWishCourses = sortedWishCourses.filter((course, index) => index !== modifiedIndex);
+        const newWishCourses = wishCourses.filter((course, index) => index !== modifiedIndex);
         setWishCourses([...newWishCourses, modifiedCourse]);
-    }, [sortedWishCourses, setWishCourses, autoGeneratorConfig]);
+    }, [pageType, wishCourses, setWishCourses, timetableConfig]);
 
 
     /** 과목 상세 정보 */
@@ -131,8 +161,8 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
 
     /** 중복 선택 확인 */
     const handleCheckDuplication = useCallback((targetCourse: Course) => {
-        return sortedWishCourses.some((course) => course.equalWith(targetCourse));
-    }, [sortedWishCourses]);
+        return wishCourses.some((course) => course.equalWith(targetCourse));
+    }, [wishCourses]);
 
 
     // Render
@@ -262,7 +292,7 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                 <div className={styles.course_list__table_info}>
                     <div className={styles.course_list__title}>희망 시간표 목록</div>
                     <div className={styles.course_list__count}>
-                        &#91;선택한 강의 수: {sortedWishCourses.length}, 학점: {sortedWishCourses.reduce((totalCredit, course) => totalCredit + course.getCredit(), 0)}&#93;
+                        &#91;선택한 강의 수: {wishCourses.length}, 학점: {wishCourses.reduce((totalCredit, course) => totalCredit + course.getCredit(), 0)}&#93;
                     </div>
                 </div>
                 <div className={styles.course_list__table}>
@@ -319,7 +349,7 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                         }}
 
 
-                        numRows={sortedWishCourses.length}
+                        numRows={wishCourses.length}
                         rowHeight={30}
                         rowStyle={{
                             default: {
@@ -343,8 +373,8 @@ export default function Coursetable({ checkCourseConflict }: CoursetableProps) {
                             }
                         }}
                         renderRows={({ index, rowClassName, rowStyle, cellClassName, cellStyles }) => {
-                            const courses = sortedWishCourses[index];
-                            const courseInfo = sortedWishCourses[index].printFormat();
+                            const courses = wishCourses[index];
+                            const courseInfo = wishCourses[index].printFormat();
                             return (
                                 <div key={index} id={`${index}`} className={rowClassName} style={rowStyle}
                                     onMouseOver={() => { handleHoverCourse(courses) }}

@@ -75,10 +75,20 @@ export class Time {
         }
     }
 
+    /**
+     * `equalWith` 메서드는 두 개의 `Time` 인스턴스가 시간 범위가 완전히 동일한지 여부를 확인합니다.
+     * @param {Time} other - 비교할 다른 `Time` 인스턴스
+     * @returns {boolean} 두 인스턴스의 시작 및 종료 시간이 완전히 동일한 경우 `true`를 반환하고, 그렇지 않으면 `false`를 반환합니다.
+     */
     equalWith(other: Time): boolean {
         return this.getBegin() === other.getBegin() && this.getEnd() === other.getEnd();
     }
 
+    /**
+     * `conflictWith` 메서드는 두 개의 `Time` 인스턴스가 시간 범위가 겹치는지 여부를 확인합니다.
+     * @param {Time} other - 비교할 다른 `Time` 인스턴스
+     * @returns {boolean} 두 인스턴스의 시간 범위가 겹치는 경우 `true`를 반환하고, 그렇지 않으면 `false`를 반환합니다.
+     */
     conflictWith(other: Time): boolean {
         return this.getBegin() < other.getEnd() && this.getEnd() > other.getBegin();
     }
@@ -132,6 +142,11 @@ export class Time {
 
 
 
+/**
+ * `ScheduleObject` 타입은 강의 또는 이벤트의 스케줄을 나타내는 객체의 타입입니다.
+ * 'day', 'time', 및 'room' 필드를 가지며, 각각 요일, 시간, 그리고 장소를 나타냅니다.
+ * 예: { day: "Mon", time: { begin: 540, end: 630 }, room: "101호" }
+ */
 export type ScheduleObject = {
     day: Day;
     time: TimeObject;
@@ -207,6 +222,11 @@ export class Schedule {
         this.room = value;
     }
 
+    /**
+     * `conflictWith` 메서드는 두 개의 `Schedule` 인스턴스가 시간대가 겹치는지 여부를 확인합니다.
+     * @param {Schedule} other - 비교할 다른 `Schedule` 인스턴스
+     * @returns {boolean} 두 인스턴스의 시간대가 겹치는 경우 `true`를 반환하고, 그렇지 않으면 `false`를 반환합니다.
+     */
     conflictWith(other: Schedule): boolean {
         return this.getDay() === other.getDay() && this.getTime().conflictWith(other.getTime());
     }

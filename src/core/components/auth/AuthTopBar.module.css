@@ -1,0 +1,24 @@
+.authTopBar {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.signout {
+    height: calc(100% - 4px);
+    width: calc(80px - 4px);
+    border: 2px solid var(--main-color);
+    cursor: pointer;
+    background-color: var(--sub-color);
+    color: var(--main-color);
+    margin-right: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.signout:hover {
+    background-color: var(--main-color);
+    color: var(--sub-color);
+}
