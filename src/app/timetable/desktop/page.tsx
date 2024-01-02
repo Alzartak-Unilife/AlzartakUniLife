@@ -10,7 +10,7 @@ export default function TimetableDesktop() {
                     스마트 시간표 생성
                 </Link>
                 <Link className={styles.btnCustom} href={"./desktop/custom/maker"}>
-                    커스텀 타임테이블
+                    커스텀 시간표
                 </Link>
             </div>
         </div>

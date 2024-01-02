@@ -42,6 +42,7 @@ export type GeneratorConfigObject = {
  * 또한, 설정을 객체 형태로 변환하거나 객체에서 인스턴스로 변환하는 기능도 제공합니다.
  */
 export class GeneratorConfig {
+    private readonly essentialRating: number = 6;
     private creditType: "단일학점" | "범위학점";
     private minCredit: number;
     private maxCredit: number;
@@ -170,6 +171,20 @@ export class GeneratorConfig {
      */
     setWishCourses(value: Course[]): void {
         this.wishCourses = value;
+    }
+
+    getAvaildWishCourses(): Course[] {
+        return this.wishCourses.filter((wishCourse) => !wishCourse.getSchedules().some((schedule) => {
+            return this.breakDays.isBreakDay(schedule.getDay()) || this.breaktimes.some((breaktime) => breaktime.getDay() === schedule.getDay() && breaktime.getTime().conflictWith(schedule.getTime()))
+        }));
+    }
+
+    getEssencialWishCourses(): Course[] {
+        return this.getAvaildWishCourses().filter((availdCourse) => availdCourse.getRating() === this.essentialRating);
+    }
+
+    getNormalWishCourses(): Course[] {
+        return this.getAvaildWishCourses().filter((availdCourse) => availdCourse.getRating() !== this.essentialRating);
     }
 
     /**

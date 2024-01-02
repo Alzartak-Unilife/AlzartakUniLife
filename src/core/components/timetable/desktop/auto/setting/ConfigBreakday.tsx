@@ -21,7 +21,7 @@ export default function ConfigBreakday() {
 
     // Hnalder
     const handleBreakDay = (day: Day) => {
-        if (!breakDays.getDay(day)) {
+        if (!breakDays.isBreakDay(day)) {
             const checkConflictWithEssential = wishCourses.some((course) => course.getRating() === essentialRating && course.getSchedules().some((schedule) => schedule.getDay() === day));
             if (checkConflictWithEssential) {
                 const comment = "필수과목과 요일이 겹칩니다";
@@ -41,7 +41,7 @@ export default function ConfigBreakday() {
             }
         }
         const newBreakDay = breakDays.copy();
-        newBreakDay.setDay(day, !newBreakDay.getDay(day));
+        newBreakDay.setBreakDay(day, !newBreakDay.isBreakDay(day));
         setBreakDays(newBreakDay);
     };
 
@@ -56,7 +56,7 @@ export default function ConfigBreakday() {
                         <input
                             type="checkbox"
                             id={day}
-                            checked={breakDays.getDay(day)}
+                            checked={breakDays.isBreakDay(day)}
                             onChange={() => { handleBreakDay(day) }}
                         />
                         {day}

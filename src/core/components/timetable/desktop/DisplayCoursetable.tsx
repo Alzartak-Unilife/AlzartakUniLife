@@ -123,7 +123,7 @@ export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps
                 const breakday = autoConfig.getBreakDays();
                 const breaktimes = autoConfig.getBreaktimes();
 
-                const conflictWithbBeakday = modifiedCourse.getSchedules().some((schedule) => breakday.getDay(schedule.getDay()));
+                const conflictWithbBeakday = modifiedCourse.getSchedules().some((schedule) => breakday.isBreakDay(schedule.getDay()));
                 const conflictWithbBeaktime = modifiedCourse.getSchedules().some((schedule) =>
                     breaktimes.some((breaktime) => schedule.getDay() === breaktime.getDay() && schedule.getTime().conflictWith(breaktime.getTime())));
 

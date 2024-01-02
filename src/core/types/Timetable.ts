@@ -29,7 +29,7 @@ export class BreakDays {
      * @param {Day} day - 조회할 요일입니다.
      * @returns {boolean} 해당 요일의 공강 여부입니다.
      */
-    getDay(day: Day): boolean {
+    isBreakDay(day: Day): boolean {
         return this.days[day];
     }
 
@@ -38,7 +38,7 @@ export class BreakDays {
      * @param {Day} day - 설정할 요일입니다.
      * @param {boolean} value - 설정할 공강 여부입니다.
      */
-    setDay(day: Day, value: boolean): void {
+    setBreakDay(day: Day, value: boolean): void {
         this.days[day] = value;
     }
 
@@ -49,7 +49,7 @@ export class BreakDays {
     copy(): BreakDays {
         const newBreakDays = new BreakDays();
         Object.keys(this.days).forEach((day) => {
-            newBreakDays.setDay(day as Day, this.days[day as Day]);
+            newBreakDays.setBreakDay(day as Day, this.days[day as Day]);
         });
         return newBreakDays;
     }
@@ -71,7 +71,7 @@ export class BreakDays {
     public static fromObject(object: BreakDaysObject): BreakDays {
         const instance = new BreakDays();
         Object.keys(object.days).forEach(day => {
-            instance.setDay(day as Day, object.days[day as Day]);
+            instance.setBreakDay(day as Day, object.days[day as Day]);
         });
         return instance;
     }
