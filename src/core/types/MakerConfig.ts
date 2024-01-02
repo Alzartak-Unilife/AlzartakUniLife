@@ -6,6 +6,8 @@ import { Course, CourseObject } from "./Course";
  * 이 타입은 사용자가 선택한 강의 목록을 CourseObject 배열로 저장합니다.
  */
 export type MakerConfigObject = {
+    id: string;
+    name: string;
     wishCourses: CourseObject[];
 }
 
@@ -16,14 +18,27 @@ export type MakerConfigObject = {
  * 강의 목록은 Course 인스턴스의 배열로 저장됩니다.
  */
 export class MakerConfig {
+    private id: string;
+    private name: string;
     private wishCourses: Course[];
 
     /**
      * MakerConfig 클래스의 생성자입니다.
-     * @param {Course[]} wishCourses - 사용자가 선택한 강의 목록입니다.
+     * @param {string} name - 시간표 이름입니다.
+     * @param {Course[]} wishCourses - 시간표의 강의 목록입니다.
      */
-    constructor(wishCourses: Course[]) {
+    constructor(id: string, name: string, wishCourses: Course[]) {
+        this.id = id;
+        this.name = name;
         this.wishCourses = wishCourses;
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    setName(name: string): void {
+        this.name = name;
     }
 
     /**
@@ -48,7 +63,7 @@ export class MakerConfig {
      */
     copy(): MakerConfig {
         const copiedCourses = this.wishCourses.map(course => course.copy());
-        return new MakerConfig(copiedCourses);
+        return new MakerConfig(this.id, this.name, copiedCourses);
     }
 
     /**
@@ -57,6 +72,8 @@ export class MakerConfig {
      */
     toObject(): MakerConfigObject {
         return {
+            id: this.id,
+            name: this.name,
             wishCourses: this.wishCourses.map(course => course.toObject())
         };
     }
@@ -67,7 +84,10 @@ export class MakerConfig {
      * @returns {MakerConfig} CustomConfig 인스턴스
      */
     public static fromObject(object: MakerConfigObject): MakerConfig {
-        const courses = object.wishCourses.map(courseObject => Course.fromObject(courseObject));
-        return new MakerConfig(courses);
+        return new MakerConfig(
+            object.id,
+            object.name,
+            object.wishCourses.map(courseObject => Course.fromObject(courseObject))
+        );
     }
 }

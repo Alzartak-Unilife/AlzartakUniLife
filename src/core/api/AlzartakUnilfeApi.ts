@@ -2,7 +2,6 @@ import axios from "axios";
 import { Course, CourseObject } from "../types/Course";
 import { GeneratorConfig, GeneratorConfigObject } from "../types/GeneratorConfig";
 import { Timetable, TimetableObject } from "../types/Timetable";
-import { MakerConfig, MakerConfigObject } from "../types/MakerConfig";
 
 
 
@@ -18,10 +17,10 @@ import { MakerConfig, MakerConfigObject } from "../types/MakerConfig";
  */
 function getApiUrl(path: string): string {
     //const apiUrl = `http://3.37.210.242:8080${path}`;
-    const apiUrl = `http://localhost:3000${path}`;
+    const apiUrl = `${path}`;
     const now = new Date();
     const formattedTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}:${now.getMilliseconds().toString().padStart(3, '0')}`;
-    console.log(`[${formattedTime}] request: ${apiUrl}`);
+    //console.log(`[${formattedTime}] request: ${apiUrl}`);
     return apiUrl;
 }
 
@@ -295,22 +294,22 @@ export async function generateTimetables(param: GeneratorConfigObject): Promise<
 *****************************************************************/
 
 /** 사용자 지정 시간표 설정 응답 데이터 타입 */
-type GetMakerConfigResponse = {
-    data: MakerConfigObject | null;
+type GetMakerTimetableResponse = {
+    data: TimetableObject | null;
     message: "SUCCESS" | "FAIL";
 };
 
 /**
  * 서버에서 사용자 지정 시간표 설정을 가져옵니다.
- * @returns {Promise<GetMakerConfigResponse>} 
+ * @returns {Promise<GetMakerTimetableResponse>} 
  * MakerConfigObject와 처리 결과 메시지를 포함하는 객체를 반환합니다.
  * 요청이 실패하면 null과 "FAIL" 메시지를 반환합니다.
  */
-export async function getMakerConfig(): Promise<{
-    data: MakerConfig | null;
+export async function getMakerTimetable(): Promise<{
+    data: Timetable | null;
     message: "SUCCESS" | "FAIL";
 }> {
-    let responseData: GetMakerConfigResponse = { data: null, message: "FAIL" };
+    let responseData: GetMakerTimetableResponse = { data: null, message: "FAIL" };
     try {
         const response = await axios.get(
             getApiUrl(`/api/timetable/custom/config`),
@@ -326,7 +325,7 @@ export async function getMakerConfig(): Promise<{
         }
     }
     return {
-        data: responseData.data === null ? null : MakerConfig.fromObject(responseData.data),
+        data: responseData.data === null ? null : Timetable.fromObject(responseData.data),
         message: responseData.message
     };
 }
@@ -339,21 +338,21 @@ export async function getMakerConfig(): Promise<{
 *****************************************************************/
 
 /** 사용자 지정 시간표 설정 저장 응답 데이터 타입 */
-type CreateMakerConfigResponse = {
+type CreateMakerTimetableResponse = {
     message: "SUCCESS" | "FAIL";
 };
 
 /**
  * 서버에 사용자 지정 시간표 설정을 저장합니다.
  * @param {MakerConfig} param - 저장할 사용자 지정 시간표 설정입니다.
- * @returns {Promise<CreateMakerConfigResponse>} 
+ * @returns {Promise<CreateMakerTimetableResponse>} 
  * 처리 결과 메시지를 포함하는 객체를 반환합니다.
  * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
  */
-export async function createMakerConfig(param: MakerConfig): Promise<{
+export async function createMakerTimetable(param: Timetable): Promise<{
     message: "SUCCESS" | "FAIL";
 }> {
-    let responseData: CreateMakerConfigResponse = { message: "FAIL" };
+    let responseData: CreateMakerTimetableResponse = { message: "FAIL" };
     try {
         const postData = param.toObject();
         const response = await axios.post(
@@ -383,21 +382,21 @@ export async function createMakerConfig(param: MakerConfig): Promise<{
 *****************************************************************/
 
 /** 사용자 지정 시간표 설정 업데이트 응답 데이터 타입 */
-type UpdateMakerConfigResponse = {
+type UpdateMakerTimetableResponse = {
     message: "SUCCESS" | "FAIL";
 };
 
 /**
  * 서버에서 사용자 지정 시간표 설정을 업데이트합니다.
  * @param {MakerConfig} param - 업데이트할 사용자 지정 시간표 설정입니다.
- * @returns {Promise<UpdateMakerConfigResponse>} 
+ * @returns {Promise<UpdateMakerTimetableResponse>} 
  * 처리 결과 메시지를 포함하는 객체를 반환합니다.
  * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
  */
-export async function updateMakerConfig(param: MakerConfig): Promise<{
+export async function updateMakerTimetable(param: Timetable): Promise<{
     message: "SUCCESS" | "FAIL";
 }> {
-    let responseData: UpdateMakerConfigResponse = { message: "FAIL" };
+    let responseData: UpdateMakerTimetableResponse = { message: "FAIL" };
     try {
         const postData = param;
         const response = await axios.patch(
@@ -473,6 +472,9 @@ export async function getTimetableAll(): Promise<{
 
 /** 시간표 저장 응답 데이터 타입 */
 type SaveTimetableResponse = {
+    data: {
+        id: string;
+    };
     message: "SUCCESS" | "FAIL";
 };
 
@@ -483,12 +485,15 @@ type SaveTimetableResponse = {
  * 처리 결과 메시지를 포함하는 객체를 반환합니다.
  * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
  */
-export async function saveTimetable(param: TimetableObject): Promise<{
+export async function saveTimetable(param: Timetable): Promise<{
+    data: {
+        id: string;
+    };
     message: "SUCCESS" | "FAIL";
 }> {
-    let responseData: SaveTimetableResponse = { message: "FAIL" };
+    let responseData: SaveTimetableResponse = { data: { id: "" }, message: "FAIL" };
     try {
-        const postData = param;
+        const postData = param.toObject();
         const response = await axios.post(
             getApiUrl(`/api/timetable/manage`),
             postData,
@@ -502,6 +507,7 @@ export async function saveTimetable(param: TimetableObject): Promise<{
         responseData = response.data;
     } catch (error) {
         return {
+            data: { id: "" },
             message: "FAIL"
         }
     }
@@ -527,14 +533,14 @@ type UpdateTimetableResponse = {
  * 처리 결과 메시지를 포함하는 객체를 반환합니다.
  * 요청이 실패하면 "FAIL" 메시지를 반환합니다.
  */
-export async function updateTimetable(param: TimetableObject): Promise<{
+export async function updateTimetable(param: Timetable): Promise<{
     message: "SUCCESS" | "FAIL";
 }> {
-    if (param.id === "") return { message: "FAIL" };
+    if (param.getId() === "") return { message: "FAIL" };
     let responseData: UpdateTimetableResponse = { message: "FAIL" };
     try {
-        const postData = param;
-        const response = await axios.post(
+        const postData = param.toObject();
+        const response = await axios.patch(
             getApiUrl(`/api/timetable/manage`),
             postData,
             {

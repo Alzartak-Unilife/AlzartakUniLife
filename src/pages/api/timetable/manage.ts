@@ -2,6 +2,7 @@ import MongoDbProvider from '@/core/modules/database/MongoDbProvider';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
+import { ObjectId } from 'mongodb';
 
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
@@ -31,17 +32,17 @@ export default async function handler(request: NextApiRequest, response: NextApi
         }
         case "POST": {
             if (session === null) {
-                response.status(500).json({ message: "FAIL" });
+                response.status(500).json({ data: { id: "" }, message: "FAIL" });
             } else {
                 try {
-                    await db.collection("timetables").insertOne({
+                    const result = await db.collection("timetables").insertOne({
                         owner: session.user?.email,
                         name: request.body.name,
                         courses: request.body.courses
                     });
-                    response.status(200).json({ message: "SUCCESS" });
+                    response.status(200).json({ data: { id: result.insertedId.toString() }, message: "SUCCESS" });
                 } catch (error) {
-                    response.status(500).json({ message: "FAIL" });
+                    response.status(500).json({ data: { id: "" }, message: "FAIL" });
                 }
             }
             break;
@@ -52,13 +53,14 @@ export default async function handler(request: NextApiRequest, response: NextApi
             } else {
                 try {
                     await db.collection("timetables").updateOne(
-                        { owner: session.user?.email },
+                        { _id: new ObjectId(request.body.id), owner: session.user?.email },
                         {
                             $set: {
                                 name: request.body.name,
                                 courses: request.body.courses,
                             }
-                        }
+                        },
+                        { upsert: true }
                     );
                     response.status(200).json({ message: "SUCCESS" });
                 } catch (error) {

@@ -4,7 +4,7 @@ import styles from "./DisplayCoursetable.module.css";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
 import { useModal } from "@/core/modules/modal/Modal";
 import VirtualizedTable from "@/core/modules/virtualized-table/VirtualizedTable";
-import { makerConfigAtom, makerConfigWishCoursesSelector } from "@/core/recoil/makerConfigAtom";
+import { makerTimetableAtom, makerTimetableCoursesSelector } from "@/core/recoil/makerTimetableAtom";
 import { generatorConfigAtom, generatorConfigWishCoursesSelector } from "@/core/recoil/generatorConfigAtom";
 import { hoverCourseAtomFamily } from "@/core/recoil/hoverCourseAtomFamily";
 import { offeredCoursesAtomFamily } from "@/core/recoil/offeredCoursesAtomFamily";
@@ -14,6 +14,7 @@ import { GeneratorConfig } from "@/core/types/GeneratorConfig";
 import { useCallback, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import Swal from "sweetalert2";
+import { Timetable } from "@/core/types/Timetable";
 
 
 interface DisplayCoursetableProps {
@@ -39,9 +40,9 @@ export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps
 
     // Recoil
     const offeredCourse = useRecoilValue<Course[]>(offeredCoursesAtomFamily(pageType));
-    const [wishCourses, setWishCourses] = useRecoilState(pageType === "autoPage" ? generatorConfigWishCoursesSelector : makerConfigWishCoursesSelector);
+    const [wishCourses, setWishCourses] = useRecoilState(pageType === "autoPage" ? generatorConfigWishCoursesSelector : makerTimetableCoursesSelector);
     const setHoveredCourse = useRecoilState<Course | null>(hoverCourseAtomFamily(pageType))[1];
-    const timetableConfig = useRecoilValue<GeneratorConfig | MakerConfig>(pageType === "autoPage" ? generatorConfigAtom : makerConfigAtom);
+    const timetableConfig = useRecoilValue<GeneratorConfig | Timetable>(pageType === "autoPage" ? generatorConfigAtom : makerTimetableAtom);
 
 
     /// Modal 

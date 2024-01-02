@@ -40,7 +40,7 @@
 
 .btnSave {
     height: calc(40px - 2px);
-    width: calc(49% - 2px);
+    width: calc(100% - 2px);
     border: 1px solid var(--main-color);
     font-size: 18px;
     font-weight: 600;

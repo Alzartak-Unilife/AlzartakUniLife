@@ -1,0 +1,60 @@
+.wrapper {
+    height: 30px;
+    width: calc(100% - 30px);
+    padding: 0px 15px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.btnReset,
+.btnLoad,
+.btnClose {
+    height: calc(30px - 2px);
+    border: 1px solid var(--main-color);
+    margin: 0px 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btnReset {
+    width: 90px;
+    background-color: var(--sub-color);
+    color: var(--main-color);
+}
+
+.btnLoad {
+    width: 90px;
+    background-color: var(--main-color);
+    color: var(--sub-color);
+}
+
+.btnClose {
+    height: calc(40px - 2px);
+    width: 100px;
+    background-color: var(--main-color);
+    color: var(--sub-color);
+}
+
+.wrapper input {
+    height: calc(30px - 2px - 20px);
+    width: calc(100% - 90px - 90px - 20px);
+    border: 1px solid var(--main-color);
+    margin: 0px 10px;
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.tableRow {
+    height: 35px;
+    font-size: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tableRow:hover {
+    background-color: var(--main-color-light-light);
+}

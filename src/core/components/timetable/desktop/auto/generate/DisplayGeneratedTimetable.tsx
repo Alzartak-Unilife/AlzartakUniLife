@@ -5,9 +5,8 @@ import styles from "./DisplayGeneratedTimetable.module.css";
 import DisplayTimetable from "../../DisplayTimetable";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { getTimetableAll, saveTimetable, testDelay, updateMakerConfig } from "@/core/api/AlzartakUnilfeApi";
+import { saveTimetable, updateMakerTimetable } from "@/core/api/AlzartakUnilfeApi";
 import { Timetable } from "@/core/types/Timetable";
-import { MakerConfig } from "@/core/types/MakerConfig";
 
 
 interface DisplayGeneratedTimetableProps {
@@ -33,8 +32,8 @@ export default function DisplayGeneratedTimetable({ timetableIdx, timetables }: 
         return `${year}-${month}-${day}, ${hours}:${minutes}:${seconds}`;
     }
 
-    const handleEditTimetable = (courses: Course[]) => {
-        updateMakerConfig(new MakerConfig(courses)).then(({ message }) => {
+    const handleEditTimetable = (id: string, name: string, courses: Course[]) => {
+        updateMakerTimetable(new Timetable(id, name, courses)).then(({ message }) => {
             if (message === "SUCCESS") {
                 Swal.close();
                 window.open("../custom/maker", '_blank');
@@ -93,6 +92,7 @@ export default function DisplayGeneratedTimetable({ timetableIdx, timetables }: 
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        const timetableName = result.value as string;
                         Swal.fire({
                             title: '처리 중...',
                             html: '잠시만 기다려 주세요.',
@@ -102,8 +102,8 @@ export default function DisplayGeneratedTimetable({ timetableIdx, timetables }: 
                             }
                         });
 
-                        saveTimetable(new Timetable("", result.value, courses).toObject()).then(response => {
-                            if (response.message === "SUCCESS") {
+                        saveTimetable(new Timetable("", timetableName, courses)).then(({ data: { id }, message }) => {
+                            if (message === "SUCCESS") {
                                 Swal.fire({
                                     heightAuto: false,
                                     scrollbarPadding: false,
@@ -119,7 +119,7 @@ export default function DisplayGeneratedTimetable({ timetableIdx, timetables }: 
                                     cancelButtonText: '시간표 편집 하기',
                                 }).then((result) => {
                                     if (result.dismiss === Swal.DismissReason.cancel) {
-                                        handleEditTimetable(courses);
+                                        handleEditTimetable(id, timetableName, courses);
                                     }
                                 });
                             } else {
@@ -165,9 +165,6 @@ export default function DisplayGeneratedTimetable({ timetableIdx, timetables }: 
                             {courses.length > 0 && <>
                                 <button className={styles.btnSave} onClick={() => { handleSelectTimtable(courses); }}>
                                     시간표 저장
-                                </button>
-                                <button className={styles.btnModify} onClick={() => { handleEditTimetable(courses); }}>
-                                    시간표 편집
                                 </button>
                             </>}
                         </div>

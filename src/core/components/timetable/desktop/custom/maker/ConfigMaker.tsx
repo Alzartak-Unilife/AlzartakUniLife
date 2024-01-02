@@ -6,11 +6,12 @@ import DisplayTimetable from "../../DisplayTimetable";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useRouter } from "next/navigation";
 import { hoverCourseAtomFamily } from "@/core/recoil/hoverCourseAtomFamily";
-import { MakerConfig } from "@/core/types/MakerConfig";
-import { makerConfigAtom } from "@/core/recoil/makerConfigAtom";
+import { makerTimetableAtom } from "@/core/recoil/makerTimetableAtom";
 import { useCallback, useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { createMakerConfig, getMakerConfig, updateMakerConfig } from "@/core/api/AlzartakUnilfeApi";
+import { createMakerTimetable, getMakerTimetable, updateMakerTimetable, updateTimetable } from "@/core/api/AlzartakUnilfeApi";
+import ConfigMakerModify from "./ConfigMakerModify";
+import { Timetable } from "@/core/types/Timetable";
 
 
 export default function ConfigMaker() {
@@ -20,7 +21,7 @@ export default function ConfigMaker() {
 
     // Recoil
     const hoverCourse = useRecoilValue<Course | null>(hoverCourseAtomFamily("customPage"));
-    const [makerConfig, setMakerConfig] = useRecoilState<MakerConfig>(makerConfigAtom);
+    const [makerTimetable, setMakerTimetable] = useRecoilState<Timetable>(makerTimetableAtom);
 
 
     // State
@@ -43,19 +44,21 @@ export default function ConfigMaker() {
 
     // Effect
     useEffect(() => {
-        getMakerConfig().then(({ data: storedConfig, message }) => {
+        getMakerTimetable().then(({ data: storedConfig, message }) => {
             if (storedConfig) {
-                setMakerConfig(storedConfig);
+                setMakerTimetable(storedConfig);
                 setIsInitialLoadComplete(true);
             } else {
-                const defaultConfig = MakerConfig.fromObject({
-                    wishCourses: []
+                const defaultConfig = Timetable.fromObject({
+                    id: "",
+                    name: "",
+                    courses: []
                 });
-                createMakerConfig(defaultConfig).then(({ message }) => {
+                createMakerTimetable(defaultConfig).then(({ message }) => {
                     if (message === "FAIL") {
                         handleServerError();
                     } else {
-                        setMakerConfig(defaultConfig);
+                        setMakerTimetable(defaultConfig);
                     }
                     setIsInitialLoadComplete(true);
                 })
@@ -66,12 +69,16 @@ export default function ConfigMaker() {
 
     useEffect(() => {
         if (!isInitialLoadComplete) return;
-        updateMakerConfig(makerConfig).then(({ message }) => {
+        updateMakerTimetable(makerTimetable).then(({ message }) => {
             if (message === "FAIL") {
                 handleServerError();
+            } else {
+                if (makerTimetable.getId() !== "") {
+                    updateTimetable(makerTimetable);
+                }
             }
         });
-    }, [handleServerError, router, makerConfig, isInitialLoadComplete]);
+    }, [handleServerError, router, makerTimetable, isInitialLoadComplete]);
 
 
     // Render
@@ -80,11 +87,11 @@ export default function ConfigMaker() {
             {isInitialLoadComplete && (
                 <div className={styles.timetable__field}>
                     <div className={styles.contents_title}>
-
+                        <ConfigMakerModify />
                     </div>
                     <div className={styles.contents_display}>
                         <DisplayTimetable
-                            wishCourses={makerConfig.getWishCourses()}
+                            wishCourses={makerTimetable.getCourses()}
                             previewCourse={hoverCourse}
                         />
                     </div>
