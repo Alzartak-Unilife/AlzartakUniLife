@@ -2,9 +2,9 @@ import MongoDbProvider from '@/core/modules/database/MongoDbProvider';
 import { NextApiRequest, NextApiResponse } from 'next';
 import coursesJson from "../../data/courses.json";
 import evaluationsJson from "../../data/evaluation.json";
-import { JCourse } from '@/pages/type/JCourse';
-import { JEvaluation } from '@/pages/type/JEvaluation';
 import { Course, CourseObject, Day, Schedule, Time } from '@/core/types/Course';
+import { JCourse } from '@/core/types/JCourse';
+import { JEvaluation } from '@/core/types/JEvaluation';
 
 
 function removeNewlines(oringStr: string | undefined): string | undefined {
