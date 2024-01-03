@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import RecoilRootProvider from '@/core/modules/nextjs-recoil/RecoilRootProvider'
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <RecoilRootProvider>
           {children}
           <SpeedInsights />
+          <Analytics />
         </RecoilRootProvider>
       </body>
     </html>
