@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import RecoilRootProvider from '@/core/modules/nextjs-recoil/RecoilRootProvider'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <RecoilRootProvider>
           {children}
+          <SpeedInsights />
         </RecoilRootProvider>
       </body>
     </html>
