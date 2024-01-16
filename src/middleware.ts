@@ -31,9 +31,9 @@ export async function middleware(request: NextRequest) {
     }
     else {
         // 디바이스 타입과 페이지 타입이 일치하는지 확인
-        if (!isDeviceTypeMatchedWithPage(request)) {
-            return NextResponse.redirect(new URL(getHostUrl(request)));
-        }
+        // if (!isDeviceTypeMatchedWithPage(request)) {
+        //     return NextResponse.redirect(new URL(getHostUrl(request)));
+        // }
     }
 
     // 특정 경로에 대한 처리

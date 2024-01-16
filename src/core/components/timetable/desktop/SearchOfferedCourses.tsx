@@ -2254,7 +2254,7 @@ export default function SearchOfferedCourses({ pageType }: SearchOfferedCoursesP
         now.setHours(now.getHours() + 9);
         const currentYear = now.getFullYear();
         const currentSemester = now.getMonth() < 7 ? 1 : 2;
-        setYearSemester({ year: currentYear - 1, semester: currentSemester + 1 });
+        setYearSemester({ year: currentYear, semester: currentSemester });
     }, []);
 
     /** 컴포넌트 마운트 및 언마운트 시 초기화 */
