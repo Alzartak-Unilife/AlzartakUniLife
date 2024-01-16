@@ -165,7 +165,7 @@ function isDeviceTypeMatchedWithPage(request: NextRequest): boolean {
 function caseRootUrl(request: NextRequest): NextResponse {
     // 사용자의 device가 모바일인지 데스크톱인지 판별
     const userAgent = request.headers.get('user-agent') || '';
-    const isMobile = /mobile/i.test(userAgent);
+    const isMobile = false;///mobile/i.test(userAgent);
 
     // 리다이렉트 Url
     const redirectUrl = isMobile
