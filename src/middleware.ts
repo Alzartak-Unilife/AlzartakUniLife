@@ -98,6 +98,7 @@ function isAPIRequest(request: NextRequest): boolean {
  */
 function isRequireAuthentication(request: NextRequest): boolean {
     const pathname = request.nextUrl.pathname;
+    if (pathname === "") return false;
     if (pathname === "/") return false;
     if (pathname.startsWith("/home")) return false;
     if (pathname.startsWith("/api/auth")) return false;
