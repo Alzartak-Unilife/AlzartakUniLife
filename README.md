@@ -32,7 +32,7 @@
 </br>
 
 # API 명세서
-<img src="" width="700"> 
+<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/0376a0eb-fb7d-4766-922f-b9bafaa43bc7" width="700"> 
 </br>
 </br>
 
