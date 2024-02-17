@@ -13,6 +13,10 @@ export default function AuthForm({ isAuth }: AuthFormProps) {
     // Const
     const router = useRouter();
 
+    // Handler
+    const guide = () => {
+        router.push("../home/desktop/guide")
+    };
 
     //Effect
     useEffect(() => {
@@ -29,8 +33,8 @@ export default function AuthForm({ isAuth }: AuthFormProps) {
                 <button className={styles.signin} onClick={() => { signIn() }}>
                     로그인
                 </button>
-                <button className={styles.signup}>
-                    회원가입
+                <button className={styles.signup} onClick={() => { guide() }}>
+                    가이드
                 </button>
             </>}
         </div>

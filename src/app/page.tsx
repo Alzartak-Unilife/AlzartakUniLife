@@ -1,8 +1,4 @@
 
 export default function AppRoot() {
-  return (
-    <div>
-
-    </div>
-  );
+  return (<div></div>);
 }
