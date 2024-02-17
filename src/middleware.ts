@@ -15,39 +15,25 @@ import { getToken } from 'next-auth/jwt';
  */
 export async function middleware(request: NextRequest) {
     // 정적 파일이나 내부 요청인 경우
-    if (isInternalOrStaticRequest(request)) {
-        return NextResponse.next();
-    }
+    if (!isInternalOrStaticRequest(request)) {
+        // 로그인이 필요한 페이지인 경우 인증 확인
+        if (isRequireAuthentication(request)) {
+            if (!(await isUserAuthenticated(request))) {
+                return NextResponse.redirect(new URL(getHostUrl(request)));
+            }
+        }
 
-    // 로그인이 필요한 페이지인 경우 인증 확인
-    if (isRequireAuthentication(request)) {
-        if (!(await isUserAuthenticated(request))) {
-            return NextResponse.redirect(new URL(getHostUrl(request)));
+        // 특정 경로에 대한 처리
+        switch (request.nextUrl.pathname) {
+            case "": {
+                return caseRootUrl(request);
+            }
+            case "/": {
+                return caseRootUrl(request);
+            }
         }
     }
-
-    // API 요청인 경우
-    if (isAPIRequest(request)) {
-    }
-    else {
-        // 디바이스 타입과 페이지 타입이 일치하는지 확인
-        // if (!isDeviceTypeMatchedWithPage(request)) {
-        //     return NextResponse.redirect(new URL(getHostUrl(request)));
-        // }
-    }
-
-    // 특정 경로에 대한 처리
-    switch (request.nextUrl.pathname) {
-        case "": {
-            return caseRootUrl(request);
-        }
-        case "/": {
-            return caseRootUrl(request);
-        }
-        default: {
-            return NextResponse.next();
-        }
-    }
+    return NextResponse.next();
 }
 
 
@@ -98,11 +84,8 @@ function isAPIRequest(request: NextRequest): boolean {
  */
 function isRequireAuthentication(request: NextRequest): boolean {
     const pathname = request.nextUrl.pathname;
-    if (pathname === "") return false;
-    if (pathname === "/") return false;
-    if (pathname.startsWith("/home")) return false;
-    if (pathname.startsWith("/api/auth")) return false;
-    return true;
+    if (pathname.startsWith("/timetable")) return true;
+    return false;
 }
 
 
