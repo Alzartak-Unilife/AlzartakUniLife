@@ -81,7 +81,7 @@ export async function getOfferedCourses(param: {
     try {
         const postData = param;
         const response = await axios.post(
-            getApiUrl(`/api/course/get`),
+            getApiUrl(`/api/course/getCourseList`),
             postData,
             {
                 timeout: getDefualtAxiosTimeout(),
@@ -130,7 +130,7 @@ export async function getGeneratorConfig(): Promise<{
     let responseData: GetGeneratorConfigResponse = { data: null, message: "FAIL" };
     try {
         const response = await axios.get(
-            getApiUrl(`/api/timetable/auto/config`),
+            getApiUrl(`/api/timetable/auto/configGenerator`),
             {
                 timeout: getDefualtAxiosTimeout(),
             }
@@ -174,7 +174,7 @@ export async function createGeneratorConfig(param: GeneratorConfig): Promise<{
     try {
         const postData = param.toObject();
         const response = await axios.post(
-            getApiUrl(`/api/timetable/auto/config`),
+            getApiUrl(`/api/timetable/auto/configGenerator`),
             postData,
             {
                 timeout: getDefualtAxiosTimeout(),
@@ -218,7 +218,7 @@ export async function updateGeneratorConfig(param: GeneratorConfig): Promise<{
     try {
         const postData = param.toObject();
         const response = await axios.patch(
-            getApiUrl(`/api/timetable/auto/config`),
+            getApiUrl(`/api/timetable/auto/configGenerator`),
             postData,
             {
                 timeout: getDefualtAxiosTimeout(),
@@ -264,7 +264,7 @@ export async function generateTimetables(param: GeneratorConfigObject): Promise<
     try {
         const postData = param;
         const response = await axios.post(
-            getApiUrl(`/api/timetable/auto/generate`),
+            getApiUrl(`/api/timetable/auto/generateTimetable`),
             postData,
             {
                 timeout: getDefualtAxiosTimeout(),
@@ -312,7 +312,7 @@ export async function getMakerTimetable(): Promise<{
     let responseData: GetMakerTimetableResponse = { data: null, message: "FAIL" };
     try {
         const response = await axios.get(
-            getApiUrl(`/api/timetable/custom/config`),
+            getApiUrl(`/api/timetable/custom/configCustomize`),
             {
                 timeout: getDefualtAxiosTimeout(),
             }
@@ -356,7 +356,7 @@ export async function createMakerTimetable(param: Timetable): Promise<{
     try {
         const postData = param.toObject();
         const response = await axios.post(
-            getApiUrl(`/api/timetable/custom/config`),
+            getApiUrl(`/api/timetable/custom/configCustomize`),
             postData,
             {
                 timeout: getDefualtAxiosTimeout(),
@@ -400,7 +400,7 @@ export async function updateMakerTimetable(param: Timetable): Promise<{
     try {
         const postData = param;
         const response = await axios.patch(
-            getApiUrl(`/api/timetable/custom/config`),
+            getApiUrl(`/api/timetable/custom/configCustomize`),
             postData,
             {
                 timeout: getDefualtAxiosTimeout(),
@@ -445,7 +445,7 @@ export async function getTimetableAll(): Promise<{
     let responseData: GetTimetableAllResponse = { data: [], message: "FAIL" };
     try {
         const response = await axios.get(
-            getApiUrl(`/api/timetable/manage`),
+            getApiUrl(`/api/timetable/manageTimetable`),
             {
                 timeout: getDefualtAxiosTimeout(),
             }
@@ -495,7 +495,7 @@ export async function saveTimetable(param: Timetable): Promise<{
     try {
         const postData = param.toObject();
         const response = await axios.post(
-            getApiUrl(`/api/timetable/manage`),
+            getApiUrl(`/api/timetable/manageTimetable`),
             postData,
             {
                 timeout: getDefualtAxiosTimeout(),
@@ -541,7 +541,7 @@ export async function updateTimetable(param: Timetable): Promise<{
     try {
         const postData = param.toObject();
         const response = await axios.patch(
-            getApiUrl(`/api/timetable/manage`),
+            getApiUrl(`/api/timetable/manageTimetable`),
             postData,
             {
                 timeout: getDefualtAxiosTimeout(),
