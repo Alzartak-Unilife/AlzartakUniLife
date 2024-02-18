@@ -27,26 +27,28 @@
 
 </br>
 
-# 구동모습
+# 데모 시연
+<h3>시나리오</h3>
+<ol>
+  <li>개설된 과목 조회</li>
+  <li>과목 선호도, 학점, 공강 설정</li>
+  <li>시간표 생성</li>
+  <li>원하는 시간표 저장</li>
+  <li>저장한 시간표 편집 (과목 추가)</li>
+</ol>
+<h3>시연 영상</h3>
+<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/d01eaae1-6b14-4483-b6fe-4e78281fca3c"> 
+</br>
+</br>
+
+# 사이트 링크
+<h3>https://alzartak.vercel.app</h3>
+<h4>(데스크톱 환경 권장)</h4>
 </br>
 </br>
 
 # API 명세서
 <img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/0376a0eb-fb7d-4766-922f-b9bafaa43bc7" width="700"> 
-</br>
-</br>
-
-# 구동방법
-<h3>링크 : https://alzartak.vercel.app</h3>
-<h4>(데스크톱 환경에 맞게 구현)</h4>
-</br>
-</br>
-
-# 소스코드 바로가기
-- 사용자 웹 페이지 : [userpage](src/app)
-- 시간표 조합 알고리즘 : [algorithm](src/core/systems/timetable-generator)
-- API 및 Auth 구현 : [apiroutes](src/pages/api)
-- 미들 웨어 구현 : [middleware](src/middleware.ts)
 </br>
 </br>
 
@@ -68,9 +70,13 @@
 </br>
 </br>
 
-
-
-
+# 소스코드 바로가기
+- 사용자 웹 페이지 : [userpage](src/app)
+- 시간표 조합 알고리즘 : [algorithm](src/core/systems/timetable-generator)
+- API 및 Auth 구현 : [apiroutes](src/pages/api)
+- 미들 웨어 구현 : [middleware](src/middleware.ts)
+</br>
+</br>
 
 
 
