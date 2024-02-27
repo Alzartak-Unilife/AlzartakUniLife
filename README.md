@@ -19,7 +19,7 @@
 |컴퓨터공학전공|송지웅|팀원|웹 백엔드 개발|![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
 
 <h3>시간표 생성기</h3>
-<p>-> 기간 : 2022.12 ~ 2023.01</p>
+<p>-> 기간 : 2022.11 ~ 2023.01</p>
 
 |전공|이름|역할|주요 업무|기술 스택|
 |-------|-----|-----|-----|-----|
