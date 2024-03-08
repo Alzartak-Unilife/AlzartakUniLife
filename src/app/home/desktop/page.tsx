@@ -2,6 +2,7 @@ import AuthForm from "@/core/components/auth/AuthForm";
 import styles from "./page.module.css";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import MyForm from "@/app/MyForm";
 
 export default async function DesktopHome() {
     // Const
@@ -14,6 +15,7 @@ export default async function DesktopHome() {
                 <AuthForm
                     isAuth={isAuth}
                 />
+                <MyForm />
             </div>
         </div>
     );

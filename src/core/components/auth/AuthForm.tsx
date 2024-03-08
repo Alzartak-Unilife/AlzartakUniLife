@@ -25,7 +25,6 @@ export default function AuthForm({ isAuth }: AuthFormProps) {
         }
     }, []);
 
-
     // Render
     return (
         <div className={styles.authForm}>
