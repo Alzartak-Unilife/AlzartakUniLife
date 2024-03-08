@@ -1,20 +1,20 @@
 import { Bit, Bitmask } from "../data-structures/Bitmask";
 import { PriorityQueue } from "../data-structures/PriorityQueue";
-import { WeightedGraph } from "../data-structures/WeightedGraph";
+import { WeightedGraph, WgtEdge } from "../data-structures/WeightedGraph";
 import { VertexConverter } from "./VertexConverter";
 
 
 export class SSSP {
     /** dijkstra */
-    public static dijkstra(graph: WeightedGraph, source: number, inf: bigint): { prevVertex: number[], prevEdgeId: number[], visitedVertex: number[], distance: bigint[] } {
+    public static dijkstra(graph: WeightedGraph, source: number, inf: number): { prevVertex: number[], prevEdgeId: number[], visitedVertex: number[], distance: number[] } {
         const INF = inf;//typeof (0 as datatype) === 'number' ? BigInt(2e9) : (10n ** 55n) * 2n;
         const prevVertex: number[] = new Array(graph.size()).fill(-1);
         const prevEdgeId: number[] = new Array(graph.size()).fill(-1);
         const visitedVertex: number[] = [];
-        const distance: bigint[] = new Array(graph.size()).fill(INF);
-        const pq = new PriorityQueue(PriorityQueue.SORTTYPE.LESS, { key: 0n, value: -1 });
+        const distance: number[] = new Array(graph.size()).fill(INF);
+        const pq = new PriorityQueue(PriorityQueue.SORTTYPE.LESS, { key: 0, value: -1 });
 
-        const enque = (curr: number, next: number, weight: bigint, edgeId: number) => {
+        const enque = (curr: number, next: number, weight: number, edgeId: number) => {
             if (distance[next] > weight) {
                 distance[next] = weight;
                 prevVertex[next] = curr;
@@ -23,15 +23,18 @@ export class SSSP {
             }
         };
 
-        enque(-1, source, 0n, -1);
+        enque(-1, source, 0, -1);
         while (!pq.empty()) {
             const { key: weight, value: curr } = pq.top(); pq.pop();
 
             if (distance[curr] !== weight) continue;
             visitedVertex.push(curr);
 
-            for (const edge of graph.get(curr))
-                enque(curr, edge.next, weight + edge.weight, edge.edgeId);
+            const edges = graph.getEdges(curr);
+            for (let i = 0; i < edges.size(); i++) {
+                const edge: WgtEdge = edges.get(i);
+                enque(curr, edge.getNext(), weight + edge.getWeight(), edge.getEdgeId());
+            }
         }
         //console.log(distance); console.log(prevVertex); console.log(prevEdgeId); console.log(visitedVertex);
         return { prevVertex: prevVertex, prevEdgeId: prevEdgeId, visitedVertex: visitedVertex, distance: distance };

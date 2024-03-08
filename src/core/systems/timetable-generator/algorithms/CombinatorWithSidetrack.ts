@@ -8,8 +8,8 @@ import { Sidetrack } from "./Sidetrack";
 import { VertexConverter } from "./VertexConverter";
 
 export class CombinatorWithSidetrack implements ICombinator {
-    private INF: bigint;
-    private BIG: bigint;
+    private INF: number;
+    private BIG: number;
     private STATE: { BEGIN: number, CONTINUE: number, END: number };
 
     private source: number;
@@ -19,14 +19,14 @@ export class CombinatorWithSidetrack implements ICombinator {
     private vertexConv: VertexConverter;                 // 정점 치환
 
     private nextVertex: number[];                        // 현재 정점에서 이동해야할 다음 정점
-    private distance: bigint[];                          // 정점에서 sink까지의 최적가중치    
+    private distance: number[];                          // 정점에서 sink까지의 최적가중치    
     private suffixPath: { set: Bit, conflict: Bit }[];   // 정점에서 sink까지의 경로
 
     private phHeap: PersistentHeap;                      // sidetrack persistent heap
     private pq: PriorityQueue;                           // sidetrack priority queue
     private currState: number;
 
-    constructor(graph: WeightedGraph, revgraph: WeightedGraph, conflicts: Bit[], vertexConv: VertexConverter, source: number, sink: number, inf: bigint, big: bigint) {
+    constructor(graph: WeightedGraph, revgraph: WeightedGraph, conflicts: Bit[], vertexConv: VertexConverter, source: number, sink: number, inf: number, big: number) {
         this.source = source;
         this.sink = sink;
         this.INF = inf;

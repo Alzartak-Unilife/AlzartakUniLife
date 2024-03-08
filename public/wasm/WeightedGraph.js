@@ -1,5 +1,5 @@
 
-var RandomGeneratorModule = (() => {
+var WeightedGraphModule = (() => {
   var _scriptDir = import.meta.url;
   
   return (
@@ -646,13 +646,13 @@ function createExportWrapper(name) {
 // end include: runtime_exceptions.js
 var wasmBinaryFile;
 if (Module['locateFile']) {
-  wasmBinaryFile = 'randomGenerator.wasm';
+  wasmBinaryFile = 'WeightedGraph.wasm';
   if (!isDataURI(wasmBinaryFile)) {
     wasmBinaryFile = locateFile(wasmBinaryFile);
   }
 } else {
   // Use bundler-friendly `new URL(..., import.meta.url)` pattern; works in browsers too.
-  wasmBinaryFile = new URL('randomGenerator.wasm', import.meta.url).href;
+  wasmBinaryFile = new URL('WeightedGraph.wasm', import.meta.url).href;
 }
 
 function getBinarySync(file) {
@@ -3701,4 +3701,4 @@ run();
 }
 );
 })();
-export default RandomGeneratorModule;
+export default WeightedGraphModule;

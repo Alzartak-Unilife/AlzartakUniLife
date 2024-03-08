@@ -8,7 +8,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
             const param = request.body as GeneratorConfigObject;
             try {
                 const timetableGen = new TimetableGenerator(param);
-                const genTimetables = timetableGen.getCourseCombination(0, 1000).map((courses) => courses.map((course) => course.toObject()));
+                const genTimetables = (await timetableGen.getCourseCombination(0, 1000)).map((courses) => courses.map((course) => course.toObject()));
                 response.status(200).json({ data: genTimetables, message: "SUCCESS" });
             } catch (error) {
                 response.status(500).json({ data: [], message: "FAIL" });

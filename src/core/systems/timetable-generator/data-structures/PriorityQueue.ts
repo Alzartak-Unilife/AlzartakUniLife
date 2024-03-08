@@ -1,5 +1,5 @@
 export interface PqNode {
-    key: bigint;
+    key: number;
     value: any;
 };
 

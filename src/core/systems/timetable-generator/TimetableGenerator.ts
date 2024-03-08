@@ -2,18 +2,17 @@ import { Course } from "@/core/types/Course";
 import { CombinatorWithSidetrack } from "./algorithms/CombinatorWithSidetrack";
 import { Bit, Bitmask } from "./data-structures/Bitmask";
 import { VertexConverter } from "./algorithms/VertexConverter";
-import { WeightedGraph } from "./data-structures/WeightedGraph";
 import { ICombinator } from "./algorithms/ICombinator";
 import { GeneratorConfig, GeneratorConfigObject } from "@/core/types/GeneratorConfig";
+import { createWeightedGraph } from "./data-structures/WeightedGraphCreater";
 
 
 /** sidetrack을 이용한 조합 생성기를 반환 */
-function constructCombinatorWithSidetrack(essentialCourses: Course[], normalCourses: Course[], minCredit: number, maxCredit: number): CombinatorWithSidetrack | null {
-
+async function constructCombinatorWithSidetrack(essentialCourses: Course[], normalCourses: Course[], minCredit: number, maxCredit: number): Promise<CombinatorWithSidetrack | null> {
     let conflicts: Bit[] = [];
     let [source, subsource, sink] = [0, 0, 0];
-    let [inf, big]: bigint[] = [(25n ** 51n) * 2n, (25n ** 51n)];
-    const [graph, revgraph] = [new WeightedGraph(), new WeightedGraph()];
+    let [inf, big]: number[] = [(25 ** 50) * 2, (2 ** 50)];
+    const [graph, revgraph] = [await createWeightedGraph(), await createWeightedGraph()];
     const vertexConv: VertexConverter = new VertexConverter();
 
     /* *********************************** 그래프 모델링 *********************************** */
@@ -21,7 +20,7 @@ function constructCombinatorWithSidetrack(essentialCourses: Course[], normalCour
     // preference 가중치를 계산
     const PREFER = { ESSENTIAL: 6, NONE: 6 };
     const rating2weight = (rating: number) => {
-        return rating === PREFER.ESSENTIAL || rating === PREFER.NONE ? 0n : (25n ** BigInt(50 - Math.floor(rating * 10)));  // ex) if rating is 4.3 then, 25^7
+        return rating === PREFER.ESSENTIAL || rating === PREFER.NONE ? 0 : (25 ** (5 - Math.round(rating)));  // ex) if rating is 3.4 then, 25^2
     }
 
     // 정점간 충돌 여부를 저장
@@ -148,7 +147,7 @@ function constructCombinatorWithSidetrack(essentialCourses: Course[], normalCour
 
 /** 시간표 생성 클래스 */
 export class TimetableGenerator {
-    private combinator: ICombinator | null;
+    private combinator: Promise<ICombinator | null> | null;
     private courses: Course[];
     private combinations: Bit[];
 
@@ -164,8 +163,9 @@ export class TimetableGenerator {
 
 
     /** count개의 조합을 생성한다. 만약 더 이상 생성할 수 있는 조합이 없다면 빈 배열을 리턴한다*/
-    private createCombinations(count: number = 1): Bit[] {
-        return this.combinator ? this.combinator.nextCombination(count) : [];
+    private async createCombinations(count: number = 1): Promise<number[]> {
+        const combinator = await this.combinator;
+        return combinator ? combinator.nextCombination(count) : [];
     }
 
 
@@ -180,12 +180,12 @@ export class TimetableGenerator {
 
 
     /** count개의 과목 조합(시간표)를 반환한다 */
-    public getCourseCombination(index: number, count: number = 1): Course[][] {
+    public async getCourseCombination(index: number, count: number = 1): Promise<Course[][]> {
         const res: Course[][] = [];
         for (let i = index; i < index + count; i++) {
             // 조합의 수가 i보다 작은 경우, 추가 조합 생성
             while (this.combinations.length <= i) {
-                const newComb = this.createCombinations(1);
+                const newComb = await this.createCombinations(1);
                 if (newComb.length > 0) this.combinations.push(...newComb);
                 else { this.combinator = null; return res; }   // 더 이상 조합 생성이 불가능한 경우 조합 생성기를 제거(더 이상 필요가 없다)하고 리턴
             }
@@ -198,9 +198,9 @@ export class TimetableGenerator {
 
 
     /** count개의 과목 조합(시간표)를 할당한다 */
-    public reserveCourseCombination(count: number = 1) {
+    public async reserveCourseCombination(count: number = 1): Promise<void> {
         if (count <= this.combinations.length) return;
-        const newCombs = this.createCombinations(count - this.combinations.length);
+        const newCombs = await this.createCombinations(count - this.combinations.length);
         newCombs.forEach(comb => { this.combinations.push(comb); });
         // 더 이상 조합 생성이 불가능한 경우 조합 생성기를 제거(더 이상 필요가 없다)함
         if (newCombs.length < count - this.combinations.length) this.combinator = null;

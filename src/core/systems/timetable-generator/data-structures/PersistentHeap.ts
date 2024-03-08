@@ -3,11 +3,11 @@ import { RandomGenerator } from "../utility/RandomGenerator"
 
 export class PhNode {
     public son: (PhNode | null)[];
-    public value: { curr: number; next: number; sidetrack: bigint; };
+    public value: { curr: number; next: number; sidetrack: number; };
 
     constructor() {
         this.son = [null, null];
-        this.value = { curr: 0, next: 0, sidetrack: 0n };
+        this.value = { curr: 0, next: 0, sidetrack: 0 };
     }
 
     public static compare(fst: PhNode, snd: PhNode) {
@@ -40,7 +40,7 @@ export class PersistentHeap {
     }
 
     /** 새로운 Heap 추가 */
-    public static newHeap(u: number, v: number, sidetrack: bigint): PhNode {
+    public static newHeap(u: number, v: number, sidetrack: number): PhNode {
         let newNode = new PhNode();
         newNode.value = { curr: u, next: v, sidetrack: sidetrack };
         return newNode;
