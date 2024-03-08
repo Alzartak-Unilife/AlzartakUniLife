@@ -1,4 +1,5 @@
 import { PersistentHeap } from "../data-structures/PersistentHeap";
+import { createPersistentHeap } from "../data-structures/PersistentHeapCreater";
 import { WeightedGraph, WgtEdge } from "../data-structures/WeightedGraph";
 
 
@@ -9,12 +10,12 @@ export class Sidetrack {
     }
 
     /**  SSSP의 결과를 기반으로 계산된 sidetrack으로 persistent heap을 구성*/
-    public static buildSideTrackHeap(graph: WeightedGraph, prevVertex: number[], prevEdgeId: number[], visitedVertex: number[], distance: number[], big: number): PersistentHeap {
-        const phHeap = new PersistentHeap(graph.size());
+    public static async buildSideTrackHeap(graph: WeightedGraph, prevVertex: number[], prevEdgeId: number[], visitedVertex: number[], distance: number[], big: number): Promise<PersistentHeap> {
+        const phHeap = await createPersistentHeap(graph.size());
 
         for (const u of visitedVertex) {
             if (prevVertex[u] !== -1)
-                phHeap.set(u, PersistentHeap.copy(phHeap.get(prevVertex[u])));
+                phHeap.copyTo(prevVertex[u], u);
 
             const edges = graph.getEdges(u);
             for (let i = 0; i < edges.size(); i++) {
@@ -23,7 +24,7 @@ export class Sidetrack {
 
                 const sidetrack = this.encode(distance, u, edge.getNext(), edge.getWeight());
                 if (sidetrack < big) {   // 현재 정점의 heap과 다음 정점의 heap을 합친다
-                    phHeap.set(u, PersistentHeap.merge(phHeap.get(u), PersistentHeap.newHeap(u, edge.getNext(), sidetrack)));
+                    phHeap.insertAt(u, u, edge.getNext(), sidetrack);
                 }
             }
         }

@@ -147,7 +147,7 @@ async function constructCombinatorWithSidetrack(essentialCourses: Course[], norm
 
 /** 시간표 생성 클래스 */
 export class TimetableGenerator {
-    private combinator: Promise<ICombinator | null> | null;
+    private combinator: Promise<CombinatorWithSidetrack | null> | null;
     private courses: Course[];
     private combinations: Bit[];
 

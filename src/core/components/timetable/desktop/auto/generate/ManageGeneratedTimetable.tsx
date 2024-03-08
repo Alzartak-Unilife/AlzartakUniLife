@@ -12,6 +12,7 @@ import { generateTimetables } from "@/core/api/AlzartakUnilfeApi";
 import CircularProgressOverlay from "@/core/modules/circular-progress-overlay/CircularProgressOverlay";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { TimetableGenerator } from "@/core/systems/timetable-generator/TimetableGenerator";
 
 
 export default function ManageGeneratedTimetable() {
@@ -74,7 +75,7 @@ export default function ManageGeneratedTimetable() {
             });
         }, 100);
 
-        generateTimetables(generatorConfig.toObject()).then(({ data: genTimetables, message }) => {
+        new TimetableGenerator(generatorConfig.toObject()).getCourseCombination(0, 1000).then(genTimetables => {
             setProcessPercentage(80);
 
             const setProgress = setInterval(() => {
@@ -91,7 +92,7 @@ export default function ManageGeneratedTimetable() {
                 });
             }, 100);
 
-            if (message === "SUCCESS" && genTimetables.length > 0) {
+            if (genTimetables.length > 0) {
                 setOrignTimetables(genTimetables);
             } else {
                 Swal.fire({
@@ -109,6 +110,7 @@ export default function ManageGeneratedTimetable() {
                     didOpen() { router.prefetch("./setting") }
                 })
             }
+
         });
     }, [setIsLoading, setProcessPercentage, setProcessDescription, generatorConfig, setOrignTimetables]);
 

@@ -15,7 +15,7 @@ export default async function DesktopHome() {
                 <AuthForm
                     isAuth={isAuth}
                 />
-                <MyForm />
+                {/* <MyForm /> */}
             </div>
         </div>
     );

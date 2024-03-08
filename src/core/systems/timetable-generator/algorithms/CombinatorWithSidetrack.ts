@@ -7,7 +7,7 @@ import { SSSP } from "./SSSP";
 import { Sidetrack } from "./Sidetrack";
 import { VertexConverter } from "./VertexConverter";
 
-export class CombinatorWithSidetrack implements ICombinator {
+export class CombinatorWithSidetrack {
     private INF: number;
     private BIG: number;
     private STATE: { BEGIN: number, CONTINUE: number, END: number };
@@ -22,7 +22,7 @@ export class CombinatorWithSidetrack implements ICombinator {
     private distance: number[];                          // 정점에서 sink까지의 최적가중치    
     private suffixPath: { set: Bit, conflict: Bit }[];   // 정점에서 sink까지의 경로
 
-    private phHeap: PersistentHeap;                      // sidetrack persistent heap
+    private ph: Promise<PersistentHeap>;                 // sidetrack persistent heap
     private pq: PriorityQueue;                           // sidetrack priority queue
     private currState: number;
 
@@ -39,7 +39,7 @@ export class CombinatorWithSidetrack implements ICombinator {
         this.nextVertex = prevVertex;
         this.distance = distance;
         this.suffixPath = SSSP.restorePaths(prevVertex, conflicts, vertexConv, sink);
-        this.phHeap = Sidetrack.buildSideTrackHeap(graph, prevVertex, prevEdgeId, visitedVertex, distance, big);
+        this.ph = Sidetrack.buildSideTrackHeap(graph, prevVertex, prevEdgeId, visitedVertex, distance, big);
         this.pq = new PriorityQueue(PriorityQueue.SORTTYPE.LESS, { key: Bitmask.default, value: [] });
 
         // 조합 시스템의 상태를 저장
@@ -55,27 +55,27 @@ export class CombinatorWithSidetrack implements ICombinator {
 
 
     /** source -> sink의 경로가 존재하는지 확인하고 mPQueue 초기화 */
-    private initializer(): Bit | null {
+    private async initializer(): Promise<number | null> {
+        const ph = await this.ph;
         const prefix: { set: Bit, conflict: Bit } = { set: Bitmask.insertAt(Bitmask.default, this.vertexConv.revert(this.source)), conflict: Bitmask.default };
         const suffix: { set: Bit, conflict: Bit } = this.suffixPath[this.nextVertex[this.source]];
-        const phNode: (PhNode | null) = this.phHeap.get(this.source);
+        const phNode: (PhNode | null) = ph.getHeap(this.source);
 
         this.currState = this.STATE.CONTINUE;
-        if (phNode !== null) this.pq.push({ key: this.distance[this.source] + phNode.value.sidetrack, value: [phNode, prefix, this.source] });
+        if (phNode !== null) this.pq.push({ key: this.distance[this.source] + phNode.getSideTrack(), value: [phNode, prefix, this.source] });
         return !this.isPathConflict(prefix, suffix) ? Bitmask.union(prefix.set, suffix.set) : null;
     }
 
 
     /** 다음 kValue개의 최적의 조합을 찾음*/
-    public nextCombination(count: number = 1): Bit[] {
+    public async nextCombination(count: number = 1): Promise<number[]> {
         const paths: Bit[] = [];
 
         if (this.currState === this.STATE.END) return paths;
         if (this.currState === this.STATE.BEGIN) {
-            const path = this.initializer();
+            const path = await this.initializer();
             if (path !== null) {
                 paths.push(path);
-                //console.log(`path: ${path}`)
             }
         }
 
@@ -93,11 +93,11 @@ export class CombinatorWithSidetrack implements ICombinator {
             this.pq.pop();
 
             // prefix와 suffix사이의 경로 복구
-            if (currLastVtx === (currNode as PhNode).value.curr) currLastVtx = insert2prefix(currPrefix, (currNode as PhNode).value.next);
+            if (currLastVtx === (currNode as PhNode).getCurrVertex()) currLastVtx = insert2prefix(currPrefix, (currNode as PhNode).getNextVertex());
             else {
-                for (let v = this.nextVertex[currLastVtx]; v !== (currNode as PhNode).value.curr && v >= 0; v = this.nextVertex[v]) currLastVtx = insert2prefix(currPrefix, v);
-                currLastVtx = insert2prefix(currPrefix, (currNode as PhNode).value.curr);
-                currLastVtx = insert2prefix(currPrefix, (currNode as PhNode).value.next);
+                for (let v = this.nextVertex[currLastVtx]; v !== (currNode as PhNode).getCurrVertex() && v >= 0; v = this.nextVertex[v]) currLastVtx = insert2prefix(currPrefix, v);
+                currLastVtx = insert2prefix(currPrefix, (currNode as PhNode).getCurrVertex());
+                currLastVtx = insert2prefix(currPrefix, (currNode as PhNode).getNextVertex());
             }
 
             //console.log(`PQ: ${(currNode as PhNode).value.curr}, ${prevPrefix.set}, ${prevLastVtx} -> ${currPrefix.set}, ${currLastVtx}`)
@@ -107,15 +107,17 @@ export class CombinatorWithSidetrack implements ICombinator {
             }
 
             // 현재 sidetrack은 포함하지 않음. 다른 sidetrack으로 대체 하거나 아예 대체하지 않음
-            for (const son of (currNode as PhNode).son) {
-                if (son === null) continue;
-                this.pq.push({ key: weight - (currNode as PhNode).value.sidetrack + son.value.sidetrack, value: [son, prevPrefix, prevLastVtx] });
+            for (let i = 0; i < 2; i++) {
+                const child = (currNode as PhNode).getChild(i);
+                if (child.getCurrVertex() === -1) continue;
+                this.pq.push({ key: weight - (currNode as PhNode).getSideTrack() + child.getSideTrack(), value: [child, prevPrefix, prevLastVtx] });
             }
 
             // 현재 sidetrack을 포함. 만약 현재 sidetrack을 포함한 prefix사이에서 충돌이 생긴다면 무시
-            const nextNode: (PhNode | null) = this.phHeap.get(currLastVtx);
-            if (!Boolean(Bitmask.intersection(currPrefix.set, currPrefix.conflict)) && nextNode !== null)
-                this.pq.push({ key: weight + nextNode.value.sidetrack, value: [nextNode, currPrefix, currLastVtx] });
+
+            const nextNode: PhNode = (await this.ph).getHeap(currLastVtx);
+            if (!Boolean(Bitmask.intersection(currPrefix.set, currPrefix.conflict)) && nextNode.getCurrVertex() !== -1)
+                this.pq.push({ key: weight + nextNode.getSideTrack(), value: [nextNode, currPrefix, currLastVtx] });
         }
 
         if (paths.length < count) this.currState = this.STATE.END;   // 추가로 구한 path의 개수가 count미만 이라는 것은 더 이상의 조합은 없다는 말

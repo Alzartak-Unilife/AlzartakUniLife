@@ -9,7 +9,6 @@ import { generatorConfigAtom, generatorConfigWishCoursesSelector } from "@/core/
 import { hoverCourseAtomFamily } from "@/core/recoil/hoverCourseAtomFamily";
 import { offeredCoursesAtomFamily } from "@/core/recoil/offeredCoursesAtomFamily";
 import { Course } from "@/core/types/Course";
-import { MakerConfig } from "@/core/types/MakerConfig";
 import { GeneratorConfig } from "@/core/types/GeneratorConfig";
 import { useCallback, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -25,7 +24,7 @@ interface DisplayCoursetableProps {
 export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps) {
     // Const
     const essential = 6;
-    const ratings = [essential, 5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1];
+    const ratings = [essential, 5, 4, 3, 2, 1];
     const offeredCourseTableAttributes: string[] = ["\u00A0", "학년/가진급", "교과과정", "학수강좌번호", "교과목명", "교원명", "수업캠퍼스", "강의평점", "학점", "강의종류", "\u00A0"];
     const wishCourseTableAttributes: string[] = ["\u00A0", "학년/가진급", "교과과정", "학수강좌번호", "교과목명", "교원명", "수업캠퍼스", "선호도 설정", "학점", "강의종류", "\u00A0"];
 
