@@ -14,6 +14,7 @@
     font-weight: 600;
     margin-bottom: 50px;
     color: #C35E1A;
+    user-select: none;
 }
 
 .select_page {
@@ -40,6 +41,7 @@
     justify-content: center;
     background-color: var(--sub-color);
     color: var(--main-color);
+    user-select: none;
 }
 
 .btnAuto:hover,

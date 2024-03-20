@@ -17,6 +17,7 @@
     font-weight: 600;
     margin-bottom: 50px;
     color: #C35E1A;
+    user-select: none;
 }
 
 .get_start {
