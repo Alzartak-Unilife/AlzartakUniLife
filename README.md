@@ -4,11 +4,11 @@
 
 # 프로젝트 개요
 <h3>시간표 추천 시스템 (2차 벨류업)</h3>
-<p>-> 기간 : 2023.12 ~ </p>
+<p>-> 기간 : 2023.12 ~ 2024.03</p>
 
 |전공|이름|역할|주요 업무|기술 스택|
 |-------|-----|-----|-----|-----|
-|컴퓨터공학전공|문정훈|팀장|웹 풀스택 개발|![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=next.js&logoColor=white) ![React.js](https://img.shields.io/badge/React.js-20232A?style=flat-square&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white) |
+|컴퓨터공학전공|문정훈|팀장|웹 풀스택 개발|![C++](https://img.shields.io/badge/C++-004482?style=flat-square&logo=cplusplus&logoColor=white) ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?style=flat-square&logo=webassembly&logoColor=white) ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=next.js&logoColor=white) ![React.js](https://img.shields.io/badge/React.js-20232A?style=flat-square&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white) |
 
 <h3>시간표 생성기 (1차 벨류업)</h3>
 <p>-> 기간 : 2023.03 ~ 2023.05</p>
