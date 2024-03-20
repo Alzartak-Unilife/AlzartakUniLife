@@ -38,14 +38,6 @@
 </br>
 </br>
 
-# 배포 사이트 (데스크톱 환경 권장)
-<h3>웹 페이지 : https://alzartak.vercel.app</h3>
-<h3>시연 영상 : https://youtu.be/TdhVPSo7Kn8</h3>
-
-
-</br>
-</br>
-
 # 시간표 생성 알고리즘 성능
 <img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/b7904df5-a942-4ef9-8a9e-3548746d9c88" width="700">
 <img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/4a0b09e7-4b0b-4f38-b0a1-ec35491b57cb" width="700"> 
@@ -67,6 +59,12 @@
 
 # API 명세서
 <img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/0376a0eb-fb7d-4766-922f-b9bafaa43bc7" width="700"> 
+</br>
+</br>
+
+# 배포 사이트 (데스크톱 환경 권장)
+<h3>웹 페이지 : https://alzartak.vercel.app</h3>
+<h3>시연 영상 : https://youtu.be/TdhVPSo7Kn8</h3>
 </br>
 </br>
 
