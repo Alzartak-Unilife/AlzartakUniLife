@@ -20,7 +20,7 @@ export const authOptions: AuthOptions = {
     // 인증 공급자를 설정합니다.
     providers: [
         CredentialsProvider({
-            name: 'Quest User',
+            name: 'Guest User',
             credentials: {},
             authorize: async () => {
                 return {
