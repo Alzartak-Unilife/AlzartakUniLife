@@ -30,7 +30,7 @@ export default function AuthForm({ isAuth }: AuthFormProps) {
         <div className={styles.authForm}>
             {!isAuth && <>
                 <button className={styles.signin} onClick={() => { signIn() }}>
-                    로그인
+                    시작하기
                 </button>
                 <button className={styles.signup} onClick={() => { guide() }}>
                     가이드
