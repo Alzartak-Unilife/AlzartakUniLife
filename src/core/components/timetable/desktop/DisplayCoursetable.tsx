@@ -169,7 +169,7 @@ export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps
     /** 과목 상세 정보 */
     const handleCourseDetail = (course: Course) => {
         SwalCourseDetails.fire({
-            title: '과목 정보',
+            title: `${course.getName()} (${course.getProfessor() || "교수 미지정"})`,
             html: <DisplayCourseDetails course={course} />,
             width: "80vw",
             buttonsStyling: false,
