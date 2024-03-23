@@ -778,7 +778,7 @@ export class Course {
             name: this.name,
             professor: this.professor,
             campus: this.campus,
-            schedules: this.schedules.map((schedule) => schedule.printFormat()),
+            schedules: this.schedules.map((schedule) => schedule.printFormat() + " "),
             credit: this.credit.toString(),
             theory: this.theory.toString(),
             practice: this.practice.toString(),

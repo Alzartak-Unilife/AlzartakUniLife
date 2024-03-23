@@ -2,7 +2,6 @@
 
 import styles from "./DisplayCoursetable.module.css";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
-import { useModal } from "@/core/modules/modal/Modal";
 import VirtualizedTable from "@/core/modules/virtualized-table/VirtualizedTable";
 import { makerTimetableAtom, makerTimetableCoursesSelector } from "@/core/recoil/makerTimetableAtom";
 import { generatorConfigAtom, generatorConfigWishCoursesSelector } from "@/core/recoil/generatorConfigAtom";
@@ -10,10 +9,12 @@ import { hoverCourseAtomFamily } from "@/core/recoil/hoverCourseAtomFamily";
 import { offeredCoursesAtomFamily } from "@/core/recoil/offeredCoursesAtomFamily";
 import { Course } from "@/core/types/Course";
 import { GeneratorConfig } from "@/core/types/GeneratorConfig";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import Swal from "sweetalert2";
 import { Timetable } from "@/core/types/Timetable";
+import withReactContent from "sweetalert2-react-content";
+import DisplayCourseDetails from "./DisplayCourseDetails";
 
 
 interface DisplayCoursetableProps {
@@ -27,14 +28,10 @@ export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps
     const ratings = [essential, 5, 4, 3, 2, 1];
     const offeredCourseTableAttributes: string[] = ["\u00A0", "학년/가진급", "교과과정", "학수강좌번호", "교과목명", "교원명", "수업캠퍼스", "강의평점", "학점", "강의종류", "\u00A0"];
     const wishCourseTableAttributes: string[] = ["\u00A0", "학년/가진급", "교과과정", "학수강좌번호", "교과목명", "교원명", "수업캠퍼스", "선호도 설정", "학점", "강의종류", "\u00A0"];
-
+    const SwalCourseDetails = withReactContent(Swal);
 
     // Ref
     const courseListTable = useRef<HTMLDivElement>(null);
-
-
-    // State
-    const [displayCourseDetail, setDisplayCourseDetail] = useState<Course | null>(null);
 
 
     // Recoil
@@ -42,10 +39,6 @@ export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps
     const [wishCourses, setWishCourses] = useRecoilState(pageType === "autoPage" ? generatorConfigWishCoursesSelector : makerTimetableCoursesSelector);
     const setHoveredCourse = useRecoilState<Course | null>(hoverCourseAtomFamily(pageType))[1];
     const timetableConfig = useRecoilValue<GeneratorConfig | Timetable>(pageType === "autoPage" ? generatorConfigAtom : makerTimetableAtom);
-
-
-    /// Modal 
-    const [CourseDetailsModal, openCourseDetailsModal, closeCourseDetailsModal] = useModal("ZOOM");
 
 
     // Custom Hook
@@ -64,6 +57,23 @@ export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps
 
     /** 과목 리스트에서 과목 선택 */
     const handleSelectCourse = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if (pageType === "autoPage" && wishCourses.length >= 25) {
+            Swal.fire({
+                heightAuto: false,
+                scrollbarPadding: false,
+                html: `<h2 style="font-size: 20px; z-index: 2000;">
+                            희망 과목은 최대 25개까지 선택 가능합니다.
+                        </h2>`,
+                icon: 'warning',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: `${styles.btnConfirm}`,
+                },
+                confirmButtonText: '확인',
+            })
+            return;
+        }
+
         const selectedIndex = parseInt(e.currentTarget.parentElement?.parentElement?.id || "-1");
         const selectedCourse = offeredCourse[selectedIndex];
 
@@ -107,6 +117,7 @@ export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps
         if (setWishCourses) {
             const newWishCourses = wishCourses.filter((course, index) => index !== selectedIndex);
             setWishCourses(newWishCourses);
+            setHoveredCourse(null);
         }
     }, [wishCourses, setWishCourses]);
 
@@ -157,8 +168,16 @@ export default function DisplayCoursetable({ pageType }: DisplayCoursetableProps
 
     /** 과목 상세 정보 */
     const handleCourseDetail = (course: Course) => {
-        setDisplayCourseDetail(course);
-        openCourseDetailsModal();
+        SwalCourseDetails.fire({
+            title: '과목 정보',
+            html: <DisplayCourseDetails course={course} />,
+            width: "80vw",
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: `${styles.btnConfirm}`,
+            },
+            confirmButtonText: '확인'
+        });
     };
 
 

@@ -11,7 +11,7 @@ import { createWeightedGraph } from "./data-structures/WeightedGraphCreater";
 async function constructCombinatorWithSidetrack(essentialCourses: Course[], normalCourses: Course[], minCredit: number, maxCredit: number): Promise<CombinatorWithSidetrack | null> {
     let conflicts: Bit[] = [];
     let [source, subsource, sink] = [0, 0, 0];
-    let [inf, big]: number[] = [(25 ** 50) * 2, (2 ** 50)];
+    let [inf, big]: number[] = [(26 ** 6) * 2, (26 ** 6)];
     const [graph, revgraph] = [await createWeightedGraph(), await createWeightedGraph()];
     const vertexConv: VertexConverter = new VertexConverter();
 
@@ -20,7 +20,7 @@ async function constructCombinatorWithSidetrack(essentialCourses: Course[], norm
     // preference 가중치를 계산
     const PREFER = { ESSENTIAL: 6, NONE: 6 };
     const rating2weight = (rating: number) => {
-        return rating === PREFER.ESSENTIAL || rating === PREFER.NONE ? 0 : (25 ** (5 - Math.round(rating)));  // ex) if rating is 3.4 then, 25^2
+        return rating === PREFER.ESSENTIAL || rating === PREFER.NONE ? 0 : (26 ** (5 - Math.round(rating)));  // ex) if rating is 3.4 then, 26^2
     }
 
     // 정점간 충돌 여부를 저장

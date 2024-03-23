@@ -1,0 +1,30 @@
+.wrapper {
+    padding: 15px;
+    display: flex;
+    border: var(--border-solid);
+}
+
+.titles {
+    padding-right: 20px;
+    border-right: var(--border-dash);
+    text-align: center;
+    font-weight: 600;
+}
+
+.title {
+    height: 24px;
+    width: 150px;
+    margin-bottom: 10px;
+}
+
+.contents {
+    padding-left: 20px;
+    text-align: left;
+}
+
+.content {
+    height: 24px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: auto;
+}
