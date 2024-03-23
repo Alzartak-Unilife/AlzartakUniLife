@@ -1,7 +1,6 @@
 .wrapper {
     padding: 15px;
     display: flex;
-    border: var(--border-solid);
 }
 
 .titles {
@@ -26,5 +25,4 @@
     height: 24px;
     margin-bottom: 10px;
     white-space: nowrap;
-    overflow: auto;
 }

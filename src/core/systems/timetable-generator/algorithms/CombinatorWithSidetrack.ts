@@ -70,7 +70,6 @@ export class CombinatorWithSidetrack {
     /** 다음 kValue개의 최적의 조합을 찾음*/
     public async nextCombination(count: number = 1): Promise<number[]> {
         const paths: Bit[] = [];
-
         if (this.currState === this.STATE.END) return paths;
         if (this.currState === this.STATE.BEGIN) {
             const path = await this.initializer();
@@ -101,7 +100,7 @@ export class CombinatorWithSidetrack {
             }
 
             //console.log(`PQ: ${(currNode as PhNode).value.curr}, ${prevPrefix.set}, ${prevLastVtx} -> ${currPrefix.set}, ${currLastVtx}`)
-            if (!this.isPathConflict(currPrefix, this.suffixPath[this.nextVertex[currLastVtx]])) {
+            if (currPrefix && this.suffixPath[this.nextVertex[currLastVtx]] && !this.isPathConflict(currPrefix, this.suffixPath[this.nextVertex[currLastVtx]])) {
                 paths.push(Bitmask.union(currPrefix.set, this.suffixPath[this.nextVertex[currLastVtx]].set));
                 //console.log(`path: ${Bitmask.union(currPrefix.set, this.suffixPath[this.nextVertex[currLastVtx]].set)}`)
             }

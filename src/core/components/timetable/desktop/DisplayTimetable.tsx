@@ -4,6 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./DisplayTimetable.module.css"
 import { Course, Day, Schedule, Time } from "@/core/types/Course";
 import useElementDimensions from "@/core/hooks/useElementDimensions";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+import DisplayCourseDetails from "./DisplayCourseDetails";
 
 
 export interface DisplayTimetableProps {
@@ -26,6 +29,7 @@ export default function DisplayTimetable({ wishCourses: selectedCourses, preview
     const noFixedDay = useMemo<Day[]>(() => ["None"], []);
     const hasWeekendSchedules = [previewCourse, ...selectedCourses].some((course) => course?.getSchedules().some((schedule) => weekends.includes(schedule.getDay() as Day)));
     const hasNoFixedSchedules = [previewCourse, ...selectedCourses].some((course) => course?.getSchedules().length === 0);
+    const SwalCourseDetails = withReactContent(Swal);
 
 
     // State
@@ -38,6 +42,21 @@ export default function DisplayTimetable({ wishCourses: selectedCourses, preview
 
     // Custom Hook
     const timetableHeight = useElementDimensions<HTMLDivElement>(timetable, "Pure").height;
+
+
+    // Handler
+    const handleCourseDetail = (course: Course) => {
+        SwalCourseDetails.fire({
+            title: '과목 정보',
+            html: <DisplayCourseDetails course={course} />,
+            width: "80vw",
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: `${styles.btnConfirm}`,
+            },
+            confirmButtonText: '확인'
+        });
+    };
 
 
     // Effect
@@ -129,7 +148,9 @@ export default function DisplayTimetable({ wishCourses: selectedCourses, preview
                                     boxSizing: "border-box",
                                     border: "1px solid #d6d6d6",
                                     borderWidth: "1px 0",
-                                }}>
+                                }}
+                                onClick={() => { handleCourseDetail(course) }}
+                            >
                                 <ul className={styles.course_block__status} style={{ display: "none" }}>
                                     <li className={styles.course_block__delete} title="삭제"></li>
                                 </ul>

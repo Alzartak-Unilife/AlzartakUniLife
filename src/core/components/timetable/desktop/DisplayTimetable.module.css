@@ -292,3 +292,17 @@
 .color30 {
     background-color: #fff8cc;
 }
+
+.btnConfirm {
+    height: calc(40px - 2px);
+    border: 1px solid var(--main-color);
+    margin: 0px 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.btnConfirm {
+    width: 100px;
+    background-color: var(--main-color);
+    color: var(--sub-color);
+}
