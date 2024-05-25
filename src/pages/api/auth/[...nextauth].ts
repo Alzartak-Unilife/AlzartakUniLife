@@ -73,7 +73,7 @@ export const authOptions: AuthOptions = {
 
     secret: process.env.ALZARTAK_NEXTAUTH_SECRET,
 
-    adapter: MongoDBAdapter(MongoDbProvider.connectDb(process.env.ALZARTAK_MONGODB_URI)),
+    //adapter: MongoDBAdapter(MongoDbProvider.connectDb(process.env.ALZARTAK_MONGODB_URI)),
 }
 
 export default NextAuth(authOptions);
