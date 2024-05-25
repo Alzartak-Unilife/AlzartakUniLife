@@ -2,13 +2,12 @@ import MongoDbProvider from "@/core/modules/database/MongoDbProvider";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import NextAuth, { AuthOptions, Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from 'bcrypt';
 import { JWT } from "next-auth/jwt";
 import GithubProvider from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
+import { ObjectId } from "mongodb";
 
 
-// JWT 내부에 사용자 정보를 포함하기 위한 타입 확장
 declare module "next-auth/jwt" {
     interface JWT {
         user: User;
@@ -16,17 +15,25 @@ declare module "next-auth/jwt" {
 }
 
 
+declare module "next-auth" {
+    interface Session {
+        user: User & { id: string };
+    }
+}
+
+
 export const authOptions: AuthOptions = {
-    // 인증 공급자를 설정합니다.
     providers: [
         CredentialsProvider({
             name: 'Guest User',
             credentials: {},
             authorize: async () => {
+                // 새로운 게스트 사용자 ID 생성
+                const guestId = new ObjectId().toString();
                 return {
-                    id: 'guest',
+                    id: guestId,
                     name: 'Guest User',
-                    email: 'guest@guest.com',
+                    email: `guest_${guestId}@guest.com`,
                 };
             },
         }),
@@ -38,19 +45,15 @@ export const authOptions: AuthOptions = {
             clientId: process.env.ALZARTAK_GOOGLE_LOCAL_ID,
             clientSecret: process.env.ALZARTAK_GOOGLE_LOCAL_SECRET,
         }),
-
     ],
 
-    // 세션 설정: JWT 방식을 사용하며, 세션의 최대 유지 기간을 30일로 설정합니다.
     session: {
         strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60 // 30일
     },
 
-    // 콜백 함수를 정의합니다.
     callbacks: {
-        // JWT 토큰 생성 시 호출됩니다.
-        // 사용자 정보를 JWT 토큰에 포함시키는 로직을 정의합니다.
+        // JWT 토큰 생성 시 호출 (사용자 정보를 JWT 토큰에 포함)
         jwt: async ({ token, user }: { token: JWT, user?: User }) => {
             if (user) {
                 token.user = {
@@ -61,21 +64,16 @@ export const authOptions: AuthOptions = {
             }
             return token;
         },
-
-        // 세션 조회 시 호출됩니다.
-        // JWT 토큰의 사용자 정보를 세션에 포함시키는 로직을 정의합니다.
+        // 세션 조회 시 호출 (JWT 토큰의 사용자 정보를 세션에 포함)
         session: async ({ session, token }: { session: Session, token: JWT }) => {
             session.user = token.user;
             return session;
         },
     },
 
-    // 비밀 키: JWT 토큰을 서명하거나 검증할 때 사용됩니다.
     secret: process.env.ALZARTAK_NEXTAUTH_SECRET,
 
-    // 데이터베이스 어댑터: MongoDB를 사용하도록 설정합니다.
     adapter: MongoDBAdapter(MongoDbProvider.connectDb(process.env.ALZARTAK_MONGODB_URI)),
 }
 
-// NextAuth 설정을 export합니다.
 export default NextAuth(authOptions);
