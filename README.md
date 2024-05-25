@@ -23,6 +23,14 @@
 |컴퓨터공학전공|문정훈|팀장|윈도우 앱 개발|![C++](https://img.shields.io/badge/C++/CLI-004482?style=flat-square&logo=cplusplus&logoColor=white) ![.NET Core](https://img.shields.io/badge/.NET%20Core-512BD4?style=flat-square&logo=.net&logoColor=white)|
 
 </br>
+</br>
+
+# 배포 사이트 (데스크톱 환경 권장)
+<h3>웹 페이지 : https://alzartak.vercel.app (게스트 로그인 가능)</h3>
+<h3>시연 영상 : https://youtu.be/TdhVPSo7Kn8</h3>
+</br>
+</br>
+
 
 # 데모 시연
 <h3>시나리오</h3>
@@ -59,12 +67,6 @@
 
 # API 명세서
 <img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/0376a0eb-fb7d-4766-922f-b9bafaa43bc7" width="700"> 
-</br>
-</br>
-
-# 배포 사이트 (데스크톱 환경 권장)
-<h3>웹 페이지 : https://alzartak.vercel.app</h3>
-<h3>시연 영상 : https://youtu.be/TdhVPSo7Kn8</h3>
 </br>
 </br>
 
