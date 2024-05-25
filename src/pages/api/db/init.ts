@@ -123,7 +123,7 @@ function createCourses(jcourses: JCourse[], jevaluations: JEvaluation): CourseOb
 
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
-    const db = await MongoDbProvider.getDb();
+    const db = await MongoDbProvider.connectDb(process.env.ALZARTAK_MONGODB_URI).then(() => MongoDbProvider.getDb());
     const jcourses: JCourse[] = coursesJson as unknown as JCourse[];
     const jevaluations: JEvaluation = evaluationsJson as unknown as JEvaluation;
     const courseObjects = createCourses(jcourses, jevaluations);

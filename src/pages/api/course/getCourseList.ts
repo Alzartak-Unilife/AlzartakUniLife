@@ -18,7 +18,7 @@ type PostParam = {
 
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
-    const db = await MongoDbProvider.getDb();
+    const db = await MongoDbProvider.connectDb(process.env.ALZARTAK_MONGODB_URI).then(() => MongoDbProvider.getDb());
 
     switch (request.method) {
         case "POST": {

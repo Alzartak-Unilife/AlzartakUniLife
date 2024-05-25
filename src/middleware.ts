@@ -14,6 +14,7 @@ export async function middleware(request: NextRequest) {
         // 특정 경로에 대한 처리
         switch (request.nextUrl.pathname) {
             case "":
+                return caseRootUrl(request);
             case "/":
                 return caseRootUrl(request);
         }
