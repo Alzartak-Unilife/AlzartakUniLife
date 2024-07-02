@@ -1,36 +1,37 @@
-# AlzartakUniLife (대학 시간표 추천 서비스)
-<p>어떤 과목을 시간표에 담아야 할지 고민 되나요? 당신이 원하는 시간표를 만들어 드립니다!</p>
+# 대학 시간표 추천 서비스
+사용자의 설정에 따른 시간표 추천 웹 서비스
+
 </br>
 
 # 프로젝트 개요
-<h3>최종 벨류업 (2023.12 ~ 2024.03)</h3>
+### Info
+|||
+|-----|-----|
+|**개발 기간**|2022.12 ~ 2024.03|
+|**핵심 기술**|![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?style=flat-square&logo=webassembly&logoColor=white) ![C++](https://img.shields.io/badge/C++-004482?style=flat-square&logo=cplusplus&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=next.js&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)|
+|**참여 인원**|1명|
+|**배포 주소**|<a>https://alzartak.vercel.app/</a>|
+|**GitHub**|<a>https://github.com/Alzartak-Unilife/AlzartakUniLife</a>|
 
-|전공|이름|역할|주요 업무|기술 스택|
-|-------|-----|-----|-----|-----|
-|컴퓨터공학전공|문정훈|팀장|Front-End & Back-End|![C++](https://img.shields.io/badge/C++-004482?style=flat-square&logo=cplusplus&logoColor=white) ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?style=flat-square&logo=webassembly&logoColor=white) ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=next.js&logoColor=white) ![React.js](https://img.shields.io/badge/React.js-20232A?style=flat-square&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white) |
-
-<h3>1차 벨류업 (2023.03 ~ 2023.05)</h3>
-
-|전공|이름|역할|주요 업무|기술 스택|
-|-------|-----|-----|-----|-----|
-|컴퓨터공학전공|문정훈|팀장|Front-End|![Vanilla JS](https://img.shields.io/badge/Vanilla%20JS-F7DF1E?style=flat-square&logo=javascript&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)|
-|컴퓨터공학전공|송지웅|팀원|Back-End|![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
-
-<h3>초기 프로젝트 (2022.11 ~ 2023.01)</h3>
-
-|전공|이름|역할|주요 업무|기술 스택|
-|-------|-----|-----|-----|-----|
-|컴퓨터공학전공|문정훈|팀장|윈도우 앱 개발|![C++](https://img.shields.io/badge/C++/CLI-004482?style=flat-square&logo=cplusplus&logoColor=white) ![.NET Core](https://img.shields.io/badge/.NET%20Core-512BD4?style=flat-square&logo=.net&logoColor=white)|
-
-</br>
+### Works
+- Sidetrack과 Persistent heap 활용하여 𝑶(𝑯𝑵^𝟐 + (𝑯−𝑳)𝑵 + 𝑲𝒍𝒐𝒈𝑲)인 시간표 조합 시스템 개발 (최적의 시간표 순서대로 나열)
+- WebAssembly을 활용하여  C++로 작성한 조합 시스템 적용 (약 50% 성능향상)
+- 웹 페이지 UI 디자인 및 구현
+  
 </br>
 
-# 배포 사이트 (데스크톱 환경 권장)
-<h3>웹 페이지 : https://alzartak.vercel.app (게스트 로그인 가능)</h3>
-<h3>시연 영상 : https://youtu.be/TdhVPSo7Kn8</h3>
-</br>
-</br>
+# 소스코드 주소
+### 클라이언트
+- [홈 페이지](src/app)
+- [스마트 시간표 설정 페이지](src/app/timetable/desktop/auto/generate)
+- [스마트 시간표 생성 페이지](src/app/timetable/desktop/auto/setting)
+- [커스텀 시간표 제작 페이지](src/app/timetable/desktop/custom/maker)
 
+### 서버
+- [REST API](src/pages/api)
+- [Middleware](src/middleware.ts)
+
+</br>
 
 # 데모 시연
 <h3>시나리오</h3>
@@ -46,37 +47,13 @@
 </br>
 </br>
 
-# 시간표 생성 알고리즘 성능
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/b7904df5-a942-4ef9-8a9e-3548746d9c88" width="700">
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/4a0b09e7-4b0b-4f38-b0a1-ec35491b57cb" width="700"> 
-</br>
-</br>
-
-# 프로젝트 상세 설명
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/73960d06-0246-48f8-accb-3d4481d49ca1" width="700">
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/6cf2a1d9-0c2f-4576-bafa-f29ab99bb3ac" width="700">
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/6ce7597b-ee3f-4b92-adbc-0b722c91e5ee" width="700">
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/38baaa16-7ab0-436f-98b0-18333e961e3a" width="700">
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/17d98fb4-c618-45ea-bbef-76fa27f9d30d" width="700">
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/e887ac55-b299-412f-9489-da7fec737bbf" width="700">
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/1837947e-288b-4db4-b776-fa5925082112" width="700">
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/a1afba95-2be6-492b-a80f-d931cddf1d72" width="700">
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/a6d9f4bb-47e0-4c4f-a7a7-11afd65b2872" width="700">
-</br>
-</br>
-
-# API 명세서
-<img src="https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/0376a0eb-fb7d-4766-922f-b9bafaa43bc7" width="700"> 
-</br>
-</br>
-
-# 소스코드 바로가기
-- 사용자 웹 페이지 구현 : [userpage](src/app)
-- 시간표 조합 알고리즘 : [algorithm](src/core/systems/timetable-generator), [wasm](public/wasm)
-- API 및 Auth 구현 : [apiroutes](src/pages/api)
-- 미들 웨어 구현 : [middleware](src/middleware.ts)
-</br>
-</br>
-
-
-
+# 프로젝트 상세 소개
+![슬라이드29](https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/394f09ef-096a-4faf-87c6-c42f4bf76fc6)
+![슬라이드30](https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/539a146a-6650-431d-95b8-3331ca47effd)
+![슬라이드31](https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/1f4e489d-f310-46f8-9437-cc5d026874d4)
+![슬라이드32](https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/e1484c8b-24bd-46d4-a849-4fb8ea93c279)
+![슬라이드33](https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/004340c5-2cd4-45da-9cef-1f06184f2b4b)
+![슬라이드34](https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/1736bd18-2117-4048-91df-85367881f12a)
+![슬라이드35](https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/bdda6117-75f0-4eeb-a65d-d47a9ea5bff8)
+![슬라이드36](https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/a2d1187f-b7c0-4d41-ab79-a305520efe6e)
+![슬라이드37](https://github.com/Alzartak-Unilife/AlzartakUniLife/assets/102275981/a8eaba86-caea-4f5a-9b8b-231045a91a36)
